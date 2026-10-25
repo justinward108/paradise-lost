@@ -1593,7 +1593,7 @@ Twenty-three decisions are open; three of them (D1–D3) block Phase 0 and shoul
 
 | ID | Question | Recommendation | Blocks | Status |
 | --- | --- | --- | --- | --- |
-| D1 | Camera and projection: isometric or top-down? | Isometric 2:1 play view plus a flat blueprint view (section 7.2) | All art, building code | Open |
+| D1 | Camera and projection: isometric or top-down? | Isometric 2:1 play view plus a flat blueprint view (section 7.2) | All art, building code | Decided 2026-10-25: isometric |
 | D2 | Time system: real, accelerated or hybrid? | Hybrid: accelerated ambient clock, real-hour consequences; prototype first (section 18.1) | Farming, neglect, NPC schedules | Open |
 | D3 | Which art style leads production? | Whichever the creator can produce consistently at modular-kit scale; pilot both with 20 pieces (section 20.4) | Art pipeline, MVP content | Open |
 
@@ -1691,6 +1691,7 @@ Newest first. One line per decision; detail lives in the section cited.
 
 | Date | Decision | Status | Section |
 | --- | --- | --- | --- |
+| 2026-10-25 | D1: isometric 2:1 camera | Confirmed (creator) | 7.2, 29 |
 | 2026-10-25 | GDD v0.1 drafted from the creator handoff | Draft | All |
 | 2026-10-25 | Browser first, deployed on Netlify at paradiselost.poor.camp; iOS/iPadOS later | Confirmed (handoff) | 1, 22 |
 | 2026-10-25 | Set during Volume One only; no Vol 2/3 content without authorisation | Confirmed (handoff) | 4 |

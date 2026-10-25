@@ -1,0 +1,6 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": { "outDir": "../../.tsbuild/content", "rootDir": ".", "types": ["node"] },
+  "include": ["src", "scripts", "test"],
+  "references": [{ "path": "../sim" }]
+}

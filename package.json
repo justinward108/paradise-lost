@@ -1,0 +1,25 @@
+{
+  "name": "paradise-lost",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Poor Camp: Paradise Lost — cozy life sim set on the Hilo/Puna side of Hawaiʻi Island",
+  "type": "module",
+  "workspaces": [
+    "packages/sim",
+    "packages/content",
+    "packages/client"
+  ],
+  "scripts": {
+    "dev": "npm run dev -w @paradise-lost/client",
+    "build": "npm run validate-content && npm run typecheck && npm run build -w @paradise-lost/client",
+    "typecheck": "tsc -b",
+    "test": "vitest run",
+    "validate-content": "node --experimental-strip-types packages/content/scripts/validate.ts"
+  },
+  "devDependencies": {
+    "@types/node": "22.20.5",
+    "typescript": "5.9.3",
+    "vite": "8.3.5",
+    "vitest": "5.0.5"
+  }
+}

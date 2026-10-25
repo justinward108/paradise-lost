@@ -1,0 +1,9 @@
+{
+  "name": "@paradise-lost/content",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "main": "src/index.ts",
+  "exports": { ".": "./src/index.ts" },
+  "dependencies": { "@paradise-lost/sim": "0.1.0" }
+}

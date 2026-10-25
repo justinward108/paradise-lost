@@ -1,0 +1,6 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": { "outDir": "../../.tsbuild/client", "rootDir": ".", "lib": ["ES2022", "DOM", "DOM.Iterable"] },
+  "include": ["src", "test", "vite.config.ts"],
+  "references": [{ "path": "../sim" }, { "path": "../content" }]
+}
