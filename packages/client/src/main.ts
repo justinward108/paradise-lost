@@ -2,16 +2,18 @@
  * Entry point: load (or create) the town, start the renderer, mount the UI.
  */
 import Phaser from 'phaser';
-import { catalog, LOT, STARTER_INVENTORY, type Style } from '@paradise-lost/content';
-import { createTown, summariseAbsence, type Town } from '@paradise-lost/sim';
+import { catalog, STARTER_INVENTORY, world, type Style } from '@paradise-lost/content';
+import * as sim from '@paradise-lost/sim';
+import { AMBIENT_DAY_MS, createTown, summariseAbsence, type Town } from '@paradise-lost/sim';
 import { Controller } from './game/controller.ts';
 import { BuildScene } from './scene/BuildScene.ts';
 import { IndexedDbKV, LocalTownStore, MemoryKV, type TownStore } from './store/townStore.ts';
-import { mountUi, showAwayCard } from './ui/ui.ts';
+import { mountUi, showAwayCard, showWelcome } from './ui/ui.ts';
 import './style.css';
 
 const TOWN_ID = 'home';
 const HOUR = 3_600_000;
+const TICK_MS = 20_000;
 
 function readStyle(): Style {
   try {
@@ -24,6 +26,7 @@ function readStyle(): Style {
 }
 
 function openStore(): TownStore {
+  const ctx = { world, catalog };
   try {
     let sync: Storage | null = null;
     try {
@@ -31,24 +34,34 @@ function openStore(): TownStore {
     } catch {
       /* no localStorage */
     }
-    if (typeof indexedDB !== 'undefined') return new LocalTownStore(new IndexedDbKV(), sync);
+    if (typeof indexedDB !== 'undefined') return new LocalTownStore(new IndexedDbKV(), sync, ctx);
   } catch {
     /* private mode etc. */
   }
   console.warn('IndexedDB unavailable; progress will not be saved.');
-  return new LocalTownStore(new MemoryKV(), null);
+  return new LocalTownStore(new MemoryKV(), null, ctx);
 }
 
 function newTown(now: number): Town {
-  return createTown({
-    townId: TOWN_ID,
-    seed: `${TOWN_ID}-${now.toString(36)}`,
-    width: LOT.width,
-    height: LOT.height,
-    nowMs: now,
-    inventory: { ...STARTER_INVENTORY },
-    plots: [{ id: 'plot1', x: LOT.width - 3, y: LOT.height - 3 }],
-  });
+  // Start the town's first day at 8 in the morning rather than midnight.
+  const epoch = now - (8 / 24) * AMBIENT_DAY_MS;
+  return createTown({ townId: TOWN_ID, seed: `${TOWN_ID}-${now.toString(36)}`, nowMs: epoch, inventory: { ...STARTER_INVENTORY }, world, catalog });
+}
+
+/** Developer aid: pretend the player was away for `ms` (moves every timestamp back). */
+function shiftBack(town: Town, ms: number) {
+  town.clock.epochMs -= ms;
+  for (const s of Object.values(town.soil)) {
+    s.tilledMs -= ms;
+    s.lastWeededMs -= ms;
+  }
+  for (const p of Object.values(town.projects)) {
+    if (p.startedMs != null) p.startedMs -= ms;
+    if (p.completedMs != null) p.completedMs -= ms;
+    for (const st of p.stages) {
+      for (const k of ['startedMs', 'materialsMetMs', 'completedMs'] as const) if (st[k] != null) st[k] = st[k]! - ms;
+    }
+  }
 }
 
 async function boot() {
@@ -58,8 +71,10 @@ async function boot() {
   void navigator.storage?.persist?.();
 
   const params = new URLSearchParams(location.search);
+  let fresh = false;
   if (params.has('reset')) {
     await store.save(newTown(now));
+    fresh = true;
     history.replaceState(null, '', location.pathname);
   }
 
@@ -70,26 +85,29 @@ async function boot() {
     console.warn('Could not read the save:', err);
   }
   const town = loaded?.town ?? newTown(now);
-  if (!loaded) await store.save(town);
+  if (!loaded) {
+    fresh = true;
+    await store.save(town);
+  }
 
-  // Developer aid for the time prototype: ?away=72 pretends you were gone 72 hours.
   let lastSeen = Number((await store.getMeta('lastSeen')) ?? now);
   const away = Number(params.get('away'));
   if (away > 0) {
-    const shift = away * HOUR;
-    town.clock.epochMs -= shift;
-    for (const p of Object.values(town.plots)) p.lastTendedMs -= shift;
-    lastSeen = now - shift;
+    shiftBack(town, away * HOUR);
+    lastSeen = now - away * HOUR;
   }
 
-  const ctrl = new Controller(town, catalog, store, readStyle());
+  const ctrl = new Controller(town, catalog, world, store, readStyle());
   if (loaded?.recovered) ctrl.setStatus('Your last save was damaged, so the one before it was restored.', 'warn');
+
+  // Summarise before settling time, so the card can say what happened.
+  const summary = summariseAbsence(town, world, lastSeen, now);
 
   const scene = new BuildScene();
   const game = new Phaser.Game({
     type: Phaser.AUTO,
     parent: 'game',
-    backgroundColor: '#a9c48b',
+    backgroundColor: '#93b273',
     scale: { mode: Phaser.Scale.RESIZE, width: window.innerWidth, height: window.innerHeight },
     antialias: true,
     scene: [],
@@ -97,10 +115,12 @@ async function boot() {
   });
   game.scene.add('build', scene, true, { ctrl });
 
-  mountUi(root, ctrl, { zoom: (f) => scene.zoomBy(f), setRoofs: (s) => scene.setRoofs(s) });
+  mountUi(root, ctrl, { zoom: (f) => scene.zoomBy(f), setRoofs: (s) => scene.setRoofs(s), follow: () => scene.follow() });
+  ctrl.tick();
+  setInterval(() => ctrl.tick(), TICK_MS);
 
-  const summary = summariseAbsence(town, lastSeen, now);
-  if (summary.lines.length > 0) showAwayCard(root, summary.lines, summary.awayHours);
+  if (fresh) showWelcome(root, () => undefined);
+  else if (summary.lines.length > 0) showAwayCard(root, summary.lines, summary.awayHours);
 
   const markSeen = () => void store.setMeta('lastSeen', String(Date.now()));
   markSeen();
@@ -112,7 +132,7 @@ async function boot() {
   window.addEventListener('pagehide', () => store.flushSync());
 
   // Exposed for automated checks and debugging.
-  (window as unknown as { paradise: unknown }).paradise = { ctrl, scene, store };
+  (window as unknown as { paradise: unknown }).paradise = { ctrl, scene, store, sim };
 }
 
 void boot();

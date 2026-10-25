@@ -1,15 +1,16 @@
 /**
- * HTML interface over the game canvas: catalogue, tools, status line, touch controls.
- * Built in the DOM (not on the canvas) for real text, screen readers and easy layout.
+ * HTML interface over the game canvas. Built in the DOM (not on the canvas) for real
+ * text, screen readers and easy layout.
  */
-import { art, catalog, MATERIALS, pieceOrder, type Style } from '@paradise-lost/content';
-import { requiredFrames } from '@paradise-lost/content';
+import { art, catalog, crops, ITEMS, pieceOrder, requiredFrames, type Style } from '@paradise-lost/content';
+import { ambientTime, friendshipLevel, goals, helperLabour, materialsMet } from '@paradise-lost/sim';
 import { drawFrame } from '../art/generate.ts';
 import type { Controller } from '../game/controller.ts';
 
 export interface UiHooks {
   zoom(f: number): void;
   setRoofs(show: boolean): void;
+  follow(): void;
 }
 
 const el = <K extends keyof HTMLElementTagNameMap>(tag: K, attrs: Record<string, string> = {}, text?: string) => {
@@ -19,66 +20,108 @@ const el = <K extends keyof HTMLElementTagNameMap>(tag: K, attrs: Record<string,
   return e;
 };
 
+function btn(label: string, attrs: Record<string, string> = {}, onClick?: () => void) {
+  const b = el('button', attrs, label);
+  if (onClick) b.addEventListener('click', onClick);
+  return b;
+}
+
+function clockText(hour: number) {
+  const h = Math.floor(hour);
+  const m = Math.floor((hour - h) * 60);
+  const suffix = h < 12 ? 'am' : 'pm';
+  const h12 = h % 12 === 0 ? 12 : h % 12;
+  return `${h12}:${String(m - (m % 10)).padStart(2, '0')} ${suffix}`;
+}
+
+const NIGHT = 0.6;
+
+/** Night darkening by ambient hour: 0 by day, up to NIGHT after dark. */
+function nightAlpha(hour: number) {
+  if (hour >= 7 && hour <= 17.5) return 0;
+  if (hour > 17.5 && hour < 20) return ((hour - 17.5) / 2.5) * NIGHT;
+  if (hour >= 5 && hour < 7) return ((7 - hour) / 2) * NIGHT;
+  return NIGHT;
+}
+
 export function mountUi(root: HTMLElement, ctrl: Controller, hooks: UiHooks): void {
   let roofs = true;
 
-  // Top bar
+  const night = el('div', { class: 'night', 'aria-hidden': 'true' });
+
+  // ----- top bar -----
   const top = el('header', { class: 'topbar' });
-  const title = el('div', { class: 'title' }, 'Paradise Lost');
-  const inv = el('div', { class: 'inventory', 'aria-label': 'Materials' });
-  const shelter = el('div', { class: 'shelter' });
-  const undo = el('button', { 'aria-label': 'Undo (Ctrl+Z)', title: 'Undo (Ctrl+Z)' }, '↶ Undo');
-  const redo = el('button', { 'aria-label': 'Redo (Ctrl+Y)', title: 'Redo (Ctrl+Y)' }, '↷ Redo');
-  const roofBtn = el('button', { 'aria-pressed': 'true', title: 'Show or hide roofs' }, 'Roofs: on');
-  const styleBtn = el('button', { title: 'Switch art style' });
-  top.append(title, inv, shelter, undo, redo, roofBtn, styleBtn);
+  const clock = el('div', { class: 'chip clock', 'aria-live': 'off' });
+  const inv = el('div', { class: 'chip inventory', 'aria-label': 'Inventory' });
+  const undo = btn('↶ Undo', { title: 'Undo (Ctrl+Z)', class: 'build-only' }, () => ctrl.undo());
+  const redo = btn('↷ Redo', { title: 'Redo (Ctrl+Y)', class: 'build-only' }, () => ctrl.redo());
+  const roofBtn = btn('Roofs: on', { 'aria-pressed': 'true', title: 'Show or hide roofs' });
+  const styleBtn = btn('', { title: 'Switch art style' });
+  const meBtn = btn('◎', { title: 'Centre on me', 'aria-label': 'Centre on me' }, () => hooks.follow());
+  top.append(clock, inv, undo, redo, roofBtn, styleBtn, meBtn);
 
-  // Left tools
-  const tools = el('aside', { class: 'tools', 'aria-label': 'Tools' });
-  const toolBtn = (icon: string, label: string, title: string) => {
-    const b = el('button', { title, 'aria-label': label });
-    b.append(el('span', { class: 'glyph', 'aria-hidden': 'true' }, icon), el('span', { class: 'label' }, label));
-    return b;
-  };
-  const selectBtn = toolBtn('✋', 'Look', 'Look and interact (Esc)');
-  const demoBtn = toolBtn('⛏', 'Demolish', 'Demolish (Delete)');
-  const rotBtn = toolBtn('↻', 'Rotate', 'Rotate (R)');
-  const zin = el('button', { 'aria-label': 'Zoom in' }, '＋');
-  const zout = el('button', { 'aria-label': 'Zoom out' }, '－');
-  tools.append(selectBtn, demoBtn, rotBtn, zin, zout);
+  // ----- goals -----
+  const goalsBox = el('section', { class: 'goals', 'aria-label': 'Goals' });
+  const goalsHead = btn('Goals', { class: 'goals-head', 'aria-expanded': 'true' });
+  const goalsList = el('ul');
+  const goalsHint = el('p', { class: 'hint' });
+  goalsBox.append(goalsHead, goalsList, goalsHint);
+  if (window.innerWidth < 700) {
+    goalsBox.classList.add('collapsed');
+    goalsHead.setAttribute('aria-expanded', 'false');
+  }
+  goalsHead.addEventListener('click', () => {
+    const open = goalsBox.classList.toggle('collapsed');
+    goalsHead.setAttribute('aria-expanded', String(!open));
+  });
 
-  // Status line + touch confirm
+  // ----- status + touch confirm -----
   const status = el('div', { class: 'status', role: 'status', 'aria-live': 'polite' });
   const statusIcon = el('span', { class: 'icon', 'aria-hidden': 'true' });
   const statusText = el('span');
-  const cascadeBtn = el('button', { class: 'cascade hidden' }, 'Remove all');
+  const cascadeBtn = btn('Remove all', { class: 'cascade hidden' }, () => ctrl.commit(true));
   status.append(statusIcon, statusText, cascadeBtn);
+  const toasts = el('div', { class: 'toasts', 'aria-live': 'polite' });
 
   const touch = el('div', { class: 'touch-confirm hidden' });
-  const okBtn = el('button', { class: 'ok', 'aria-label': 'Confirm' }, '✓ Place');
-  const noBtn = el('button', { class: 'no', 'aria-label': 'Cancel' }, '✕');
+  const okBtn = btn('✓ Place', { class: 'ok', 'aria-label': 'Confirm' }, () => ctrl.commit());
+  const noBtn = btn('✕', { class: 'no', 'aria-label': 'Cancel' }, () => {
+    ctrl.pendingTouch = false;
+    ctrl.updatePreview(null);
+    renderStatus();
+  });
   touch.append(okBtn, noBtn);
 
-  // Catalogue
-  const cat = el('nav', { class: 'catalog', 'aria-label': 'Building pieces' });
-  const buttons = new Map<string, HTMLButtonElement>();
+  // ----- bottom bar -----
+  const bottom = el('nav', { class: 'bottom', 'aria-label': 'Tools' });
+  const tabs = el('div', { class: 'tabs', role: 'tablist' });
+  const playTab = btn('🌿 Live', { role: 'tab' }, () => ctrl.setMode('play'));
+  const buildTab = btn('🔨 Build', { role: 'tab' }, () => ctrl.setMode('build'));
+  tabs.append(playTab, buildTab);
+
+  const playBar = el('div', { class: 'bar play-bar' });
+  const buildBar = el('div', { class: 'bar build-bar' });
+  bottom.append(tabs, playBar, buildBar);
+
+  const demoBtn = btn('⛏ Demolish', { class: 'tool', title: 'Demolish (Delete)' }, () => ctrl.setTool({ mode: 'demolish' }));
+  const rotBtn = btn('↻ Rotate', { class: 'tool', title: 'Rotate (R)' }, () => ctrl.rotate());
+  const pieceButtons = new Map<string, HTMLButtonElement>();
+  buildBar.append(demoBtn, rotBtn);
   for (const id of pieceOrder) {
     const def = catalog[id]!;
     const b = el('button', { class: 'piece', 'data-id': id });
-    const img = el('img', { alt: '' });
-    const name = el('span', { class: 'name' }, def.name);
-    const cost = el('span', { class: 'cost' }, Object.entries(def.cost).map(([m, n]) => `${n} ${m}`).join(', '));
-    b.append(img, name, cost);
+    b.append(el('img', { alt: '' }), el('span', { class: 'name' }, def.name), el('span', { class: 'cost' }, Object.entries(def.cost).map(([m, n]) => `${n} ${ITEMS[m]?.name.toLowerCase() ?? m}`).join(', ')));
     b.addEventListener('click', () => ctrl.setTool({ mode: 'build', pieceId: id, rotation: 0 }));
-    buttons.set(id, b);
-    cat.append(b);
+    pieceButtons.set(id, b);
+    buildBar.append(b);
   }
 
-  root.append(top, tools, status, touch, cat);
+  // ----- side panel -----
+  const panel = el('aside', { class: 'panel hidden', role: 'dialog', 'aria-live': 'polite' });
+
+  root.append(night, top, goalsBox, status, toasts, touch, panel, bottom);
 
   // ----- behaviour -----
-  undo.addEventListener('click', () => ctrl.undo());
-  redo.addEventListener('click', () => ctrl.redo());
   roofBtn.addEventListener('click', () => {
     roofs = !roofs;
     hooks.setRoofs(roofs);
@@ -90,42 +133,43 @@ export function mountUi(root: HTMLElement, ctrl: Controller, hooks: UiHooks): vo
     try {
       localStorage.setItem('pl.style', next);
     } catch {
-      /* storage unavailable: preference lasts this session only */
+      /* storage unavailable */
     }
     ctrl.setStyle(next);
   });
-  selectBtn.addEventListener('click', () => ctrl.setTool({ mode: 'select' }));
-  demoBtn.addEventListener('click', () => ctrl.setTool({ mode: 'demolish' }));
-  rotBtn.addEventListener('click', () => ctrl.rotate());
-  zin.addEventListener('click', () => hooks.zoom(1.15));
-  zout.addEventListener('click', () => hooks.zoom(1 / 1.15));
-  okBtn.addEventListener('click', () => ctrl.commit());
-  noBtn.addEventListener('click', () => {
-    ctrl.pendingTouch = false;
-    ctrl.updatePreview(null);
-    renderStatus();
-  });
-  cascadeBtn.addEventListener('click', () => ctrl.commit(true));
 
+  const keys: Record<string, [number, number]> = {
+    w: [0, -1], arrowup: [0, -1], s: [0, 1], arrowdown: [0, 1], a: [-1, 0], arrowleft: [-1, 0], d: [1, 0], arrowright: [1, 0],
+  };
   window.addEventListener('keydown', (e) => {
     if (e.target instanceof HTMLInputElement) return;
+    const k = e.key.toLowerCase();
     const mod = e.ctrlKey || e.metaKey;
-    if (mod && e.key.toLowerCase() === 'z' && !e.shiftKey) {
+    if (mod && k === 'z' && !e.shiftKey) {
       e.preventDefault();
       ctrl.undo();
-    } else if (mod && (e.key.toLowerCase() === 'y' || (e.key.toLowerCase() === 'z' && e.shiftKey))) {
+    } else if (mod && (k === 'y' || (k === 'z' && e.shiftKey))) {
       e.preventDefault();
       ctrl.redo();
-    } else if (e.key === 'r' || e.key === 'R') ctrl.rotate();
-    else if (e.key === 'Escape') ctrl.setTool({ mode: 'select' });
-    else if (e.key === 'Delete' || e.key === 'Backspace') ctrl.setTool({ mode: 'demolish' });
+    } else if (k === 'r' && ctrl.mode === 'build') ctrl.rotate();
+    else if (k === 'escape') {
+      if (ctrl.panel) ctrl.openPanel(null);
+      else ctrl.setTool(ctrl.mode === 'play' ? { mode: 'walk' } : { mode: 'demolish' });
+    } else if (k === 'b') ctrl.setMode(ctrl.mode === 'play' ? 'build' : 'play');
+    else if ((k === 'delete' || k === 'backspace') && ctrl.mode === 'build') ctrl.setTool({ mode: 'demolish' });
+    else if (ctrl.mode === 'play' && keys[k]) {
+      e.preventDefault();
+      ctrl.stepDir(...keys[k]!);
+    } else if (ctrl.mode === 'play' && (k === 'e' || k === ' ')) {
+      e.preventDefault();
+      ctrl.interactFacing();
+    }
   });
 
+  // ----- renderers -----
   function renderThumbs() {
-    for (const [id, b] of buttons) {
-      const def = catalog[id]!;
-      const frame = requiredFrames(def)[0]!;
-      const d = drawFrame(art[id]![ctrl.style], ctrl.style, frame, `thumb:${id}`);
+    for (const [id, b] of pieceButtons) {
+      const d = drawFrame(art[id]![ctrl.style], ctrl.style, requiredFrames(catalog[id]!)[0]!, `thumb:${id}`);
       const img = b.querySelector('img')!;
       img.src = d.canvas.toDataURL();
       img.style.width = `${d.canvas.width * d.displayScale * 0.6}px`;
@@ -139,31 +183,61 @@ export function mountUi(root: HTMLElement, ctrl: Controller, hooks: UiHooks): vo
     renderThumbs();
   }
 
+  function renderPlayBar() {
+    const t = ctrl.tool;
+    const items: HTMLButtonElement[] = [
+      btn('✋ Walk & use', { class: `tool ${t.mode === 'walk' ? 'active' : ''}` }, () => ctrl.setTool({ mode: 'walk' })),
+      btn('⛏ Dig bed', { class: `tool ${t.mode === 'dig' ? 'active' : ''}` }, () => ctrl.setTool({ mode: 'dig' })),
+    ];
+    for (const c of Object.values(crops)) {
+      const n = ctrl.town.inventory[c.seed] ?? 0;
+      if (n <= 0) continue;
+      const active = t.mode === 'plant' && t.cropId === c.id;
+      items.push(btn(`🌱 ${c.name} (${n})`, { class: `tool ${active ? 'active' : ''}` }, () => ctrl.setTool({ mode: 'plant', cropId: c.id })));
+    }
+    items.push(btn('💧 Water', { class: `tool ${t.mode === 'water' ? 'active' : ''}` }, () => ctrl.setTool({ mode: 'water' })));
+    playBar.replaceChildren(...items);
+  }
+
+  function renderClock() {
+    const a = ambientTime(ctrl.town, ctrl.now());
+    clock.textContent = `Day ${a.day + 1} · ${clockText(a.hour)} · ${a.rain ? 'Rain' : 'Clear'}`;
+    night.style.opacity = String(nightAlpha(a.hour));
+    document.body.classList.toggle('raining', a.rain);
+  }
+
   function renderTown() {
-    inv.replaceChildren(
-      ...MATERIALS.filter((m) => (ctrl.town.inventory[m.id] ?? 0) > 0 || m.id === 'boards').map((m) =>
-        el('span', { class: 'mat' }, `${m.name} ${ctrl.town.inventory[m.id] ?? 0}`),
-      ),
-    );
-    const ready = ctrl.shelterReady();
-    shelter.textContent = ready ? '✓ Shelter ready' : 'No shelter yet';
-    shelter.classList.toggle('ready', ready);
+    const list = ctrl.inventoryList();
+    inv.replaceChildren(...(list.length ? list : [{ id: 'none', name: 'Empty-handed', kind: '', n: 0 }]).map((i) => el('span', { class: `item ${i.kind}` }, i.n ? `${i.name} ${i.n}` : i.name)));
     undo.disabled = ctrl.town.history.undo.length === 0;
     redo.disabled = ctrl.town.history.redo.length === 0;
-    for (const [id, b] of buttons) {
+    for (const [id, b] of pieceButtons) {
       const def = catalog[id]!;
       const locked = def.tier > ctrl.town.progress.tier;
       b.classList.toggle('locked', locked);
       b.title = locked ? `${def.name} — unlocks at tier ${def.tier}` : def.name;
     }
+    const gs = goals(ctrl.town, ctrl.catalog, ctrl.world);
+    goalsList.replaceChildren(...gs.map((g) => el('li', { class: g.done ? 'done' : '' }, `${g.done ? '✓' : '○'} ${g.text}`)));
+    const next = gs.find((g) => !g.done);
+    goalsHint.textContent = next ? next.hint : 'All done for now. The town has more to discover soon.';
+    renderPlayBar();
+    renderPanel();
+  }
+
+  function renderMode() {
+    document.body.classList.toggle('mode-build', ctrl.mode === 'build');
+    document.body.classList.toggle('mode-play', ctrl.mode === 'play');
+    playTab.setAttribute('aria-selected', String(ctrl.mode === 'play'));
+    buildTab.setAttribute('aria-selected', String(ctrl.mode === 'build'));
   }
 
   function renderTool() {
     const t = ctrl.tool;
-    for (const [id, b] of buttons) b.classList.toggle('active', t.mode === 'build' && t.pieceId === id);
-    selectBtn.classList.toggle('active', t.mode === 'select');
+    for (const [id, b] of pieceButtons) b.classList.toggle('active', t.mode === 'build' && t.pieceId === id);
     demoBtn.classList.toggle('active', t.mode === 'demolish');
     rotBtn.disabled = !(t.mode === 'build' && (catalog[t.pieceId]?.rotations ?? 1) > 1);
+    renderPlayBar();
   }
 
   function renderStatus() {
@@ -173,12 +247,10 @@ export function mountUi(root: HTMLElement, ctrl: Controller, hooks: UiHooks): vo
     if (p.kind === 'place' || p.kind === 'remove') {
       text = p.message;
       tone = !p.ok ? 'error' : p.kind === 'place' && p.warning ? 'warn' : 'ok';
-    } else if (p.kind === 'plot') {
-      text = p.message;
-      tone = 'info';
+    } else if (p.kind === 'action') {
+      text = p.action.message;
+      tone = p.action.ok ? 'ok' : 'error';
     }
-    // If the latest command was rejected, that reason wins until the pointer moves on.
-    if (ctrl.status.tone === 'error' && p.kind === 'none') tone = 'error';
     statusText.textContent = text;
     statusIcon.textContent = tone === 'ok' ? '✓' : tone === 'warn' ? '!' : tone === 'error' ? '✕' : 'ℹ';
     status.dataset.tone = tone;
@@ -190,16 +262,87 @@ export function mountUi(root: HTMLElement, ctrl: Controller, hooks: UiHooks): vo
     okBtn.textContent = p.kind === 'remove' ? '✓ Remove' : '✓ Place';
   }
 
-  ctrl.on((what) => {
+  function toast(text: string) {
+    const t = el('div', { class: 'toast' }, text);
+    toasts.append(t);
+    setTimeout(() => t.classList.add('fade'), 1800);
+    setTimeout(() => t.remove(), 2600);
+  }
+
+  function renderPanel() {
+    const p = ctrl.panel;
+    panel.classList.toggle('hidden', p === null);
+    if (!p) return;
+    const close = btn('✕', { class: 'close', 'aria-label': 'Close' }, () => ctrl.openPanel(null));
+    if (p.kind === 'npc') {
+      const def = ctrl.world.npcs.find((n) => n.id === p.npcId);
+      const st = ctrl.town.npcs[p.npcId];
+      if (!def || !st) return;
+      const foods = ctrl.inventoryList().filter((i) => i.kind === 'food');
+      const gifts = el('div', { class: 'gifts' });
+      gifts.append(el('span', { class: 'label' }, foods.length ? 'Give:' : 'Grow food to share with her.'));
+      for (const f of foods) gifts.append(btn(`${f.name} (${f.n})${def.likes.includes(f.id) ? ' ♥' : ''}`, {}, () => ctrl.give(def.id, f.id)));
+      panel.replaceChildren(
+        close,
+        el('h2', {}, def.name),
+        el('p', { class: 'sub' }, `${friendshipLevel(st.friendship)} · ${st.friendship} / 100`),
+        ...p.lines.map((l) => el('p', { class: 'line' }, l)),
+        gifts,
+      );
+      return;
+    }
+    const def = ctrl.world.projects.find((x) => x.id === p.projectId);
+    const st = ctrl.town.projects[p.projectId];
+    if (!def || !st) return;
+    const now = ctrl.now();
+    const kids: HTMLElement[] = [close, el('h2', {}, def.name)];
+    const ol = el('ol', { class: 'stages' });
+    def.stages.forEach((s, i) => ol.append(el('li', { class: i < st.stage ? 'done' : i === st.stage ? 'current' : '' }, `${i < st.stage ? '✓ ' : ''}${s.name}`)));
+    kids.push(ol);
+    if (st.completedMs != null) {
+      kids.push(el('p', { class: 'line' }, 'Finished. Thank you for your help.'));
+    } else {
+      const s = def.stages[st.stage]!;
+      const stage = st.stages[st.stage]!;
+      const helper = helperLabour(ctrl.town, def, now);
+      const helperName = ctrl.world.npcs.find((n) => n.id === def.helper)?.name ?? 'Your neighbour';
+      kids.push(el('p', { class: 'line' }, `Labour: ${Math.min(s.labour, stage.playerLabour + helper)} of ${s.labour} hours (you ${stage.playerLabour}, ${helperName} ${helper})`));
+      const actions = el('div', { class: 'gifts' });
+      actions.append(btn('Work for an hour', {}, () => ctrl.work(def.id)));
+      for (const [m, need] of Object.entries(s.materials)) {
+        const given = stage.given[m] ?? 0;
+        const have = ctrl.town.inventory[m] ?? 0;
+        kids.push(el('p', { class: 'line' }, `${ITEMS[m]?.name ?? m}: ${given} of ${need} given (you have ${have})`));
+        if (given < need) actions.append(btn(`Give ${Math.min(need - given, have)} ${ITEMS[m]?.name.toLowerCase() ?? m}`, have ? {} : { disabled: 'true' }, () => ctrl.contribute(def.id, m)));
+      }
+      kids.push(actions);
+      if (!materialsMet(stage, s.materials)) kids.push(el('p', { class: 'sub' }, `${helperName} can only work on this stage once its materials are here.`));
+      else if (def.helper && ctrl.town.npcs[def.helper]?.met) kids.push(el('p', { class: 'sub' }, `${helperName} works on it in the afternoons, even while you're away.`));
+      else if (def.helper) kids.push(el('p', { class: 'sub' }, `Your neighbour across the stream might help, if you introduce yourself.`));
+    }
+    if (p.note) kids.push(el('p', { class: 'note' }, p.note));
+    panel.replaceChildren(...kids);
+  }
+
+  ctrl.on((what, data) => {
     if (what === 'style') renderStyle();
     if (what === 'town') renderTown();
     if (what === 'tool') renderTool();
+    if (what === 'mode') renderMode();
+    if (what === 'panel') renderPanel();
+    if (what === 'clock') {
+      renderClock();
+      renderTown();
+    }
+    if (what === 'status' && data && typeof data === 'object' && 'toast' in data) toast(String((data as { toast: string }).toast));
     renderStatus();
   });
 
   renderStyle();
+  renderMode();
   renderTown();
   renderTool();
+  renderClock();
   renderStatus();
 }
 
@@ -213,6 +356,26 @@ export function showAwayCard(root: HTMLElement, lines: string[], hours: number):
   const ok = el('button', {}, 'Back to it');
   ok.addEventListener('click', () => modal.remove());
   card.append(ul, ok);
+  modal.append(card);
+  root.append(modal);
+  ok.focus();
+}
+
+export function showWelcome(root: HTMLElement, onClose: () => void): void {
+  const modal = el('div', { class: 'modal', role: 'dialog', 'aria-modal': 'true', 'aria-labelledby': 'welcome-title' });
+  const card = el('div', { class: 'card' });
+  card.append(
+    el('h2', { id: 'welcome-title' }, 'Paradise Lost'),
+    el('p', {}, 'You have a tarp, a few tools, and an overgrown lot on the wet side of the island. Most of the neighbours have gone.'),
+    el('p', {}, 'Salvage what you can, build yourself a shelter, and see who is still around.'),
+    el('p', { class: 'sub' }, 'Click to walk and to use things. Press B or tap Build to build. This is an early test: the art is placeholder.'),
+  );
+  const ok = el('button', {}, 'Start');
+  ok.addEventListener('click', () => {
+    modal.remove();
+    onClose();
+  });
+  card.append(ok);
   modal.append(card);
   root.append(modal);
   ok.focus();

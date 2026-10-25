@@ -10,7 +10,7 @@
  * running it twice, or at a different moment for the same timestamps, gives the same answer.
  */
 import { rngFor } from './rng.ts';
-import type { Plot, Town } from './types.ts';
+import type { Town } from './types.ts';
 
 /** One ambient in-game day, in real milliseconds. Starting value from the GDD; tune in playtests. */
 export const AMBIENT_DAY_MS = 48 * 60 * 1000;
@@ -42,35 +42,8 @@ export function rainOnDay(town: Town, day: number): boolean {
   return rngFor(town.seed, `rain:${day}`)() < 0.7;
 }
 
-/** Fraction of the plot covered by weeds at `nowMs` (0 to WEED_CAP). */
-export function weedCoverage(plot: Plot, nowMs: number): number {
-  const hours = Math.max(0, (nowMs - plot.lastTendedMs) / HOUR_MS - WEED_ONSET_H);
+/** Fraction of a bed covered by weeds at `nowMs`, given when it was last weeded (0 to WEED_CAP). */
+export function weedCoverage(lastWeededMs: number, nowMs: number): number {
+  const hours = Math.max(0, (nowMs - lastWeededMs) / HOUR_MS - WEED_ONSET_H);
   return WEED_CAP * (1 - Math.exp(-hours / WEED_TAU_H));
-}
-
-export interface AwaySummary {
-  awayHours: number;
-  lines: string[];
-}
-
-/**
- * The "While you were away" card. Pure: depends only on the town and the two timestamps.
- */
-export function summariseAbsence(town: Town, lastSeenMs: number, nowMs: number): AwaySummary {
-  const awayHours = Math.max(0, (nowMs - lastSeenMs) / HOUR_MS);
-  const lines: string[] = [];
-  if (awayHours < 1) return { awayHours, lines };
-
-  const fromDay = ambientTime(town, lastSeenMs).day;
-  const toDay = ambientTime(town, nowMs).day;
-  let rainyDays = 0;
-  for (let d = fromDay + 1; d <= toDay && d - fromDay <= 10_000; d++) if (rainOnDay(town, d)) rainyDays++;
-  if (toDay > fromDay) lines.push(`${toDay - fromDay} days passed in town; it rained on ${rainyDays} of them.`);
-
-  for (const plot of Object.values(town.plots)) {
-    const before = weedCoverage(plot, lastSeenMs);
-    const now = weedCoverage(plot, nowMs);
-    if (now - before >= 0.05) lines.push(`Weeds now cover ${Math.round(now * 100)}% of your garden plot.`);
-  }
-  return { awayHours, lines };
 }

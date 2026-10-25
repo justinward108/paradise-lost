@@ -1,59 +1,113 @@
 /**
  * Client-side game controller: holds the town, turns player intents into sim commands,
- * saves after every change and tells the renderer and UI what changed.
+ * walks the avatar to where an action needs it, saves, and tells the renderer and UI
+ * what changed.
  *
- * It decides WHERE the player is pointing; the sim decides WHETHER that is allowed.
+ * It decides WHERE the player is pointing and HOW to get there; the sim decides WHETHER
+ * anything is allowed. World actions are checked by running them on a copy of the town
+ * first, so the reasons shown under the cursor are exactly the sim's.
  */
 import {
+  ambientTime,
   apply,
   checkPlace,
   checkRemove,
+  cropStatus,
+  bedWeeds,
+  hasBrush,
+  hasShelter,
   isEdgeKind,
-  LAYER_OF,
   newCommandId,
-  rooms,
+  npcPosition,
+  pathToReach,
+  findPath,
+  projectComplete,
+  siteAt,
+  siteRemaining,
   slotKey,
+  tile,
   topLayerAt,
-  weedCoverage,
+  walkable,
   type ApplyResult,
   type Catalog,
   type Command,
   type Layer,
+  type Point,
   type Slot,
   type Town,
+  type World,
 } from '@paradise-lost/sim';
-import type { Style } from '@paradise-lost/content';
+import { crops as cropDefs, describeGain, ITEMS, PROJECT_TEXT, ROSA, type Style } from '@paradise-lost/content';
 import type { TownStore } from '../store/townStore.ts';
 import { edgeAt, FOUND_H, tileAt, toWorld } from '../iso.ts';
 
+export type Mode = 'play' | 'build';
+
 export type Tool =
-  | { mode: 'select' }
+  | { mode: 'walk' }
+  | { mode: 'dig' }
+  | { mode: 'plant'; cropId: string }
+  | { mode: 'water' }
   | { mode: 'build'; pieceId: string; rotation: number }
   | { mode: 'demolish' };
+
+/** A world action the player can take at a spot, already checked against the sim. */
+export interface Action {
+  label: string;
+  target: Point;
+  ok: boolean;
+  /** The reason it can't be done, or a description of what will happen. */
+  message: string;
+  /** Tiles to walk first (empty if already in reach). */
+  path: Point[];
+  /** The command to send on arrival, or a UI action. */
+  command?: Command;
+  open?: { kind: 'npc'; npcId: string } | { kind: 'project'; projectId: string };
+}
 
 export type Preview =
   | { kind: 'none' }
   | { kind: 'place'; pieceId: string; slot: Slot; rotation: number; ok: boolean; message: string; warning: boolean }
   | { kind: 'remove'; slot: Slot; layer: Layer; ok: boolean; message: string; dependents: string[] }
-  | { kind: 'plot'; plotId: string; slot: Slot; message: string };
+  | { kind: 'action'; action: Action };
 
-type Listener = (what: 'town' | 'tool' | 'preview' | 'style' | 'status') => void;
+export type Panel = null | { kind: 'npc'; npcId: string; lines: string[] } | { kind: 'project'; projectId: string; note?: string };
+
+export type Change = 'town' | 'tool' | 'preview' | 'style' | 'status' | 'panel' | 'walk' | 'clock' | 'mode';
+type Listener = (what: Change, data?: unknown) => void;
+
+const STEP_MS = 230;
 
 export class Controller {
-  tool: Tool = { mode: 'select' };
+  mode: Mode = 'play';
+  tool: Tool = { mode: 'walk' };
   preview: Preview = { kind: 'none' };
-  /** Touch: the ghost waits here until the player taps Confirm. */
+  panel: Panel = null;
+  /** Touch in build mode: the ghost waits here until the player taps Confirm. */
   pendingTouch = false;
-  status: { text: string; tone: 'info' | 'ok' | 'warn' | 'error' } = { text: 'Pick a piece below to start building.', tone: 'info' };
+  status: { text: string; tone: 'info' | 'ok' | 'warn' | 'error' } = { text: 'Click the ground to walk. Click things to use them.', tone: 'info' };
+  /** Tiles the avatar is walking through; the renderer animates them. */
+  route: Point[] = [];
+  private onArrive: (() => void) | null = null;
   private listeners = new Set<Listener>();
+  private saveTimer: ReturnType<typeof setTimeout> | null = null;
+  private justPlaced: string | null = null;
+  private hadShelter: boolean;
+  facing: Point = { x: 1, y: 0 };
 
   constructor(
     public town: Town,
     public readonly catalog: Catalog,
+    public readonly world: World,
     private store: TownStore,
     public style: Style,
+    private clock: () => number = Date.now,
   ) {
-    this.hadShelter = this.shelterReady();
+    this.hadShelter = hasShelter(town, catalog);
+  }
+
+  now(): number {
+    return this.clock();
   }
 
   on(fn: Listener): () => void {
@@ -61,8 +115,8 @@ export class Controller {
     return () => this.listeners.delete(fn);
   }
 
-  private emit(what: Parameters<Listener>[0]) {
-    for (const fn of this.listeners) fn(what);
+  private emit(what: Change, data?: unknown) {
+    for (const fn of this.listeners) fn(what, data);
   }
 
   setStatus(text: string, tone: Controller['status']['tone'] = 'info') {
@@ -70,13 +124,67 @@ export class Controller {
     this.emit('status');
   }
 
+  toast(text: string) {
+    this.emit('status', { toast: text });
+  }
+
+  // ---------- commands ----------
+
   dispatch(cmd: Command): ApplyResult {
-    const result = apply(this.town, this.catalog, cmd);
+    const result = apply(this.town, this.catalog, cmd, this.world);
     if (result.changed) {
-      void this.store.save(this.town);
+      if (cmd.type === 'move') this.saveSoon();
+      else void this.store.save(this.town);
       this.emit('town');
     }
+    if (result.events?.length) this.describeEvents(result.events);
     return result;
+  }
+
+  private saveSoon() {
+    if (this.saveTimer) return;
+    this.saveTimer = setTimeout(() => {
+      this.saveTimer = null;
+      void this.store.save(this.town);
+    }, 800);
+  }
+
+  tick(): void {
+    const r = this.dispatch({ type: 'tick', id: newCommandId(), nowMs: this.now() });
+    if (r.changed) void this.store.save(this.town);
+    this.emit('clock');
+  }
+
+  private describeEvents(events: string[]) {
+    const gains = events.map(describeGain).filter((g): g is string => g !== null);
+    if (gains.length) this.toast(gains.join('  '));
+    for (const e of events) {
+      const [kind, a, b, c] = e.split(':');
+      if (kind === 'project' && a === 'stage' && b && c !== undefined) {
+        const text = PROJECT_TEXT[b]?.stageDone[Number(c)];
+        if (text) this.setStatus(text, 'ok');
+      }
+      if (kind === 'project' && a === 'done' && b) this.setStatus(PROJECT_TEXT[b]?.done ?? 'Project complete!', 'ok');
+      if (kind === 'salvage' && a === 'empty') this.setStatus('Nothing useful left there.', 'info');
+      if (kind === 'garden' && a === 'harvested') this.setStatus(`Harvested ${cropDefs[b ?? '']?.name.toLowerCase() ?? 'the crop'}.`, 'ok');
+      if (kind === 'garden' && a === 'planted') this.setStatus(`Planted ${cropDefs[b ?? '']?.name.toLowerCase() ?? 'seeds'}. Rain will water it most days.`, 'ok');
+      if (kind === 'garden' && a === 'tilled') this.setStatus('Dug a garden bed.', 'ok');
+      if (kind === 'garden' && a === 'watered') this.setStatus('Watered.', 'ok');
+      if (kind === 'garden' && a === 'weeded') this.setStatus('Weeds pulled.', 'ok');
+      if (kind === 'brush') this.setStatus('Cleared the scrub. Albizia wood makes rough boards.', 'ok');
+    }
+  }
+
+  // ---------- modes and tools ----------
+
+  setMode(mode: Mode) {
+    if (mode === this.mode) return;
+    this.mode = mode;
+    this.panel = null;
+    this.emit('mode');
+    this.emit('panel');
+    this.setTool(mode === 'play' ? { mode: 'walk' } : { mode: 'demolish' });
+    if (mode === 'build') this.setStatus('Build mode: pick a piece below. Building works anywhere on your lot.');
   }
 
   setTool(tool: Tool) {
@@ -85,15 +193,17 @@ export class Controller {
     this.preview = { kind: 'none' };
     this.emit('tool');
     this.emit('preview');
-    if (tool.mode === 'build') this.setStatus(`${this.catalog[tool.pieceId]?.name ?? ''}: click to place, drag to paint, R to rotate.`);
+    const name = tool.mode === 'build' ? this.catalog[tool.pieceId]?.name : undefined;
+    if (tool.mode === 'build') this.setStatus(`${name ?? ''}: click to place, drag to paint, R to rotate.`);
     else if (tool.mode === 'demolish') this.setStatus('Demolish: click a piece to remove it. Materials come back.');
-    else this.setStatus('Pick a piece below to start building.');
+    else if (tool.mode === 'dig') this.setStatus('Dig: click cleared ground on your lot to make a garden bed.');
+    else if (tool.mode === 'plant') this.setStatus(`Plant ${cropDefs[tool.cropId]?.name.toLowerCase() ?? ''}: click an empty bed.`);
+    else if (tool.mode === 'water') this.setStatus("Water: click a crop. On rainy days there's no need.");
   }
 
   rotate() {
     if (this.tool.mode !== 'build') return;
-    const def = this.catalog[this.tool.pieceId];
-    const n = Math.max(1, def?.rotations ?? 1);
+    const n = Math.max(1, this.catalog[this.tool.pieceId]?.rotations ?? 1);
     this.tool = { ...this.tool, rotation: (this.tool.rotation + 1) % n };
     if (this.preview.kind === 'place') this.updatePreview(this.preview.slot);
     this.emit('tool');
@@ -104,7 +214,14 @@ export class Controller {
     this.emit('style');
   }
 
-  /** The slot the current tool would act on at a world-space screen point. */
+  openPanel(panel: Panel) {
+    this.panel = panel;
+    this.emit('panel');
+  }
+
+  // ---------- pointing ----------
+
+  /** The slot or tile the current tool acts on at a world-space screen point. */
   targetAt(sx: number, sy: number): Slot | null {
     if (this.tool.mode === 'build') {
       const def = this.catalog[this.tool.pieceId];
@@ -113,18 +230,20 @@ export class Controller {
       return isEdgeKind(def.kind) ? edgeAt(sx, sy, z) : tileAt(sx, sy, z);
     }
     if (this.tool.mode === 'demolish') {
-      // Prefer a wall when the pointer is close to one.
       const e = edgeAt(sx, sy, FOUND_H);
       const w = toWorld(sx, sy, FOUND_H);
       const d = e.dir === 'n' ? Math.abs(w.y - e.y) : Math.abs(w.x - e.x);
       if (d < 0.22 && slotKey(e, 'wall') in this.town.pieces) return e;
       return tileAt(sx, sy, FOUND_H);
     }
-    return tileAt(sx, sy, FOUND_H);
+    // Play: people and tall things are clicked above the ground they stand on.
+    const ground = tileAt(sx, sy, 0);
+    for (const z of [36, 18]) {
+      const up = tileAt(sx, sy, z);
+      if (this.npcAt(up.x, up.y) || this.siteAtLive(up.x, up.y)) return up;
+    }
+    return ground;
   }
-
-  /** The slot just built on; the ghost stays hidden there until the pointer moves on. */
-  private justPlaced: string | null = null;
 
   updatePreview(slot: Slot | null) {
     const id = slot ? JSON.stringify(slot) : null;
@@ -137,52 +256,121 @@ export class Controller {
     if (!slot) return { kind: 'none' };
     const t = this.tool;
     if (t.mode === 'build') {
-      const v = checkPlace(this.town, this.catalog, t.pieceId, slot, t.rotation);
+      const v = checkPlace(this.town, this.catalog, t.pieceId, slot, t.rotation, this.world);
       const name = this.catalog[t.pieceId]?.name ?? t.pieceId;
       if (!v.ok) return { kind: 'place', pieceId: t.pieceId, slot, rotation: t.rotation, ok: false, message: v.reason, warning: false };
-      return {
-        kind: 'place',
-        pieceId: t.pieceId,
-        slot,
-        rotation: t.rotation,
-        ok: true,
-        warning: Boolean(v.warning),
-        message: v.warning ?? `Place ${name}`,
-      };
+      return { kind: 'place', pieceId: t.pieceId, slot, rotation: t.rotation, ok: true, warning: Boolean(v.warning), message: v.warning ?? `Place ${name}` };
     }
     if (t.mode === 'demolish') {
-      let layer: Layer | null;
-      if (slot.kind === 'edge') layer = 'wall';
-      else layer = topLayerAt(this.town, slot.x, slot.y, slot.level);
+      const layer: Layer | null = slot.kind === 'edge' ? 'wall' : topLayerAt(this.town, slot.x, slot.y, slot.level);
       if (!layer) return { kind: 'none' };
       const v = checkRemove(this.town, this.catalog, slot, layer);
-      const piece = this.town.pieces[slotKey(slot, layer)];
-      const name = this.catalog[piece?.pieceId ?? '']?.name ?? 'piece';
+      const name = this.catalog[this.town.pieces[slotKey(slot, layer)]?.pieceId ?? '']?.name ?? 'piece';
       if (!v.ok) return { kind: 'remove', slot, layer, ok: false, message: v.reason, dependents: v.dependents ?? [] };
       return { kind: 'remove', slot, layer, ok: true, message: `Remove ${name}`, dependents: [] };
     }
-    if (slot.kind === 'tile') {
-      const plot = Object.values(this.town.plots).find((p) => p.x === slot.x && p.y === slot.y);
-      if (plot) {
-        const pct = Math.round(weedCoverage(plot, Date.now()) * 100);
-        return { kind: 'plot', plotId: plot.id, slot, message: `Garden plot: weeds ${pct}%. Click to weed it.` };
-      }
-    }
-    return { kind: 'none' };
+    if (slot.kind !== 'tile') return { kind: 'none' };
+    const action = this.actionAt(slot.x, slot.y);
+    return action ? { kind: 'action', action } : { kind: 'none' };
   }
 
-  /** Act on the current preview. `cascade` confirms removing the pieces a wall or floor holds up. */
+  private npcAt(x: number, y: number) {
+    const now = this.now();
+    return this.world.npcs.find((n) => {
+      const p = npcPosition(this.town, this.world, n, now);
+      return !p.inside && p.x === x && p.y === y;
+    });
+  }
+
+  private siteAtLive(x: number, y: number) {
+    const s = siteAt(this.world, x, y);
+    return s && siteRemaining(this.town, s) > 0 ? s : undefined;
+  }
+
+  /** Run a command on a copy of the town with the player standing where they'd end up. */
+  private preflight(label: string, target: Point, command: Command, describe?: string): Action {
+    const path = pathToReach(this.town, this.world, this.catalog, target);
+    if (path === null) return { label, target, ok: false, message: "You can't reach that from here", path: [] };
+    const copy = structuredClone(this.town);
+    const end = path.at(-1);
+    if (end) copy.player = { ...end };
+    const r = apply(copy, this.catalog, command, this.world);
+    return { label, target, ok: r.ok, message: r.ok ? (describe ?? label) : (r.reason ?? "Can't do that"), path, command };
+  }
+
+  /** What clicking this tile would do with the current tool. */
+  actionAt(x: number, y: number): Action | null {
+    const now = this.now();
+    const target = { x, y };
+    const key = `${x},${y}`;
+    const t = this.tool;
+    const id = newCommandId();
+
+    if (t.mode === 'dig') return this.preflight('Dig a bed', target, { type: 'till', id, x, y, nowMs: now });
+    if (t.mode === 'plant') {
+      const name = cropDefs[t.cropId]?.name ?? t.cropId;
+      return this.preflight(`Plant ${name.toLowerCase()}`, target, { type: 'plant', id, x, y, cropId: t.cropId, nowMs: now });
+    }
+    if (t.mode === 'water') return this.preflight('Water', target, { type: 'water', id, x, y, nowMs: now });
+
+    const npc = this.npcAt(x, y);
+    if (npc) {
+      const path = pathToReach(this.town, this.world, this.catalog, target);
+      return path
+        ? { label: `Talk to ${npc.name}`, target, ok: true, message: `Talk to ${npc.name}`, path, command: { type: 'talk', id, npcId: npc.id, nowMs: now }, open: { kind: 'npc', npcId: npc.id } }
+        : { label: `Talk to ${npc.name}`, target, ok: false, message: "You can't reach her from here", path: [] };
+    }
+
+    const project = this.world.projects.find((p) => p.tiles.some((tt) => tt.x === x && tt.y === y));
+    if (project && !projectComplete(this.town, project.id)) {
+      const path = pathToReach(this.town, this.world, this.catalog, target);
+      return path
+        ? { label: project.name, target, ok: true, message: `${project.name}: see what it needs`, path, open: { kind: 'project', projectId: project.id } }
+        : { label: project.name, target, ok: false, message: "You can't reach that from here", path: [] };
+    }
+
+    const site = this.siteAtLive(x, y);
+    if (site) {
+      const left = siteRemaining(this.town, site);
+      return this.preflight(`Salvage the ${site.name.toLowerCase()}`, target, { type: 'salvage', id, siteId: site.id }, `Salvage the ${site.name.toLowerCase()} (${left} left)`);
+    }
+    if (hasBrush(this.town, this.world, x, y)) return this.preflight('Clear brush', target, { type: 'clearBrush', id, x, y });
+
+    const crop = this.town.crops[key];
+    if (crop) {
+      const def = this.world.crops[crop.cropId];
+      if (def) {
+        const st = cropStatus(this.town, def, crop, now);
+        if (st.ready) return this.preflight(`Harvest ${def.name.toLowerCase()}`, target, { type: 'harvest', id, x, y, nowMs: now });
+        if (bedWeeds(this.town, key, now) >= 0.05) return this.preflight('Pull weeds', target, { type: 'weed', id, x, y, nowMs: now });
+        if (!st.wateredToday) return this.preflight(`Water ${def.name.toLowerCase()}`, target, { type: 'water', id, x, y, nowMs: now });
+        return { label: def.name, target, ok: false, message: `${def.name}: ${st.growth} of ${st.need} watered days. Already watered today.`, path: [] };
+      }
+    }
+    if (key in this.town.soil) {
+      if (bedWeeds(this.town, key, now) >= 0.05) return this.preflight('Pull weeds', target, { type: 'weed', id, x, y, nowMs: now });
+      return { label: 'Garden bed', target, ok: false, message: 'Empty bed. Pick seeds in the bar below to plant.', path: [] };
+    }
+
+    if (x === this.town.player.x && y === this.town.player.y) return null;
+    if (!walkable(this.town, this.world, this.catalog, x, y)) return { label: 'Walk', target, ok: false, message: "You can't walk there", path: [] };
+    const path = findPath(this.town, this.world, this.catalog, this.town.player, (p) => p.x === x && p.y === y);
+    if (!path) return { label: 'Walk', target, ok: false, message: "You can't get there from here", path: [] };
+    return { label: 'Walk here', target, ok: true, message: 'Walk here', path };
+  }
+
+  // ---------- acting ----------
+
+  /** Act on the current preview. `cascade` confirms removing what a wall or floor holds up. */
   commit(cascade = false): ApplyResult | null {
     const p = this.preview;
-    let result: ApplyResult | null = null;
-    if (p.kind === 'place') {
-      result = this.dispatch({ type: 'place', id: newCommandId(), pieceId: p.pieceId, slot: p.slot, rotation: p.rotation });
-    } else if (p.kind === 'remove') {
-      result = this.dispatch({ type: 'remove', id: newCommandId(), slot: p.slot, layer: p.layer, cascade });
-    } else if (p.kind === 'plot') {
-      result = this.dispatch({ type: 'tendPlot', id: newCommandId(), plotId: p.plotId, nowMs: Date.now() });
-      if (result.ok) this.setStatus('Weeded. The plot is clear.', 'ok');
+    if (p.kind === 'action') {
+      this.perform(p.action);
+      return null;
     }
+    let result: ApplyResult | null = null;
+    if (p.kind === 'place') result = this.dispatch({ type: 'place', id: newCommandId(), pieceId: p.pieceId, slot: p.slot, rotation: p.rotation });
+    else if (p.kind === 'remove') result = this.dispatch({ type: 'remove', id: newCommandId(), slot: p.slot, layer: p.layer, cascade });
     if (result) {
       if (!result.ok && result.reason) this.setStatus(result.reason, 'error');
       else if (result.warning) this.setStatus(result.warning, 'warn');
@@ -194,6 +382,133 @@ export class Controller {
       this.announceShelter();
     }
     return result;
+  }
+
+  /** Walk if needed, then do the action. */
+  perform(action: Action) {
+    if (!action.ok) {
+      this.setStatus(action.message, 'error');
+      return;
+    }
+    const finish = () => {
+      if (action.command) {
+        // Re-stamp time and id: the walk took a moment.
+        const cmd = { ...action.command, id: newCommandId() } as Command;
+        if ('nowMs' in cmd) (cmd as { nowMs: number }).nowMs = this.now();
+        const r = this.dispatch(cmd);
+        if (!r.ok && r.reason) {
+          this.setStatus(r.reason, 'error');
+          return;
+        }
+        if (cmd.type === 'talk') this.openNpcPanel(cmd.npcId, r.events ?? []);
+        this.announceShelter();
+      }
+      if (action.open?.kind === 'project') this.openPanel({ kind: 'project', projectId: action.open.projectId });
+      this.updatePreview(tile(action.target.x, action.target.y));
+    };
+    this.walk(action.path, finish);
+  }
+
+  walk(path: Point[], then?: () => void) {
+    this.route = [...path];
+    this.onArrive = then ?? null;
+    if (this.route.length === 0) {
+      this.onArrive = null;
+      then?.();
+      return;
+    }
+    this.emit('walk');
+  }
+
+  /** The renderer calls this as the avatar reaches each tile. */
+  arrived(p: Point) {
+    this.facing = { x: Math.sign(p.x - this.town.player.x), y: Math.sign(p.y - this.town.player.y) };
+    const r = this.dispatch({ type: 'move', id: newCommandId(), to: p });
+    if (!r.ok) {
+      // Something changed under our feet (a wall went up): stop.
+      this.route = [];
+      this.onArrive = null;
+      this.setStatus(r.reason ?? "Can't go that way", 'error');
+      return;
+    }
+    this.route.shift();
+    if (this.route.length === 0) {
+      const then = this.onArrive;
+      this.onArrive = null;
+      then?.();
+    }
+  }
+
+  stepMs(): number {
+    return STEP_MS;
+  }
+
+  /** Keyboard: one step in a direction, or face it if blocked. */
+  stepDir(dx: number, dy: number) {
+    if (this.route.length > 0) return;
+    const to = { x: this.town.player.x + dx, y: this.town.player.y + dy };
+    this.facing = { x: dx, y: dy };
+    const path = findPath(this.town, this.world, this.catalog, this.town.player, (p) => p.x === to.x && p.y === to.y, 8);
+    if (path && path.length === 1) this.walk(path);
+    else this.emit('walk');
+  }
+
+  /** Keyboard: use whatever is in front of the player. */
+  interactFacing() {
+    const t = { x: this.town.player.x + this.facing.x, y: this.town.player.y + this.facing.y };
+    const a = this.actionAt(t.x, t.y);
+    if (a && a.label !== 'Walk here') this.perform(a);
+  }
+
+  // ---------- NPCs and projects ----------
+
+  openNpcPanel(npcId: string, events: string[]) {
+    const def = this.world.npcs.find((n) => n.id === npcId);
+    if (!def) return;
+    const lines: string[] = [];
+    for (const e of events) {
+      if (e.startsWith('npc:first_meet')) lines.push(...ROSA.firstMeet);
+      else if (e.startsWith('npc:chat_again')) lines.push(ROSA.chatAgain[0]!);
+      else if (e.startsWith('npc:chat')) lines.push(ROSA.greet(this.lineContext(npcId)));
+      else if (e.startsWith('npc:lesson')) lines.push(...ROSA.lesson, 'Tier 2 building pieces are unlocked.');
+      else if (e.startsWith('npc:gift_liked')) lines.push(ROSA.giftLiked(e.split(':')[3] ?? ''));
+      else if (e.startsWith('npc:gift')) lines.push(ROSA.gift(e.split(':')[3] ?? ''));
+    }
+    this.openPanel({ kind: 'npc', npcId, lines });
+  }
+
+  private lineContext(npcId: string) {
+    const now = this.now();
+    const a = ambientTime(this.town, now);
+    const project = this.world.projects.find((p) => p.helper === npcId);
+    const st = project ? this.town.projects[project.id] : undefined;
+    return {
+      day: a.day,
+      hour: a.hour,
+      rain: a.rain,
+      friendship: this.town.npcs[npcId]?.friendship ?? 0,
+      projectState: !st || st.startedMs == null ? ('not_started' as const) : st.completedMs != null ? ('done' as const) : ('active' as const),
+      projectStage: project && st ? project.stages[st.stage]?.name : undefined,
+    };
+  }
+
+  give(npcId: string, item: string) {
+    const r = this.dispatch({ type: 'gift', id: newCommandId(), npcId, item, nowMs: this.now() });
+    if (!r.ok) {
+      if (this.panel?.kind === 'npc') this.openPanel({ ...this.panel, lines: [r.reason ?? "Can't give that"] });
+      return;
+    }
+    this.openNpcPanel(npcId, r.events ?? []);
+  }
+
+  contribute(projectId: string, item: string) {
+    const r = this.dispatch({ type: 'contribute', id: newCommandId(), projectId, item, amount: 999, nowMs: this.now() });
+    this.openPanel({ kind: 'project', projectId, note: r.ok ? undefined : r.reason });
+  }
+
+  work(projectId: string) {
+    const r = this.dispatch({ type: 'work', id: newCommandId(), projectId, nowMs: this.now() });
+    this.openPanel({ kind: 'project', projectId, note: r.ok ? 'You put in an hour of work.' : r.reason });
   }
 
   undo() {
@@ -213,20 +528,21 @@ export class Controller {
     if (p.kind === 'place' || p.kind === 'remove') this.updatePreview(p.slot);
   }
 
-  private hadShelter = false;
   private announceShelter() {
-    const now = this.shelterReady();
+    const now = hasShelter(this.town, this.catalog);
     if (now && !this.hadShelter) this.setStatus('Your shelter is weatherproof. You could sleep here tonight.', 'ok');
     this.hadShelter = now;
   }
 
   shelterReady(): boolean {
-    return rooms(this.town, this.catalog).some((r) => r.shelter);
+    return hasShelter(this.town, this.catalog);
   }
 
-  /** Pieces of a layer kind, for the renderer. */
-  static layerOf(catalog: Catalog, pieceId: string): Layer | undefined {
-    const def = catalog[pieceId];
-    return def ? LAYER_OF[def.kind] : undefined;
+  /** Items in the inventory grouped for display. */
+  inventoryList(): { id: string; name: string; kind: string; n: number }[] {
+    return Object.entries(this.town.inventory)
+      .filter(([, n]) => n > 0)
+      .map(([id, n]) => ({ id, name: ITEMS[id]?.name ?? id, kind: ITEMS[id]?.kind ?? 'material', n }))
+      .sort((a, b) => a.kind.localeCompare(b.kind) || a.name.localeCompare(b.name));
   }
 }

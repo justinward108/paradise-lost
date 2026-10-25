@@ -7,6 +7,7 @@
 import { LAYER_OF, inBounds, isEdgeKind, slotKey, tile, tilesBesideEdge } from './grid.ts';
 import { computeRooms, enclosedTiles } from './rooms.ts';
 import type { Catalog, Layer, PieceDef, PlacedPiece, Slot, Town } from './types.ts';
+import { hasBrush, type World } from './world.ts';
 
 export type Verdict =
   | { ok: true; warning?: string }
@@ -56,8 +57,14 @@ export function isSupported(
   }
 }
 
+/** Is the slot on the player's own land? Edges on the lot's boundary count. */
+export function onLot(town: Town, slot: Slot): boolean {
+  const l = town.lot;
+  return inBounds({ ...slot, x: slot.x - l.x, y: slot.y - l.y }, l.w, l.h);
+}
+
 /** Check whether `pieceId` can be placed at `slot` right now. Does not change the town. */
-export function checkPlace(town: Town, catalog: Catalog, pieceId: string, slot: Slot, rotation = 0): Verdict {
+export function checkPlace(town: Town, catalog: Catalog, pieceId: string, slot: Slot, rotation = 0, world?: World): Verdict {
   const def = catalog[pieceId];
   if (!def) return { ok: false, reason: `Unknown piece "${pieceId}"` };
   if (def.tier > town.progress.tier) return { ok: false, reason: `Unlocks at tier ${def.tier}` };
@@ -65,12 +72,17 @@ export function checkPlace(town: Town, catalog: Catalog, pieceId: string, slot: 
   const wantsEdge = isEdgeKind(def.kind);
   if (wantsEdge && slot.kind !== 'edge') return { ok: false, reason: 'Walls go on the edge between tiles' };
   if (!wantsEdge && slot.kind !== 'tile') return { ok: false, reason: 'This goes on a tile, not an edge' };
-  if (!inBounds(slot, town.width, town.height)) return { ok: false, reason: 'Outside your lot' };
+  if (!onLot(town, slot)) return { ok: false, reason: 'Outside your lot' };
   if (rotation < 0 || rotation >= Math.max(1, def.rotations)) return { ok: false, reason: 'Invalid rotation' };
 
   const layer = LAYER_OF[def.kind];
   const key = slotKey(slot, layer);
   if (key in town.pieces) return { ok: false, reason: 'Something is already here' };
+  if (slot.kind === 'tile') {
+    if (`${slot.x},${slot.y}` in town.soil) return { ok: false, reason: "There's a garden bed here" };
+    if (world && hasBrush(town, world, slot.x, slot.y)) return { ok: false, reason: 'Clear the brush first' };
+    if (def.solid && town.player.x === slot.x && town.player.y === slot.y) return { ok: false, reason: "You're standing there" };
+  }
 
   for (const [mat, n] of Object.entries(def.cost)) {
     const have = town.inventory[mat] ?? 0;
@@ -138,6 +150,7 @@ export function checkRemove(
 ): Verdict & { dependents?: string[] } {
   const key = slotKey(slot, layer);
   if (!(key in town.pieces)) return { ok: false, reason: 'Nothing to remove here' };
+  if (!onLot(town, slot)) return { ok: false, reason: "That isn't your land" };
   const dependents = findDependents(town, catalog, key);
   if (dependents.length > 0 && !cascade) {
     return {

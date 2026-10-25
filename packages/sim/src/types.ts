@@ -48,6 +48,8 @@ export interface PieceDef {
   rotations: number;
   /** Catalogue grouping for the UI. */
   category: string;
+  /** Furniture that blocks walking (a crate does; a bedroll doesn't). */
+  solid?: boolean;
 }
 
 export type Catalog = Readonly<Record<string, PieceDef>>;
@@ -58,13 +60,47 @@ export interface PlacedPiece {
   rotation: number;
 }
 
-/** A garden plot used by the time-system prototype. */
-export interface Plot {
-  id: string;
-  x: number;
-  y: number;
-  /** Real time (ms since epoch) the plot was last weeded. */
-  lastTendedMs: number;
+/** A tilled garden bed tile. */
+export interface Soil {
+  tilledMs: number;
+  /** Real time the bed was last weeded (weeds grow in real hours). */
+  lastWeededMs: number;
+}
+
+/** A crop growing in a bed. */
+export interface Crop {
+  cropId: string;
+  /** Ambient day it was planted, or last harvested for perennials. */
+  sinceDay: number;
+  /** Ambient days the player watered it by hand (rain counts on its own). */
+  wateredDays: number[];
+  harvests: number;
+}
+
+export interface NpcState {
+  met: boolean;
+  friendship: number;
+  lastTalkDay: number;
+  lastGiftDay: number;
+  taught: boolean;
+}
+
+export interface ProjectStageState {
+  playerLabour: number;
+  given: Record<string, number>;
+  startedMs: number | null;
+  materialsMetMs: number | null;
+  completedMs: number | null;
+}
+
+export interface ProjectState {
+  /** Set when the player first contributes; the helper NPC starts working from then. */
+  startedMs: number | null;
+  stage: number;
+  stages: ProjectStageState[];
+  completedMs: number | null;
+  /** Player contributions, for the community record. */
+  ledger: { what: string; amount: number; ms: number }[];
 }
 
 /** One reversible change to the piece map. */
@@ -79,7 +115,7 @@ export interface HistoryEntry {
   inventoryDelta: Record<string, number>;
 }
 
-export const SCHEMA_VERSION = 1 as const;
+export const SCHEMA_VERSION = 2 as const;
 
 /** Everything needed to restore a town. This is exactly what gets saved. */
 export interface Town {
@@ -87,13 +123,25 @@ export interface Town {
   townId: string;
   /** Seed for deterministic randomness. */
   seed: string;
+  /** Map size in tiles. */
   width: number;
   height: number;
+  /** The player's buildable land within the map. */
+  lot: { x: number; y: number; w: number; h: number };
+  mapId: string;
   pieces: Record<string, PlacedPiece>;
   inventory: Record<string, number>;
   progress: { tier: number };
   clock: { epochMs: number };
-  plots: Record<string, Plot>;
+  /** Player position in tile coordinates (the tile's top corner; centre is +0.5). */
+  player: { x: number; y: number };
+  /** Brush tiles ("x,y") the player has cleared. */
+  cleared: string[];
+  sites: Record<string, { used: number }>;
+  soil: Record<string, Soil>;
+  crops: Record<string, Crop>;
+  npcs: Record<string, NpcState>;
+  projects: Record<string, ProjectState>;
   history: { undo: HistoryEntry[]; redo: HistoryEntry[] };
   /** Recently applied command ids, so a resent command is not applied twice. */
   appliedIds: string[];

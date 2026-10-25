@@ -6,7 +6,7 @@
  * interface. Every save keeps the previous snapshot, so one corrupted write can be rolled
  * back automatically.
  */
-import { decodeSnapshot, encodeSnapshot, type Snapshot, type Town } from '@paradise-lost/sim';
+import { decodeSnapshot, encodeSnapshot, type MigrationContext, type Snapshot, type Town } from '@paradise-lost/sim';
 
 export interface TownStore {
   load(townId: string): Promise<{ town: Town; recovered: boolean } | null>;
@@ -86,6 +86,8 @@ export class LocalTownStore implements TownStore {
   constructor(
     private kv: KV,
     private sync: SyncKV | null = null,
+    /** Current content, for migrating saves from older versions. */
+    private ctx: MigrationContext = {},
   ) {}
 
   private emergencyKey(townId: string) {
@@ -112,7 +114,7 @@ export class LocalTownStore implements TownStore {
     for (const [snap, recovered] of candidates) {
       if (!snap) continue;
       try {
-        const town = decodeSnapshot(snap);
+        const town = decodeSnapshot(snap, this.ctx);
         if (snap === emergency) await this.save(town); // move it into IndexedDB
         return { town, recovered };
       } catch (err) {

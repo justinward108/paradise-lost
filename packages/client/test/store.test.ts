@@ -2,17 +2,16 @@ import 'fake-indexeddb/auto';
 import { IDBFactory } from 'fake-indexeddb';
 import { describe, expect, it } from 'vitest';
 import { apply, createTown, tile } from '@paradise-lost/sim';
-import { catalog, LOT, STARTER_INVENTORY } from '@paradise-lost/content';
+import { catalog, STARTER_INVENTORY, world } from '@paradise-lost/content';
 import { IndexedDbKV, LocalTownStore, MemoryKV } from '../src/store/townStore.ts';
 
-const fresh = () =>
-  createTown({ townId: 'home', seed: 's', width: LOT.width, height: LOT.height, nowMs: 0, inventory: { ...STARTER_INVENTORY } });
+const fresh = () => createTown({ townId: 'home', seed: 's', nowMs: 0, inventory: { ...STARTER_INVENTORY, boards: 20 }, world, catalog });
 
 describe('LocalTownStore', () => {
   it('saves and loads the exact town', async () => {
     const store = new LocalTownStore(new MemoryKV());
     const t = fresh();
-    apply(t, catalog, { type: 'place', id: 'a', pieceId: 'pier_foundation', slot: tile(1, 1) });
+    apply(t, catalog, { type: 'place', id: 'a', pieceId: 'pier_foundation', slot: tile(9, 14) });
     await store.save(t);
     expect(await store.load('home')).toEqual({ town: t, recovered: false });
   });
@@ -23,7 +22,7 @@ describe('LocalTownStore', () => {
     const t = fresh();
     await store.save(t);
     const first = structuredClone(t);
-    apply(t, catalog, { type: 'place', id: 'a', pieceId: 'pier_foundation', slot: tile(1, 1) });
+    apply(t, catalog, { type: 'place', id: 'a', pieceId: 'pier_foundation', slot: tile(9, 14) });
     await store.save(t);
 
     const cur = kv.data.get('town:home:current') as { body: string };
@@ -66,7 +65,7 @@ describe('emergency copy on page close', () => {
     const store = new LocalTownStore(kv, sync);
     const t = fresh();
     await store.save(t);
-    apply(t, catalog, { type: 'place', id: 'a', pieceId: 'pier_foundation', slot: tile(1, 1) });
+    apply(t, catalog, { type: 'place', id: 'a', pieceId: 'pier_foundation', slot: tile(9, 14) });
     // Simulate the page closing mid-write: the snapshot is taken, the async write is lost.
     const stuck = new LocalTownStore({ get: kv.get.bind(kv), set: () => new Promise<void>(() => {}) }, sync);
     await new Promise((r) => setTimeout(r, 2)); // a later moment than the first save
@@ -87,7 +86,7 @@ describe('emergency copy on page close', () => {
     store.flushSync();
     const old = JSON.parse(sync.data.get('pl.emergency.home')!);
     sync.data.set('pl.emergency.home', JSON.stringify({ ...old, savedAt: 0 }));
-    apply(t, catalog, { type: 'place', id: 'b', pieceId: 'pier_foundation', slot: tile(2, 2) });
+    apply(t, catalog, { type: 'place', id: 'b', pieceId: 'pier_foundation', slot: tile(10, 14) });
     await store.save(t);
     sync.data.set('pl.emergency.home', JSON.stringify({ ...old, savedAt: 0 }));
     expect((await new LocalTownStore(kv, sync).load('home'))?.town).toEqual(t);

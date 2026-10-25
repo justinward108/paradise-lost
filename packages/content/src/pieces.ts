@@ -15,7 +15,7 @@ const defs: PieceDef[] = [
   { id: 'plank_door', name: 'Plank door', kind: 'door', tier: 1, cost: { boards: 4 }, rotations: 1, category: 'Walls' },
   { id: 'tin_roof', name: 'Corrugated roof', kind: 'roof', tier: 1, cost: { roofing: 2 }, rotations: 1, category: 'Roofs' },
   { id: 'bedroll', name: 'Bedroll', kind: 'furniture', tier: 1, cost: { cloth: 3 }, rotations: 2, category: 'Furniture' },
-  { id: 'crate', name: 'Crate', kind: 'furniture', tier: 1, cost: { boards: 2 }, rotations: 1, category: 'Furniture' },
+  { id: 'crate', name: 'Crate', kind: 'furniture', tier: 1, cost: { boards: 2 }, rotations: 1, category: 'Furniture', solid: true },
   // Tier 2 — rough-built (locked at the start; shows the progression gate)
   { id: 'block_foundation', name: 'Cinder block foundation', kind: 'foundation', tier: 2, cost: { block: 2 }, rotations: 1, category: 'Foundations' },
   { id: 'board_floor', name: 'Rough lumber floor', kind: 'floor', tier: 2, cost: { lumber: 2 }, rotations: 1, category: 'Floors' },
@@ -34,10 +34,8 @@ export const MATERIALS: readonly { id: string; name: string }[] = [
   { id: 'cloth', name: 'Cloth' },
   { id: 'lumber', name: 'Lumber' },
   { id: 'block', name: 'Block' },
+  { id: 'stone', name: 'Stone' },
 ];
 
-/** What a new player starts with in Sprint 1 (no gathering yet). */
-export const STARTER_INVENTORY: Readonly<Record<string, number>> = { boards: 160, roofing: 30, cloth: 6, lumber: 0, block: 0 };
-
-/** Size of the starter lot in tiles. */
-export const LOT = { width: 14, height: 14 } as const;
+/** What a new player arrives with: a tarp's worth of cloth. Everything else is salvaged. */
+export const STARTER_INVENTORY: Readonly<Record<string, number>> = { cloth: 3 };

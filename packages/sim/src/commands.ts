@@ -5,16 +5,19 @@
  * town; multiplayer (later) sends the same commands to the server, which applies them to
  * its own copy with exactly this code. Undo, redo and save files reuse the same records.
  */
+import { applyWorld, type WorldCommand } from './actions.ts';
 import { LAYER_OF, slotKey } from './grid.ts';
 import { checkPlace, checkRemove } from './rules.ts';
 import type { Catalog, HistoryEntry, Layer, Op, PlacedPiece, Slot, Town } from './types.ts';
+import type { World } from './world.ts';
 
-export type Command =
+export type BuildCommand =
   | { type: 'place'; id: string; pieceId: string; slot: Slot; rotation?: number }
   | { type: 'remove'; id: string; slot: Slot; layer: Layer; cascade?: boolean }
   | { type: 'undo'; id: string }
-  | { type: 'redo'; id: string }
-  | { type: 'tendPlot'; id: string; plotId: string; nowMs: number };
+  | { type: 'redo'; id: string };
+
+export type Command = BuildCommand | WorldCommand;
 
 export interface ApplyResult {
   ok: boolean;
@@ -23,6 +26,8 @@ export interface ApplyResult {
   /** True when the town changed (false for rejected or duplicate commands). */
   changed: boolean;
   duplicate?: boolean;
+  /** What happened, for the UI to describe (world actions). */
+  events?: string[];
 }
 
 export const MAX_UNDO = 100;
@@ -32,6 +37,22 @@ function addInventory(town: Town, delta: Record<string, number>, sign: 1 | -1): 
   for (const [mat, n] of Object.entries(delta)) {
     town.inventory[mat] = (town.inventory[mat] ?? 0) + sign * n;
   }
+}
+
+/** Can a history entry be replayed in this direction without conflicts or debt? */
+function blocked(town: Town, entry: HistoryEntry, forward: boolean): string | null {
+  const sign = forward ? 1 : -1;
+  for (const [mat, n] of Object.entries(entry.inventoryDelta)) {
+    if ((town.inventory[mat] ?? 0) + sign * n < 0) return 'You no longer have the materials to do that';
+  }
+  for (const op of entry.ops) {
+    const adds = op.kind === 'add' ? forward : !forward;
+    if (!adds) continue;
+    if (op.key in town.pieces) return 'Something is in the way';
+    const s = op.piece.slot;
+    if (s.kind === 'tile' && `${s.x},${s.y}` in town.soil) return "There's a garden bed in the way";
+  }
+  return null;
 }
 
 function runOps(town: Town, ops: Op[], forward: boolean): void {
@@ -62,14 +83,17 @@ function remember(town: Town, id: string): void {
   if (town.appliedIds.length > MAX_APPLIED_IDS) town.appliedIds.splice(0, town.appliedIds.length - MAX_APPLIED_IDS);
 }
 
-/** Apply a command to the town in place. Rejected commands leave the town untouched. */
-export function apply(town: Town, catalog: Catalog, cmd: Command): ApplyResult {
+/**
+ * Apply a command to the town in place. Rejected commands leave the town untouched.
+ * `world` is required for world actions (walking, gardening, …) and adds terrain rules to building.
+ */
+export function apply(town: Town, catalog: Catalog, cmd: Command, world?: World): ApplyResult {
   if (town.appliedIds.includes(cmd.id)) return { ok: true, changed: false, duplicate: true };
 
   switch (cmd.type) {
     case 'place': {
       const rotation = cmd.rotation ?? 0;
-      const verdict = checkPlace(town, catalog, cmd.pieceId, cmd.slot, rotation);
+      const verdict = checkPlace(town, catalog, cmd.pieceId, cmd.slot, rotation, world);
       if (!verdict.ok) return { ok: false, reason: verdict.reason, changed: false };
       const def = catalog[cmd.pieceId]!;
       const piece: PlacedPiece = { pieceId: cmd.pieceId, slot: cmd.slot, rotation };
@@ -98,8 +122,11 @@ export function apply(town: Town, catalog: Catalog, cmd: Command): ApplyResult {
     }
 
     case 'undo': {
-      const entry = town.history.undo.pop();
+      const entry = town.history.undo.at(-1);
       if (!entry) return { ok: false, reason: 'Nothing to undo', changed: false };
+      const why = blocked(town, entry, false);
+      if (why) return { ok: false, reason: why, changed: false };
+      town.history.undo.pop();
       runOps(town, entry.ops, false);
       addInventory(town, entry.inventoryDelta, -1);
       town.history.redo.push(entry);
@@ -108,8 +135,11 @@ export function apply(town: Town, catalog: Catalog, cmd: Command): ApplyResult {
     }
 
     case 'redo': {
-      const entry = town.history.redo.pop();
+      const entry = town.history.redo.at(-1);
       if (!entry) return { ok: false, reason: 'Nothing to redo', changed: false };
+      const why = blocked(town, entry, true);
+      if (why) return { ok: false, reason: why, changed: false };
+      town.history.redo.pop();
       runOps(town, entry.ops, true);
       addInventory(town, entry.inventoryDelta, 1);
       town.history.undo.push(entry);
@@ -117,12 +147,12 @@ export function apply(town: Town, catalog: Catalog, cmd: Command): ApplyResult {
       return { ok: true, changed: true };
     }
 
-    case 'tendPlot': {
-      const plot = town.plots[cmd.plotId];
-      if (!plot) return { ok: false, reason: 'No such plot', changed: false };
-      plot.lastTendedMs = cmd.nowMs;
-      remember(town, cmd.id);
-      return { ok: true, changed: true };
+    default: {
+      if (!world) return { ok: false, reason: 'This action needs the world', changed: false };
+      const r = applyWorld(town, catalog, world, cmd);
+      // Ticks are idempotent by nature and frequent, so they aren't remembered.
+      if (r.ok && cmd.type !== 'tick') remember(town, cmd.id);
+      return r;
     }
   }
 }

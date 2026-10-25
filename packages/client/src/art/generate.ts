@@ -132,6 +132,18 @@ function shade(hex: string, amt: number): string {
 /** Iso offset from the anchor: dx, dy in tiles, z in display pixels. */
 const P = (dx: number, dy: number, z = 0): Pt => ({ x: ((dx - dy) * TW) / 2, y: ((dx + dy) * TH) / 2 - z });
 
+const DIAMOND = [P(-0.5, -0.5), P(0.5, -0.5), P(0.5, 0.5), P(-0.5, 0.5)];
+
+/** A rounded blob in screen space (canopies, leaves, heads). */
+function blob(pen: Pen, cx: number, cy: number, rx: number, ry: number, fill: string, stroke?: string): void {
+  const pts: Pt[] = [];
+  for (let i = 0; i < 12; i++) {
+    const a = (i / 12) * Math.PI * 2;
+    pts.push({ x: cx + Math.cos(a) * rx, y: cy + Math.sin(a) * ry });
+  }
+  pen.poly(pts, fill, stroke);
+}
+
 interface BoxColours {
   top: string;
   left: string;
@@ -220,6 +232,154 @@ const painters: Record<ArtEntry['generator'], { up: number; paint: Painter } | '
       pen.line(P(-0.3, 0.3, 2), P(0.3, 0.3, 22), c.line);
       pen.line(P(0.3, -0.3, 2), P(0.3, 0.3, 22), c.line);
       pen.line(P(-0.3, 0.3, 12), P(0.3, 0.3, 12), c.line);
+    },
+  },
+  water: {
+    up: 0,
+    paint(pen, pal, _f, rand) {
+      pen.poly(DIAMOND, pal.base ?? '#2f6f8f');
+      for (let i = 0; i < 3; i++) {
+        const dx = (rand() - 0.5) * 0.5;
+        const dy = (rand() - 0.5) * 0.5;
+        pen.line(P(dx - 0.12, dy), P(dx + 0.12, dy), pal.light ?? '#5fa3c2');
+      }
+    },
+  },
+  bridge: {
+    up: 4,
+    paint(pen, pal) {
+      pen.poly(DIAMOND, pal.base ?? '#2f6f8f');
+      const c = fromPalette(pal);
+      box(pen, 0, 0, 0.5, 0.42, 0, 4, c);
+      for (const k of [-0.25, 0, 0.25]) pen.line(P(k, -0.42, 4), P(k, 0.42, 4), c.line);
+    },
+  },
+  soil: {
+    up: 2,
+    paint(pen, pal) {
+      pen.poly([P(-0.45, -0.45), P(0.45, -0.45), P(0.45, 0.45), P(-0.45, 0.45)], pal.base ?? '#4a3420', pal.furrow);
+      for (const k of [-0.25, 0, 0.25]) pen.line(P(-0.4, k, 1), P(0.4, k, 1), pal.furrow ?? '#2f2014', 1.5);
+    },
+  },
+  tree: {
+    up: 78,
+    paint(pen, pal, frame) {
+      const tall = frame === 'r1';
+      const h = tall ? 70 : 56;
+      pen.poly([P(-0.06, 0.06), P(0.06, 0.06), P(0.06, 0.06, h * 0.55), P(-0.06, 0.06, h * 0.55)], pal.trunk ?? '#5a4128', pal.dark);
+      blob(pen, 0, -h * 0.62, 20, 14, pal.dark ?? '#1f4a1c');
+      blob(pen, -6, -h * 0.72, 15, 12, pal.leaf ?? '#2f6b2a');
+      blob(pen, 7, -h * 0.68, 14, 11, pal.leaf ?? '#2f6b2a');
+      blob(pen, 0, -h * 0.84, 12, 9, pal.light ?? '#4c8a3c');
+    },
+  },
+  bush: {
+    up: 18,
+    paint(pen, pal) {
+      blob(pen, 0, -6, 14, 8, pal.dark ?? '#355620');
+      blob(pen, -4, -9, 9, 6, pal.leaf ?? '#4f7d2f');
+      blob(pen, 5, -10, 8, 6, pal.light ?? '#6f9e45');
+    },
+  },
+  rubble: {
+    up: 30,
+    paint(pen, pal, frame) {
+      const c = fromPalette(pal);
+      const full = frame === 'r0';
+      box(pen, -0.1, 0.05, 0.3, 0.25, 0, full ? 10 : 4, c);
+      pen.poly([P(-0.35, -0.3, 2), P(0.3, -0.25, full ? 26 : 10), P(0.38, -0.15, full ? 22 : 8), P(-0.3, -0.2, 0)], c.top, c.line);
+      if (full) pen.poly([P(0.05, 0.3, 0), P(0.4, 0.1, 18), P(0.44, 0.18, 16), P(0.1, 0.38, 0)], c.right, c.line);
+      pen.line(P(-0.4, 0.3), P(0.2, 0.4), c.line, 2);
+    },
+  },
+  carport: {
+    up: 30,
+    paint(pen, pal, frame) {
+      const full = frame === 'r0';
+      const wood = pal.wood ?? '#8a6a3f';
+      pen.line(P(-0.35, -0.35), P(-0.35, -0.35, full ? 26 : 14), wood, 3);
+      pen.line(P(0.35, 0.35), P(0.35, 0.35, 8), wood, 3);
+      pen.poly([P(-0.45, -0.4, full ? 26 : 14), P(0.4, -0.45, 20), P(0.45, 0.4, 4), P(-0.4, 0.45, 8)], pal.mid ?? '#738891', pal.line);
+      for (const k of [-0.2, 0, 0.2]) pen.line(P(k - 0.2, -0.4, 22), P(k + 0.2, 0.4, 6), pal.light ?? '#9fb1b8');
+      pen.dot(P(0.1, 0.1, 12), 1.5, pal.rust ?? '#a0522d');
+    },
+  },
+  rockpile: {
+    up: 24,
+    paint(pen, pal, frame) {
+      const c = fromPalette(pal);
+      const n = frame === 'r0' ? 5 : 2;
+      const spots: [number, number, number][] = [[-0.15, 0.1, 10], [0.15, 0.05, 12], [0, -0.15, 14], [-0.25, -0.15, 8], [0.25, -0.2, 9]];
+      for (const [x, y, h] of spots.slice(0, n)) box(pen, x, y, 0.13, 0.12, 0, h, c);
+    },
+  },
+  store: {
+    up: 60,
+    paint(pen, pal, frame) {
+      const c = fromPalette(pal);
+      const intact = frame === 'r0';
+      box(pen, 0, 0, 0.45, 0.4, 0, intact ? 46 : 30, c);
+      const f = (u: number, v: number, z: number) => P(-0.45 + u * 0.9, 0.4, z * (intact ? 46 : 30));
+      pen.poly([f(0.1, 0, 0.55), f(0.9, 0, 0.55), f(0.9, 0, 0.85), f(0.1, 0, 0.85)], pal.sign ?? '#a33a2a', c.line);
+      pen.poly([f(0.15, 0, 0.1), f(0.45, 0, 0.1), f(0.45, 0, 0.45), f(0.15, 0, 0.45)], pal.glass ?? '#4a6e78', c.line);
+      pen.poly([f(0.6, 0, 0), f(0.85, 0, 0), f(0.85, 0, 0.45), f(0.6, 0, 0.45)], c.left, c.line);
+    },
+  },
+  debris: {
+    up: 16,
+    paint(pen, pal, frame) {
+      pen.poly([P(-0.42, -0.3), P(0.4, -0.25), P(0.42, 0.3), P(-0.4, 0.28)], frame === 'r2' ? (pal.mud ?? '#6b5434') : (pal.hole ?? '#2a1d12'), pal.bark);
+      if (frame === 'r2') for (const k of [-0.2, 0, 0.2]) pen.line(P(-0.35, k, 1), P(0.35, k, 1), pal.board ?? '#b08d5b', 2.5);
+      if (frame === 'r0') {
+        box(pen, 0, 0, 0.55, 0.09, 0, 10, { top: pal.log ?? '#5a4128', left: pal.bark ?? '#3a2a18', right: pal.bark ?? '#3a2a18', line: pal.bark ?? '#3a2a18' });
+        blob(pen, 22, -10, 10, 8, '#3f6a2a');
+      }
+    },
+  },
+  crop: {
+    up: 40,
+    paint(pen, pal, frame) {
+      const stage = Number(frame.slice(1));
+      const leaf = pal.leaf ?? '#5fa23a';
+      const dark = pal.dark ?? '#3f7426';
+      if (stage === 0) {
+        pen.dot(P(0, 0, 1), 1.5, dark);
+        return;
+      }
+      if (pal.trunk) {
+        // Papaya: a trunk with a crown of leaves.
+        const h = [0, 10, 22, 32][stage]!;
+        pen.line(P(0, 0), P(0, 0, h), pal.trunk, 3);
+        blob(pen, 0, -h, 6 + stage * 3, 3 + stage, leaf);
+        if (stage === 3) for (const dx of [-3, 3]) pen.dot({ x: dx, y: -h + 5 }, 2.6, pal.fruit ?? '#e08a2a');
+        return;
+      }
+      const size = [0, 4, 7, 10][stage]!;
+      blob(pen, 0, -size * 0.6, size, size * 0.6, dark);
+      blob(pen, -2, -size * 0.8, size * 0.7, size * 0.45, leaf);
+      if (stage === 3) pen.dot(P(0.12, 0.1, 3), 2.4, pal.fruit ?? '#86c45a');
+    },
+  },
+  weeds: {
+    up: 10,
+    paint(pen, pal, frame, rand) {
+      const n = [3, 6, 10][Number(frame.slice(1))] ?? 3;
+      for (let i = 0; i < n; i++) {
+        const p = P((rand() - 0.5) * 0.7, (rand() - 0.5) * 0.7);
+        pen.poly([{ x: p.x - 2.5, y: p.y }, { x: p.x, y: p.y - 7 }, { x: p.x + 2.5, y: p.y }], i % 2 ? (pal.leaf ?? '#6fae3a') : (pal.dark ?? '#4a7a26'));
+      }
+    },
+  },
+  person: {
+    up: 46,
+    paint(pen, pal) {
+      const line = pal.line ?? '#1a1410';
+      pen.poly([{ x: -8, y: -2 }, { x: 8, y: -2 }, { x: 8, y: 2 }, { x: -8, y: 2 }], 'rgba(0,0,0,0.25)');
+      pen.poly([{ x: -5, y: 0 }, { x: -1, y: 0 }, { x: -1, y: -14 }, { x: -5, y: -14 }], pal.pants ?? '#3a3a3a', line);
+      pen.poly([{ x: 1, y: 0 }, { x: 5, y: 0 }, { x: 5, y: -14 }, { x: 1, y: -14 }], pal.pants ?? '#3a3a3a', line);
+      pen.poly([{ x: -7, y: -13 }, { x: 7, y: -13 }, { x: 6, y: -29 }, { x: -6, y: -29 }], pal.shirt ?? '#3f6a9a', line);
+      blob(pen, 0, -35, 6, 6.5, pal.skin ?? '#b07a52', line);
+      blob(pen, -1, -39, 6.5, 3.5, pal.hair ?? '#2a1d14');
     },
   },
   wall: 'wall',
