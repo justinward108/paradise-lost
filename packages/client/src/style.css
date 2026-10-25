@@ -480,6 +480,128 @@ body.style-pixel .piece img {
   transform: translateY(-16px);
 }
 
+/* Help screen */
+.help .help-card {
+  position: relative;
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  grid-template-rows: 1fr auto;
+  gap: 12px 20px;
+  width: min(820px, calc(100vw - 32px));
+  max-width: none;
+  height: min(620px, calc(100vh - 48px));
+  padding: 20px;
+}
+
+.help-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  overflow-y: auto;
+}
+
+.help-nav button {
+  min-height: 36px;
+  padding: 6px 10px;
+  text-align: left;
+  font-size: 14px;
+}
+
+.help-nav button[aria-current='true'] {
+  font-weight: 700;
+  border-color: var(--accent);
+  box-shadow: inset 3px 0 0 var(--accent);
+}
+
+.help-content {
+  overflow-y: auto;
+  padding-right: 8px;
+  line-height: 1.55;
+  outline: none;
+}
+
+.help-content h2 {
+  margin: 0 0 10px;
+  padding-right: 40px;
+}
+
+.help-content ul {
+  margin: 0 0 12px;
+  padding-left: 22px;
+}
+
+.help-card > .close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  min-height: 34px;
+  min-width: 34px;
+  padding: 2px 8px;
+}
+
+.help-footer {
+  grid-column: 1 / -1;
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+}
+
+/* First-time tips */
+.tip {
+  position: fixed;
+  right: var(--gap);
+  bottom: calc(env(safe-area-inset-bottom) + 186px);
+  width: min(340px, calc(100vw - 2 * var(--gap)));
+  padding: 12px 14px;
+  background: var(--panel);
+  border: 2px solid var(--accent);
+  border-radius: var(--radius);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18);
+}
+
+.tip strong {
+  display: block;
+  margin-bottom: 4px;
+}
+
+.tip p {
+  margin: 0 0 10px;
+  line-height: 1.45;
+}
+
+.tip .row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+}
+
+.tip .row button {
+  min-height: 36px;
+  padding: 4px 10px;
+}
+
+.tip .ok {
+  font-weight: 700;
+  border-color: var(--accent);
+}
+
+button.link {
+  background: none;
+  border: none;
+  box-shadow: none;
+  min-height: 32px;
+  padding: 4px 6px;
+  color: var(--ink-soft);
+  text-decoration: underline;
+}
+
+.goals .link {
+  margin-top: 2px;
+  padding-left: 0;
+}
+
 /* Night */
 .night {
   position: fixed;
@@ -528,6 +650,22 @@ body.style-pixel .piece img {
 }
 
 @media (max-width: 700px) {
+  .help .help-card {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto 1fr auto;
+  }
+  .help-nav {
+    flex-direction: row;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding-right: 40px;
+  }
+  .help-nav button {
+    flex: 0 0 auto;
+  }
+  .tip {
+    bottom: calc(env(safe-area-inset-bottom) + 236px);
+  }
   .goals {
     width: auto;
     right: var(--gap);
@@ -590,4 +728,21 @@ body.style-pixel .piece img {
   * {
     transition: none !important;
   }
+}
+
+/* Dialogs sit above tips and panels, on an opaque card. */
+.modal {
+  z-index: 50;
+}
+
+.tip {
+  z-index: 40;
+}
+
+.modal .card {
+  background: #faf4e6;
+}
+
+body.style-pixel .modal .card {
+  background: #1e1a14;
 }

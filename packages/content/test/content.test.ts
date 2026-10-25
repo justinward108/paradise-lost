@@ -27,3 +27,18 @@ describe('starter world', () => {
     expect(validateWorld(broken, catalog, ITEMS)).toContain('site island: unreachable');
   });
 });
+
+import { readFileSync } from 'node:fs';
+import { HELP_SECTIONS, helpMarkdown, TIPS } from '../src/index.ts';
+
+describe('help', () => {
+  it('docs/HOW_TO_PLAY.md matches the in-game help (run npm run help-doc)', () => {
+    const doc = readFileSync(new URL('../../../docs/HOW_TO_PLAY.md', import.meta.url), 'utf8');
+    expect(doc).toBe(helpMarkdown());
+  });
+
+  it('every tip points at a real help section', () => {
+    const ids = new Set(HELP_SECTIONS.map((s) => s.id));
+    for (const [id, tip] of Object.entries(TIPS)) expect(ids.has(tip.section), id).toBe(true);
+  });
+});

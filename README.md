@@ -5,6 +5,7 @@ A cozy life sim set in the *Poor Camp* universe: arrive with almost nothing on t
 Browser first (Netlify, paradiselost.poor.camp); iOS/iPadOS later.
 
 - Design document: [docs/GDD.md](docs/GDD.md)
+- How to play: [docs/HOW_TO_PLAY.md](docs/HOW_TO_PLAY.md) (the same text as the in-game Help, press H)
 - Status: **Sprint 2** — the opening loop, on placeholder art.
 
 ## What works now
@@ -17,6 +18,7 @@ Browser first (Netlify, paradiselost.poor.camp); iOS/iPadOS later.
 - Auntie Rosa keeps a daily routine, gives you seeds when you meet, warms to daily chats and gifts, and teaches you tier-2 building once you're friends
 - The path repair is a three-stage community project; Rosa keeps working on it while you're away
 - Goals list, day/night clock and weather, "While you were away" summary
+- Help screen (H or ? Help) that opens on the topic you're in, plus one-time tips the first time things come up
 - Saves from Sprint 1 are migrated onto the new map
 
 **Building (Sprint 1)**
@@ -38,7 +40,9 @@ npm test           # unit tests
 npm run build      # validate content, type-check, build to packages/client/dist
 ```
 
-Netlify uses `netlify.toml` (build `npm run build`, publish `packages/client/dist`).
+Netlify uses `netlify.toml` (build `npm run build`, publish `packages/client/dist`). For a manual deploy, zip the contents of `packages/client/dist` and drop the zip on Netlify's Deploys page.
+
+Help text lives in `packages/content/src/help.ts`; after editing it, run `npm run help-doc` (a test fails if the doc is out of date).
 
 Developer URL flags: `?reset` starts a fresh game; `?away=72` pretends you were gone 72 hours (handy for watching crops grow and Rosa's work on the path).
 
@@ -57,6 +61,7 @@ Developer URL flags: `?reset` starts a fresh game; `?away=72` pretends you were 
 | Pan / zoom | Right-drag; mouse wheel | Drag |
 | Centre on me | ◎ button | ◎ button |
 | Close a panel / back | Esc | ✕ |
+| Help | H or ? Help | ? Help |
 
 ## Layout
 

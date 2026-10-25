@@ -14,7 +14,8 @@
     "build": "npm run validate-content && npm run typecheck && npm run build -w @paradise-lost/client",
     "typecheck": "tsc -b",
     "test": "vitest run",
-    "validate-content": "node --experimental-strip-types packages/content/scripts/validate.ts"
+    "validate-content": "node --experimental-strip-types packages/content/scripts/validate.ts",
+    "help-doc": "node --experimental-strip-types packages/content/scripts/help-doc.ts"
   },
   "devDependencies": {
     "@types/node": "22.20.5",

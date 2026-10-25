@@ -5,6 +5,7 @@
 import { art, catalog, crops, ITEMS, pieceOrder, requiredFrames, type Style } from '@paradise-lost/content';
 import { ambientTime, friendshipLevel, goals, helperLabour, materialsMet } from '@paradise-lost/sim';
 import { drawFrame } from '../art/generate.ts';
+import { closeHelp, isHelpOpen, showHelp, Tips } from './help.ts';
 import type { Controller } from '../game/controller.ts';
 
 export interface UiHooks {
@@ -44,8 +45,32 @@ function nightAlpha(hour: number) {
   return NIGHT;
 }
 
-export function mountUi(root: HTMLElement, ctrl: Controller, hooks: UiHooks): void {
+/** Which help section fits what the player is doing right now. */
+function helpSectionFor(ctrl: Controller): string {
+  if (ctrl.panel?.kind === 'npc') return 'rosa';
+  if (ctrl.panel?.kind === 'project') return 'projects';
+  if (ctrl.mode === 'build') return ctrl.tool.mode === 'demolish' ? 'changing' : 'building';
+  if (ctrl.tool.mode === 'dig' || ctrl.tool.mode === 'plant' || ctrl.tool.mode === 'water') return 'garden';
+  return 'start';
+}
+
+const GOAL_SECTION: Record<string, string> = { brush: 'moving', salvage: 'moving', shelter: 'building', neighbour: 'rosa', garden: 'garden', path: 'projects' };
+
+export function mountUi(root: HTMLElement, ctrl: Controller, hooks: UiHooks): Tips {
   let roofs = true;
+  let nextGoal = 'start';
+
+  const openHelp = (section: string) => {
+    const footer = el('div', { class: 'help-footer' });
+    const toggle = btn(tips.enabled ? 'Turn off tips' : 'Turn tips back on', {}, () => {
+      tips.setEnabled(!tips.enabled);
+      toggle.textContent = tips.enabled ? 'Turn off tips' : 'Turn tips back on';
+    });
+    const again = btn('Show all tips again', {}, () => tips.reset());
+    footer.append(toggle, again);
+    showHelp(root, section, footer);
+  };
+  const tips = new Tips(root, openHelp);
 
   const night = el('div', { class: 'night', 'aria-hidden': 'true' });
 
@@ -58,14 +83,16 @@ export function mountUi(root: HTMLElement, ctrl: Controller, hooks: UiHooks): vo
   const roofBtn = btn('Roofs: on', { 'aria-pressed': 'true', title: 'Show or hide roofs' });
   const styleBtn = btn('', { title: 'Switch art style' });
   const meBtn = btn('◎', { title: 'Centre on me', 'aria-label': 'Centre on me' }, () => hooks.follow());
-  top.append(clock, inv, undo, redo, roofBtn, styleBtn, meBtn);
+  const helpBtn = btn('? Help', { title: 'Help (H)', 'aria-label': 'Help' }, () => openHelp(helpSectionFor(ctrl)));
+  top.append(clock, inv, undo, redo, roofBtn, styleBtn, meBtn, helpBtn);
 
   // ----- goals -----
   const goalsBox = el('section', { class: 'goals', 'aria-label': 'Goals' });
   const goalsHead = btn('Goals', { class: 'goals-head', 'aria-expanded': 'true' });
   const goalsList = el('ul');
   const goalsHint = el('p', { class: 'hint' });
-  goalsBox.append(goalsHead, goalsList, goalsHint);
+  const goalsMore = btn('How?', { class: 'link', title: 'Help for this goal' }, () => openHelp(GOAL_SECTION[nextGoal] ?? 'start'));
+  goalsBox.append(goalsHead, goalsList, goalsHint, goalsMore);
   if (window.innerWidth < 700) {
     goalsBox.classList.add('collapsed');
     goalsHead.setAttribute('aria-expanded', 'false');
@@ -95,8 +122,8 @@ export function mountUi(root: HTMLElement, ctrl: Controller, hooks: UiHooks): vo
   // ----- bottom bar -----
   const bottom = el('nav', { class: 'bottom', 'aria-label': 'Tools' });
   const tabs = el('div', { class: 'tabs', role: 'tablist' });
-  const playTab = btn('🌿 Live', { role: 'tab' }, () => ctrl.setMode('play'));
-  const buildTab = btn('🔨 Build', { role: 'tab' }, () => ctrl.setMode('build'));
+  const playTab = btn('🌿 Live', { role: 'tab', title: 'Walk, gather, garden and talk (B)' }, () => ctrl.setMode('play'));
+  const buildTab = btn('🔨 Build', { role: 'tab', title: 'Build on your lot (B)' }, () => ctrl.setMode('build'));
   tabs.append(playTab, buildTab);
 
   const playBar = el('div', { class: 'bar play-bar' });
@@ -152,7 +179,13 @@ export function mountUi(root: HTMLElement, ctrl: Controller, hooks: UiHooks): vo
       e.preventDefault();
       ctrl.redo();
     } else if (k === 'r' && ctrl.mode === 'build') ctrl.rotate();
-    else if (k === 'escape') {
+    else if (k === 'h' || k === 'f1' || (k === '?' && !mod)) {
+      e.preventDefault();
+      if (isHelpOpen()) closeHelp();
+      else openHelp(helpSectionFor(ctrl));
+    } else if (isHelpOpen()) {
+      if (k === 'escape') closeHelp();
+    } else if (k === 'escape') {
       if (ctrl.panel) ctrl.openPanel(null);
       else ctrl.setTool(ctrl.mode === 'play' ? { mode: 'walk' } : { mode: 'demolish' });
     } else if (k === 'b') ctrl.setMode(ctrl.mode === 'play' ? 'build' : 'play');
@@ -186,16 +219,17 @@ export function mountUi(root: HTMLElement, ctrl: Controller, hooks: UiHooks): vo
   function renderPlayBar() {
     const t = ctrl.tool;
     const items: HTMLButtonElement[] = [
-      btn('✋ Walk & use', { class: `tool ${t.mode === 'walk' ? 'active' : ''}` }, () => ctrl.setTool({ mode: 'walk' })),
-      btn('⛏ Dig bed', { class: `tool ${t.mode === 'dig' ? 'active' : ''}` }, () => ctrl.setTool({ mode: 'dig' })),
+      btn('✋ Walk & use', { class: `tool ${t.mode === 'walk' ? 'active' : ''}`, title: 'Click to walk; click things to use them (Esc)' }, () => ctrl.setTool({ mode: 'walk' })),
+      btn('⛏ Dig bed', { class: `tool ${t.mode === 'dig' ? 'active' : ''}`, title: 'Click cleared ground on your lot to make a garden bed' }, () => ctrl.setTool({ mode: 'dig' })),
     ];
     for (const c of Object.values(crops)) {
       const n = ctrl.town.inventory[c.seed] ?? 0;
       if (n <= 0) continue;
       const active = t.mode === 'plant' && t.cropId === c.id;
-      items.push(btn(`🌱 ${c.name} (${n})`, { class: `tool ${active ? 'active' : ''}` }, () => ctrl.setTool({ mode: 'plant', cropId: c.id })));
+      const time = c.regrowDays ? `${c.days} watered days, then every ${c.regrowDays}` : `${c.days} watered days`;
+      items.push(btn(`🌱 ${c.name} (${n})`, { class: `tool ${active ? 'active' : ''}`, title: `Plant ${c.name.toLowerCase()} in an empty bed. Ready in ${time}.` }, () => ctrl.setTool({ mode: 'plant', cropId: c.id })));
     }
-    items.push(btn('💧 Water', { class: `tool ${t.mode === 'water' ? 'active' : ''}` }, () => ctrl.setTool({ mode: 'water' })));
+    items.push(btn('💧 Water', { class: `tool ${t.mode === 'water' ? 'active' : ''}`, title: 'Water a crop on a dry day. Rain does it for you most days.' }, () => ctrl.setTool({ mode: 'water' })));
     playBar.replaceChildren(...items);
   }
 
@@ -203,6 +237,7 @@ export function mountUi(root: HTMLElement, ctrl: Controller, hooks: UiHooks): vo
     const a = ambientTime(ctrl.town, ctrl.now());
     clock.textContent = `Day ${a.day + 1} · ${clockText(a.hour)} · ${a.rain ? 'Rain' : 'Clear'}`;
     night.style.opacity = String(nightAlpha(a.hour));
+    if (a.hour >= 19.5 || a.hour < 5) tips.trigger('night');
     document.body.classList.toggle('raining', a.rain);
   }
 
@@ -221,11 +256,19 @@ export function mountUi(root: HTMLElement, ctrl: Controller, hooks: UiHooks): vo
     goalsList.replaceChildren(...gs.map((g) => el('li', { class: g.done ? 'done' : '' }, `${g.done ? '✓' : '○'} ${g.text}`)));
     const next = gs.find((g) => !g.done);
     goalsHint.textContent = next ? next.hint : 'All done for now. The town has more to discover soon.';
+    nextGoal = next?.id ?? 'start';
+    goalsMore.classList.toggle('hidden', !next);
+    // Tips for things that have just happened.
+    if (Object.values(ctrl.town.sites).some((x) => x.used > 0)) tips.trigger('firstSalvage');
+    if (ctrl.shelterReady()) tips.trigger('shelter');
+    if (Object.values(ctrl.town.npcs).some((n) => n.met)) tips.trigger('metRosa');
+    if (Object.keys(ctrl.town.inventory).some((k) => k.startsWith('seed_') || k.startsWith('slip_'))) tips.trigger('garden');
     renderPlayBar();
     renderPanel();
   }
 
   function renderMode() {
+    if (ctrl.mode === 'build') tips.trigger('buildMode');
     document.body.classList.toggle('mode-build', ctrl.mode === 'build');
     document.body.classList.toggle('mode-play', ctrl.mode === 'play');
     playTab.setAttribute('aria-selected', String(ctrl.mode === 'play'));
@@ -237,6 +280,9 @@ export function mountUi(root: HTMLElement, ctrl: Controller, hooks: UiHooks): vo
     for (const [id, b] of pieceButtons) b.classList.toggle('active', t.mode === 'build' && t.pieceId === id);
     demoBtn.classList.toggle('active', t.mode === 'demolish');
     rotBtn.disabled = !(t.mode === 'build' && (catalog[t.pieceId]?.rotations ?? 1) > 1);
+    if (t.mode === 'build' && (catalog[t.pieceId]?.tier ?? 1) > ctrl.town.progress.tier) tips.trigger('locked');
+    if (t.mode === 'demolish' && ctrl.mode === 'build') tips.trigger('demolish');
+    if (t.mode === 'dig' || t.mode === 'plant' || t.mode === 'water') tips.trigger('garden');
     renderPlayBar();
   }
 
@@ -251,6 +297,7 @@ export function mountUi(root: HTMLElement, ctrl: Controller, hooks: UiHooks): vo
       text = p.action.message;
       tone = p.action.ok ? 'ok' : 'error';
     }
+    if (tone === 'error' && (ctrl.status.tone === 'error' || ctrl.preview.kind === 'none')) tips.trigger('rejected');
     statusText.textContent = text;
     statusIcon.textContent = tone === 'ok' ? '✓' : tone === 'warn' ? '!' : tone === 'error' ? '✕' : 'ℹ';
     status.dataset.tone = tone;
@@ -274,6 +321,7 @@ export function mountUi(root: HTMLElement, ctrl: Controller, hooks: UiHooks): vo
     panel.classList.toggle('hidden', p === null);
     if (!p) return;
     const close = btn('✕', { class: 'close', 'aria-label': 'Close' }, () => ctrl.openPanel(null));
+    if (p.kind === 'project') tips.trigger('project');
     if (p.kind === 'npc') {
       const def = ctrl.world.npcs.find((n) => n.id === p.npcId);
       const st = ctrl.town.npcs[p.npcId];
@@ -317,7 +365,7 @@ export function mountUi(root: HTMLElement, ctrl: Controller, hooks: UiHooks): vo
       }
       kids.push(actions);
       if (!materialsMet(stage, s.materials)) kids.push(el('p', { class: 'sub' }, `${helperName} can only work on this stage once its materials are here.`));
-      else if (def.helper && ctrl.town.npcs[def.helper]?.met) kids.push(el('p', { class: 'sub' }, `${helperName} works on it in the afternoons, even while you're away.`));
+      else if (def.helper && ctrl.town.npcs[def.helper]?.met) kids.push(el('p', { class: 'sub' }, `${helperName} adds an hour of work every 10 minutes, even while you're away.`));
       else if (def.helper) kids.push(el('p', { class: 'sub' }, `Your neighbour across the stream might help, if you introduce yourself.`));
     }
     if (p.note) kids.push(el('p', { class: 'note' }, p.note));
@@ -344,6 +392,8 @@ export function mountUi(root: HTMLElement, ctrl: Controller, hooks: UiHooks): vo
   renderTool();
   renderClock();
   renderStatus();
+  tips.trigger('firstSteps');
+  return tips;
 }
 
 export function showAwayCard(root: HTMLElement, lines: string[], hours: number): void {
@@ -368,7 +418,7 @@ export function showWelcome(root: HTMLElement, onClose: () => void): void {
     el('h2', { id: 'welcome-title' }, 'Paradise Lost'),
     el('p', {}, 'You have a tarp, a few tools, and an overgrown lot on the wet side of the island. Most of the neighbours have gone.'),
     el('p', {}, 'Salvage what you can, build yourself a shelter, and see who is still around.'),
-    el('p', { class: 'sub' }, 'Click to walk and to use things. Press B or tap Build to build. This is an early test: the art is placeholder.'),
+    el('p', { class: 'sub' }, 'Click to walk and to use things. Press B or tap Build to build, and H or ? Help any time. This is an early test: the art is placeholder.'),
   );
   const ok = el('button', {}, 'Start');
   ok.addEventListener('click', () => {

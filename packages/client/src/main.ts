@@ -115,12 +115,15 @@ async function boot() {
   });
   game.scene.add('build', scene, true, { ctrl });
 
-  mountUi(root, ctrl, { zoom: (f) => scene.zoomBy(f), setRoofs: (s) => scene.setRoofs(s), follow: () => scene.follow() });
+  const tips = mountUi(root, ctrl, { zoom: (f) => scene.zoomBy(f), setRoofs: (s) => scene.setRoofs(s), follow: () => scene.follow() });
   ctrl.tick();
   setInterval(() => ctrl.tick(), TICK_MS);
 
   if (fresh) showWelcome(root, () => undefined);
-  else if (summary.lines.length > 0) showAwayCard(root, summary.lines, summary.awayHours);
+  else if (summary.lines.length > 0) {
+    showAwayCard(root, summary.lines, summary.awayHours);
+    tips.trigger('away');
+  }
 
   const markSeen = () => void store.setMeta('lastSeen', String(Date.now()));
   markSeen();
