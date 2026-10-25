@@ -6,6 +6,7 @@ import { art, catalog, crops, ITEMS, pieceOrder, requiredFrames, type Style } fr
 import { ambientTime, friendshipLevel, goals, helperLabour, materialsMet } from '@paradise-lost/sim';
 import { drawFrame } from '../art/generate.ts';
 import { closeHelp, isHelpOpen, showHelp, Tips } from './help.ts';
+import { isFeedbackOpen, showFeedback } from './feedback.ts';
 import type { Controller } from '../game/controller.ts';
 
 export interface UiHooks {
@@ -84,7 +85,8 @@ export function mountUi(root: HTMLElement, ctrl: Controller, hooks: UiHooks): Ti
   const styleBtn = btn('', { title: 'Switch art style' });
   const meBtn = btn('◎', { title: 'Centre on me', 'aria-label': 'Centre on me' }, () => hooks.follow());
   const helpBtn = btn('? Help', { title: 'Help (H)', 'aria-label': 'Help' }, () => openHelp(helpSectionFor(ctrl)));
-  top.append(clock, inv, undo, redo, roofBtn, styleBtn, meBtn, helpBtn);
+  const noteBtn = btn('✎ Note', { title: 'Write a playtest note (N)', 'aria-label': 'Write a playtest note' }, () => showFeedback(root, ctrl));
+  top.append(clock, inv, undo, redo, roofBtn, styleBtn, meBtn, noteBtn, helpBtn);
 
   // ----- goals -----
   const goalsBox = el('section', { class: 'goals', 'aria-label': 'Goals' });
@@ -169,7 +171,7 @@ export function mountUi(root: HTMLElement, ctrl: Controller, hooks: UiHooks): Ti
     w: [0, -1], arrowup: [0, -1], s: [0, 1], arrowdown: [0, 1], a: [-1, 0], arrowleft: [-1, 0], d: [1, 0], arrowright: [1, 0],
   };
   window.addEventListener('keydown', (e) => {
-    if (e.target instanceof HTMLInputElement) return;
+    if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement || isFeedbackOpen()) return;
     const k = e.key.toLowerCase();
     const mod = e.ctrlKey || e.metaKey;
     if (mod && k === 'z' && !e.shiftKey) {
@@ -179,7 +181,10 @@ export function mountUi(root: HTMLElement, ctrl: Controller, hooks: UiHooks): Ti
       e.preventDefault();
       ctrl.redo();
     } else if (k === 'r' && ctrl.mode === 'build') ctrl.rotate();
-    else if (k === 'h' || k === 'f1' || (k === '?' && !mod)) {
+    else if (k === 'n' && !mod && !isHelpOpen()) {
+      e.preventDefault();
+      showFeedback(root, ctrl);
+    } else if (k === 'h' || k === 'f1' || (k === '?' && !mod)) {
       e.preventDefault();
       if (isHelpOpen()) closeHelp();
       else openHelp(helpSectionFor(ctrl));
@@ -418,7 +423,7 @@ export function showWelcome(root: HTMLElement, onClose: () => void): void {
     el('h2', { id: 'welcome-title' }, 'Paradise Lost'),
     el('p', {}, 'You have a tarp, a few tools, and an overgrown lot on the wet side of the island. Most of the neighbours have gone.'),
     el('p', {}, 'Salvage what you can, build yourself a shelter, and see who is still around.'),
-    el('p', { class: 'sub' }, 'Click to walk and to use things. Press B or tap Build to build, and H or ? Help any time. This is an early test: the art is placeholder.'),
+    el('p', { class: 'sub' }, 'Click to walk and to use things. Press B or tap Build to build, and H or ? Help any time. This is an early test: the art is placeholder. Press N or ✎ Note whenever something feels slow, confusing or fun.'),
   );
   const ok = el('button', {}, 'Start');
   ok.addEventListener('click', () => {

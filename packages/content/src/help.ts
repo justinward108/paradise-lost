@@ -149,6 +149,7 @@ export const HELP_SECTIONS: readonly HelpSection[] = [
       '- Look around: right-drag with a mouse, or drag on a touch screen; zoom with the mouse wheel',
       '- Centre on yourself: ◎',
       '- Help: H or the ? button; close panels with Esc',
+      '- Playtest note: N or ✎ Note. Your note is saved with what you were doing; Copy all notes puts them on the clipboard to send on.',
     ],
   },
 ];

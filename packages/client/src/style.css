@@ -530,7 +530,8 @@ body.style-pixel .piece img {
   padding-left: 22px;
 }
 
-.help-card > .close {
+.help-card > .close,
+.feedback-card > .close {
   position: absolute;
   top: 12px;
   right: 12px;
@@ -745,4 +746,79 @@ button.link {
 
 body.style-pixel .modal .card {
   background: #1e1a14;
+}
+
+/* Playtest notes */
+.feedback-card {
+  position: relative;
+  width: min(480px, calc(100vw - 32px));
+  max-height: calc(100vh - 32px);
+  overflow: auto;
+}
+
+.feedback-card h2 {
+  padding-right: 40px;
+}
+
+.feedback-card .sub {
+  margin-top: 0;
+  opacity: 0.8;
+}
+
+.feedback-card textarea {
+  box-sizing: border-box;
+  width: 100%;
+  font: inherit;
+  font-size: 16px; /* stops iOS zooming in */
+  padding: 8px 10px;
+  border: 1.5px solid var(--edge);
+  border-radius: var(--radius);
+  background: rgba(255, 255, 255, 0.85);
+  color: #2a2318;
+  resize: vertical;
+}
+
+body.style-pixel .feedback-card textarea {
+  background: #2b251c;
+  color: #f2e8d2;
+}
+
+.feedback-card details {
+  margin: 8px 0 12px;
+  font-size: 13px;
+}
+
+.feedback-card summary {
+  cursor: pointer;
+  opacity: 0.8;
+}
+
+.feedback-card pre {
+  white-space: pre-wrap;
+  font-size: 12px;
+  line-height: 1.4;
+  margin: 6px 0 0;
+  opacity: 0.85;
+}
+
+.feedback-card .row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.feedback-card .fb-msg {
+  min-height: 1.5em;
+  margin: 10px 0 0;
+}
+
+.feedback-card .fb-count {
+  margin: 0 0 4px;
+  font-size: 13px;
+  opacity: 0.8;
+}
+
+.feedback-card button[disabled] {
+  opacity: 0.45;
+  cursor: default;
 }

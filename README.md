@@ -20,6 +20,7 @@ Browser first (Netlify, paradiselost.poor.camp); iOS/iPadOS later.
 - Goals list, day/night clock and weather, "While you were away" summary
 - Help screen (H or ? Help) that opens on the topic you're in, plus one-time tips the first time things come up
 - Saves from Sprint 1 are migrated onto the new map
+- Playtest notes (N or ✎ Note): each note is saved on the device with a snapshot of the game state, and can be copied or downloaded
 
 **Building (Sprint 1)**
 - Post-and-pier foundations, floors, walls, windows, doors, roofs and furniture, only on your lot
@@ -62,6 +63,7 @@ Developer URL flags: `?reset` starts a fresh game; `?away=72` pretends you were 
 | Centre on me | ◎ button | ◎ button |
 | Close a panel / back | Esc | ✕ |
 | Help | H or ? Help | ? Help |
+| Playtest note | N or ✎ Note | ✎ Note |
 
 ## Layout
 
