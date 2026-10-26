@@ -15,3 +15,4 @@ export * from './npc.ts';
 export * from './project.ts';
 export * from './absence.ts';
 export * from './goals.ts';
+export * from './regrow.ts';

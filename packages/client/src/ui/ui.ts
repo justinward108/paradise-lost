@@ -55,7 +55,7 @@ function helpSectionFor(ctrl: Controller): string {
   return 'start';
 }
 
-const GOAL_SECTION: Record<string, string> = { brush: 'moving', salvage: 'moving', shelter: 'building', neighbour: 'rosa', garden: 'garden', path: 'projects' };
+const GOAL_SECTION: Record<string, string> = { brush: 'moving', salvage: 'materials', shelter: 'building', neighbour: 'rosa', garden: 'garden', path: 'projects' };
 
 export function mountUi(root: HTMLElement, ctrl: Controller, hooks: UiHooks): Tips {
   let roofs = true;
@@ -300,9 +300,10 @@ export function mountUi(root: HTMLElement, ctrl: Controller, hooks: UiHooks): Ti
       tone = !p.ok ? 'error' : p.kind === 'place' && p.warning ? 'warn' : 'ok';
     } else if (p.kind === 'action') {
       text = p.action.message;
-      tone = p.action.ok ? 'ok' : 'error';
+      tone = p.action.tone ?? (p.action.ok ? (p.action.arm ? 'warn' : 'ok') : 'error');
     }
     if (tone === 'error' && (ctrl.status.tone === 'error' || ctrl.preview.kind === 'none')) tips.trigger('rejected');
+    if (tone === 'error' && /^Needs \d/.test(text)) tips.trigger('needMaterials');
     statusText.textContent = text;
     statusIcon.textContent = tone === 'ok' ? '✓' : tone === 'warn' ? '!' : tone === 'error' ? '✕' : 'ℹ';
     status.dataset.tone = tone;

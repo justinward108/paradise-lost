@@ -6,7 +6,7 @@ import { edge, slotKey, tile } from './grid.ts';
 import { siteAt, siteRemaining, terrainAt, type Point, type World } from './world.ts';
 import type { Catalog, Town } from './types.ts';
 
-const BLOCKING_TERRAIN = new Set(['~', 'T', 'X']);
+const BLOCKING_TERRAIN = new Set(['~', 'T', 'X', 'D']);
 
 export function walkable(town: Town, world: World, catalog: Catalog, x: number, y: number): boolean {
   const t = terrainAt(town, world, x, y);

@@ -29,6 +29,8 @@ export const FRIENDSHIP = {
   dailyChat: 2,
   gift: 4,
   likedGift: 8,
+  /** Working on a project alongside her, once a day. */
+  workedTogether: 3,
   max: 100,
 } as const;
 

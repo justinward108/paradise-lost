@@ -4,6 +4,7 @@
  */
 import { bedWeeds, cropStatus } from './garden.ts';
 import { settleProjects, helperLabour } from './project.ts';
+import { growBack } from './regrow.ts';
 import { ambientTime, rainOnDay } from './time.ts';
 import type { Town } from './types.ts';
 import type { World } from './world.ts';
@@ -55,5 +56,14 @@ export function summariseAbsence(town: Town, world: World, lastSeenMs: number, n
     if (stagesDone > 0) lines.push(`${helper} kept working on the ${def.name.toLowerCase()} and finished a stage.`);
     else if (hoursAfter > hoursBefore) lines.push(`${helper} put in ${hoursAfter - hoursBefore} more hours on the ${def.name.toLowerCase()}.`);
   }
+  // The land recovering while away, worked out on a copy.
+  const land = structuredClone(town);
+  const grown = growBack(land, world, nowMs);
+  const trees = grown.filter((e) => e.startsWith('regrow:tree:')).length;
+  const brush = grown.find((e) => e.startsWith('regrow:brush:'));
+  const sites = grown.filter((e) => e.startsWith('regrow:site:')).map((e) => world.sites.find((s) => s.id === e.split(':')[2])?.name.toLowerCase());
+  if (trees > 0) lines.push(`${trees} tree${trees === 1 ? ' has' : 's have'} grown back where you chopped.`);
+  if (brush) lines.push('Brush has sprung up again on your lot. Clearing it gives boards.');
+  for (const name of sites) if (name) lines.push(`More ${name} has turned up.`);
   return { awayHours, lines };
 }

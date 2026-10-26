@@ -57,7 +57,17 @@ export function validateWorld(
     for (const s of world.sites) if (!objectArt[s.art]) problems.push(`site ${s.id}: no art "${s.art}"`);
     for (const c of Object.keys(world.crops)) if (!objectArt[`crop_${c}`]) problems.push(`crop ${c}: no art "crop_${c}"`);
     for (const n of world.npcs) if (!objectArt[n.id]) problems.push(`npc ${n.id}: no art`);
+    const need = ['tree', 'stump', 'marker', 'bush'];
+    if (world.chop?.D) need.push('deadtree');
+    if ((world.map.rubble ?? []).length > 0) need.push('smallrubble');
+    for (const id of need) if (!objectArt[id]) problems.push(`object art "${id}" missing`);
   }
+  for (const id of world.map.rubble ?? []) {
+    const [x, y] = id.split(',').map(Number) as [number, number];
+    if (world.map.rows[y]?.[x] !== 'L') problems.push(`rubble at ${id} is not on the lot`);
+    if (world.map.brush.includes(id)) problems.push(`rubble at ${id} is also brush`);
+  }
+  for (const s of world.sites) if (s.refillMs !== undefined && s.refillMs <= 0) problems.push(`site ${s.id}: refillMs must be positive`);
   const m = world.map;
   if (m.rows.length !== m.height) problems.push(`map: ${m.rows.length} rows, expected ${m.height}`);
   m.rows.forEach((r, i) => r.length !== m.width && problems.push(`map row ${i}: ${r.length} columns, expected ${m.width}`));

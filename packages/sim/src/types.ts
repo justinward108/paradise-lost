@@ -83,6 +83,8 @@ export interface NpcState {
   lastTalkDay: number;
   lastGiftDay: number;
   taught: boolean;
+  /** Last ambient day the player worked alongside this neighbour on a project. */
+  lastWorkDay?: number;
 }
 
 export interface ProjectStageState {
@@ -115,7 +117,7 @@ export interface HistoryEntry {
   inventoryDelta: Record<string, number>;
 }
 
-export const SCHEMA_VERSION = 2 as const;
+export const SCHEMA_VERSION = 3 as const;
 
 /** Everything needed to restore a town. This is exactly what gets saved. */
 export interface Town {
@@ -135,9 +137,16 @@ export interface Town {
   clock: { epochMs: number };
   /** Player position in tile coordinates (the tile's top corner; centre is +0.5). */
   player: { x: number; y: number };
-  /** Brush tiles ("x,y") the player has cleared. */
+  /** Starting brush and rubble tiles ("x,y") the player has cleared. */
   cleared: string[];
-  sites: Record<string, { used: number }>;
+  /** Brush that has grown back on the lot since ("x,y"). */
+  sprouts: string[];
+  /** Chopped trees ("x,y") and when; live trees grow back, dead ones leave a stump. */
+  felled: Record<string, number>;
+  /** Real time the land's regrowth was last worked out up to (null until the first action). */
+  growMs: number | null;
+  /** `refillMs`: when the next use of a renewable site started counting back. */
+  sites: Record<string, { used: number; refillMs?: number }>;
   soil: Record<string, Soil>;
   crops: Record<string, Crop>;
   npcs: Record<string, NpcState>;

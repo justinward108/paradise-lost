@@ -6,9 +6,19 @@ Browser first (Netlify, paradiselost.poor.camp); iOS/iPadOS later.
 
 - Design document: [docs/GDD.md](docs/GDD.md)
 - How to play: [docs/HOW_TO_PLAY.md](docs/HOW_TO_PLAY.md) (the same text as the in-game Help, press H)
-- Status: **Sprint 2** — the opening loop, on placeholder art.
+- Status: **Sprint 2.5** — the opening loop, reworked after the first playtest, on placeholder art.
 
 ## What works now
+
+**After the first playtest (Sprint 2.5)**
+- No dead ends: chop albizia trees for boards (they grow back in a real day), brush grows back on the lot, loose lava rock refills, burnt trees and lot rubble can be cleared
+- The town looks bombed and abandoned: craters, scorched ground, cracked road, burnt trees, a bombed-out house, wrecked cars, rubble on the lot; the ruins are salvage
+- Roofs need only a wall beside them and reach two tiles past it (eaves and porches), so a part-built house can be roofed
+- Crops get a coloured tag on a stake and their own shape; a blue drop means water today, a star means ready; pointing at a crop says how far along it is
+- Dig bed on an existing bed fills it in (asks first if something is growing), so the ground can be built on
+- Walls and roofs in front of the pointer or the player fade, so you can see and click behind buildings
+- Working on the path with Auntie Rosa raises friendship once a day
+- Saves from Sprint 2 carry over
 
 **Living (Sprint 2)**
 - A 34 × 34 map: your lot, a stream with a footbridge, Auntie Rosa's yard and house, a lava-rock field, and a washed-out path to the road

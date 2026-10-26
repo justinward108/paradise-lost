@@ -9,7 +9,10 @@ import {
   cropStatus,
   hashString,
   hasBrush,
+  hasRubble,
   LAYER_OF,
+  stumpAt,
+  treeAt,
   npcPosition,
   siteRemaining,
   slotKey,
@@ -57,6 +60,7 @@ export class BuildScene extends Phaser.Scene {
   private walkT = 0;
   showRoofs = true;
   private hoverDepth = -1;
+  private hoverAt: Point | null = null;
 
   constructor() {
     super('build');
@@ -146,7 +150,7 @@ export class BuildScene extends Phaser.Scene {
     this.cameras.main.setBackgroundColor(this.ctrl.style === 'pixel' ? '#2f5a22' : '#93b273');
   }
 
-  /** Terrain and trees: drawn once (restyled on style change). */
+  /** Terrain: drawn once (restyled on style change). Trees are overlays, since they can be chopped. */
   private drawStatics() {
     const { map } = this.ctrl.world;
     for (let y = 0; y < map.height; y++) {
@@ -157,12 +161,6 @@ export class BuildScene extends Phaser.Scene {
         this.setTex(img, this.key(`terrain.${TERRAIN_ART_FOR[c] ?? 'grass'}`, 'r0'));
         img.setDepth(BAND.terrain);
         this.statics.push(img);
-        if (c === 'T') {
-          const t = this.add.image(p.x, p.y, '__DEFAULT');
-          this.setTex(t, this.key('obj.tree', hashString(`${x},${y}`) % 2 ? 'r1' : 'r0'));
-          t.setDepth(BAND.standing + (x + y + 1) * 10 + 3);
-          this.statics.push(t);
-        }
       }
     }
   }
@@ -214,11 +212,30 @@ export class BuildScene extends Phaser.Scene {
     const at = (x: number, y: number) => toScreen(x + 0.5, y + 0.5);
     const stand = (x: number, y: number, bias: number) => BAND.standing + (x + y + 1) * 10 + bias;
 
-    for (const id of world.map.brush) {
+    const { map } = world;
+    for (let y = 0; y < map.height; y++) {
+      const row = map.rows[y] ?? '';
+      for (let x = 0; x < map.width; x++) {
+        const c = row[x];
+        if (c !== 'T' && c !== 'D') continue;
+        const p = at(x, y);
+        const v = hashString(`${x},${y}`) % 2 ? 'r1' : 'r0';
+        const stump = stumpAt(town, world, x, y);
+        if (stump) out.push({ key: `stump:${x},${y}`, tex: `obj.stump:${stump === 'T' ? 'r0' : 'r1'}`, x: p.x, y: p.y, depth: stand(x, y, 1) });
+        else if (c === 'T' || treeAt(town, world, x, y)) out.push({ key: `tree:${x},${y}`, tex: `obj.${c === 'T' ? 'tree' : 'deadtree'}:${v}`, x: p.x, y: p.y, depth: stand(x, y, 3) });
+      }
+    }
+    for (const id of new Set([...map.brush, ...town.sprouts])) {
       const [x, y] = id.split(',').map(Number) as [number, number];
       if (!hasBrush(town, world, x, y)) continue;
       const p = at(x, y);
       out.push({ key: `brush:${id}`, tex: 'obj.bush:r0', x: p.x, y: p.y, depth: stand(x, y, 2) });
+    }
+    for (const id of map.rubble ?? []) {
+      const [x, y] = id.split(',').map(Number) as [number, number];
+      if (!hasRubble(town, world, x, y)) continue;
+      const p = at(x, y);
+      out.push({ key: `rubble:${id}`, tex: 'obj.smallrubble:r0', x: p.x, y: p.y, depth: stand(x, y, 2) });
     }
     for (const s of world.sites) {
       const left = siteRemaining(town, s);
@@ -252,6 +269,8 @@ export class BuildScene extends Phaser.Scene {
         const st = cropStatus(town, def, crop, now);
         const stage = st.ready ? 3 : st.fraction >= 0.5 ? 2 : st.growth > 0 ? 1 : 0;
         out.push({ key: `crop:${key}`, tex: `obj.crop_${def.id}:s${stage}`, x: p.x, y: p.y - 2, depth: stand(x, y, 1) });
+        const mark = st.ready ? 'ready' : !st.wateredToday ? 'water' : null;
+        if (mark) out.push({ key: `mark:${key}`, tex: `obj.marker:${mark}`, x: p.x, y: p.y, depth: BAND.roof - 1 });
       }
     }
     return out;
@@ -347,17 +366,30 @@ export class BuildScene extends Phaser.Scene {
     // The roof over the player's head fades while they're inside.
     const pl = this.ctrl.town.player;
     const playerRoof = this.ctrl.town.pieces[slotKey({ kind: 'tile', x: pl.x, y: pl.y, level: 0 }, 'roof')];
+    // Cutaway: walls and roofs standing in front of what the pointer is on, or in front of the
+    // player, fade so you can see and click behind them. "In front" = drawn later (deeper),
+    // close enough to cover it on screen.
+    const covers = (slot: Slot, at: Point | null) => {
+      if (!at) return false;
+      const d = slotDepth(slot);
+      const td = at.x + at.y + 1;
+      if (d <= td || d - td > 5) return false;
+      const sx = slot.kind === 'tile' ? slot.x - slot.y : slot.dir === 'n' ? slot.x + 0.5 - slot.y : slot.x - slot.y - 0.5;
+      return Math.abs(sx - (at.x - at.y)) <= 1.6;
+    };
+    const target = this.hoverAt;
+    const me = building ? null : pl;
     for (const img of this.sprites.values()) {
       const p = img.getData('piece') as PlacedPiece;
       const layer = LAYER_OF[this.ctrl.catalog[p.pieceId]!.kind];
+      const cut = covers(p.slot, target) || covers(p.slot, me);
       if (layer === 'roof') {
         let a = this.showRoofs ? 1 : 0;
         if (this.showRoofs && building && inside(p) && (interior || tool.mode === 'demolish')) a = 0.25;
         if (this.showRoofs && !building && playerRoof && Math.abs(p.slot.x - pl.x) + Math.abs(p.slot.y - pl.y) <= 3) a = 0.25;
+        if (this.showRoofs && cut) a = Math.min(a, 0.25);
         img.setAlpha(a);
       } else if (layer === 'wall') {
-        const d = slotDepth(p.slot);
-        const cut = building && this.hoverDepth >= 0 && d > this.hoverDepth && d - this.hoverDepth < 4;
         img.setAlpha(cut ? 0.3 : 1);
       }
     }
@@ -379,6 +411,7 @@ export class BuildScene extends Phaser.Scene {
       this.ghost.setTint(!p.ok ? 0xff5a5a : p.warning ? 0xffc34d : 0x8cff8c);
       this.ghost.setAlpha(0.75).setVisible(true);
       this.hoverDepth = slotDepth(p.slot);
+      this.hoverAt = { x: p.slot.x, y: p.slot.y };
     } else if (p.kind === 'remove') {
       const img = this.sprites.get(slotKey(p.slot, p.layer));
       if (img) {
@@ -386,15 +419,18 @@ export class BuildScene extends Phaser.Scene {
         this.highlighted = img;
       }
       this.hoverDepth = slotDepth(p.slot);
+      this.hoverAt = { x: p.slot.x, y: p.slot.y };
     } else if (p.kind === 'action') {
       const { x, y } = p.action.target;
       const c = (dx: number, dy: number) => toScreen(x + dx, y + dy);
       const pts = [c(0, 0), c(1, 0), c(1, 1), c(0, 1)].map((q) => new Phaser.Math.Vector2(q.x, q.y));
       this.hover.lineStyle(2, p.action.ok ? 0xfff2c0 : 0xff6a5a, 0.95);
       this.hover.strokePoints(pts, true);
-      this.hoverDepth = -1;
+      this.hoverDepth = slotDepth({ kind: 'tile', x, y, level: 0 });
+      this.hoverAt = { x, y };
     } else {
       this.hoverDepth = -1;
+      this.hoverAt = null;
     }
     this.applyVisibility();
   }

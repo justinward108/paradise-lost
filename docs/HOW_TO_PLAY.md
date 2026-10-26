@@ -4,12 +4,12 @@ _Generated from `packages/content/src/help.ts`. Edit that file, then run `npm ru
 
 ## Getting started
 
-You arrive with a tarp, a few tools and an overgrown lot on the wet side of the island. Most of the neighbours have gone.
+You arrive with a tarp, a few tools and an overgrown lot on the wet side of the island. The town was bombed and left behind: craters, burnt trees, wrecked houses. Most of the neighbours have gone.
 
 The Goals list at the top left suggests what to do next. None of it is required, and you can do things in any order.
 
-- Clear some scrub from your lot
-- Salvage boards and roofing from the wrecks south of your lot
+- Clear some scrub and rubble from your lot
+- Salvage boards and roofing from the wrecks south of your lot, and chop trees for more boards
 - Build a shelter: foundation, floor, walls with a door, roof
 - Cross the footbridge to the east and meet your neighbour
 - Dig a garden bed and plant something
@@ -23,8 +23,10 @@ Click the ground to walk there. Click something to use it: your character walks 
 
 The line above the bottom bar always says what a click will do, or why it can’t be done. A tick means you can; a cross means you can’t, with the reason.
 
-- Scrub (green bushes on your lot): clear it for a rough board
-- Wrecks and rock piles: salvage them for materials until nothing is left
+- Scrub (green bushes on your lot): clear it for a board
+- Rubble (broken block and charred wood on your lot): clear it for stone and a board
+- Trees: chop albizia (an invasive tree that grows back) and burnt trees for boards
+- Wrecks, ruins and rock piles: salvage them for materials
 - Auntie Rosa: talk to her
 - The broken path: see what the repair needs
 - Crops: harvest when ready, pull weeds, or water
@@ -32,6 +34,17 @@ The line above the bottom bar always says what a click will do, or why it can’
 On a keyboard, WASD or the arrow keys take one step, and E or Space uses whatever is in front of you.
 
 Walls block you; doors let you through. To look around, right-drag with a mouse or drag on a touch screen; press ◎ to centre on yourself again.
+
+## Getting materials
+
+There is always somewhere to get more. Point at anything to see what it gives.
+
+- Boards: chop trees (3 from an albizia, which grows back in a real day; 2 from a burnt tree, which is gone for good), clear brush (1, and it keeps growing back on your lot), clear rubble, salvage wrecks and ruins
+- Roofing: the fallen carport, the bombed-out house and the burnt-out car east of the stream, and more past the path once it is fixed
+- Stone: the loose lava rock east of the stream (more turns up every couple of hours), rubble on your lot, the burnt-out car
+- Lumber and block: Rosa gives you some when she teaches you to build with them
+
+Wrecks and ruins run out; trees, brush and rock come back.
 
 ## Building
 
@@ -42,14 +55,18 @@ Pieces need something to stand on, in this order:
 - Foundation on cleared ground on your lot
 - Floor on a foundation
 - Walls, windows and doors on the edges between tiles, next to a floor
-- Roof over a room that walls close in on every side
+- Roof on a tile with a wall along one of its edges, or next to another roof (a roof reaches up to 2 tiles past a wall, for eaves and porches)
 - Furniture on a floor
 
 The ghost piece turns green when it fits, amber when it fits but something is off (like a room with no door), and red when it doesn’t, with the reason in the status line.
 
 A room counts as a shelter when it is closed in, has a door, and has a roof over every tile. The game tells you when you have one.
 
-You can only build on your own lot. Building materials come from salvage; costs are shown under each piece.
+You can only build on your own lot. Costs are shown under each piece; see Getting materials for where they come from.
+
+A garden bed is in the way of building: fill it in first (Live tab, Dig bed, click the bed).
+
+If a wall or roof hides something, point at it: walls in front of the pointer and in front of you fade so you can see and click behind them.
 
 Locked pieces (faded) need a higher building tier. Rosa can teach you the next one.
 
@@ -67,7 +84,7 @@ Undo only covers building. Gardening, salvage, gifts and project work can’t be
 
 ## Garden
 
-Pick Dig bed in the bottom bar and click cleared ground on your lot to make a garden bed.
+Pick Dig bed in the bottom bar and click cleared ground on your lot to make a garden bed. Dig bed on an existing bed fills it in again (if something is growing, it asks first, and the crop is lost).
 
 Pick a seed in the bottom bar (they appear once you have some) and click an empty bed to plant it.
 
@@ -76,6 +93,10 @@ Crops grow one step for each in-game day they get water. It rains here most days
 - Leafy greens: 2 watered days
 - Sweet potato: 5 watered days
 - Papaya: 8 watered days, then fruits again every 3
+
+Every planted bed has a stake with a coloured tag: green for greens, purple for sweet potato, orange for papaya. Each crop also has its own shape as it grows: greens are a round clump, sweet potato spreads out on purple stems, papaya grows a trunk.
+
+A blue drop over a crop means it needs water today. A yellow star means it is ready to harvest. Point at a crop to see how many days it has grown.
 
 Weeds come up on beds after about a real day and take a share of the harvest until you pull them. Click a weedy bed to pull them.
 
@@ -87,7 +108,7 @@ Your neighbour lives across the footbridge to the east. She keeps a routine: her
 
 Once you have started on the path repair, you will find her there in the afternoons.
 
-Talk to her once a day and give her food to become friends. She is fondest of papaya and sweet potato (marked ♥).
+Talk to her once a day, work on the path with her, and give her food to become friends. She is fondest of papaya and sweet potato (marked ♥).
 
 When you are friends enough, she will teach you to build with lumber and block, and give you some to start.
 
@@ -109,7 +130,7 @@ Once you have met Rosa and started the repair, she adds an hour of work every 10
 
 The clock at the top runs fast: an in-game day passes in about 48 real minutes. Night falls in the evening and lifts in the morning.
 
-The world keeps going while you are away, but gently. Crops keep growing, weeds come up, and Rosa keeps working on the path. Nothing you own is lost, and nothing dies.
+The world keeps going while you are away, but gently. Crops keep growing, weeds come up, and Rosa keeps working on the path. Chopped trees grow back, brush springs up again on your lot, and more loose rock turns up. Nothing you own is lost, and nothing dies.
 
 When you come back after a while, a card tells you what changed.
 

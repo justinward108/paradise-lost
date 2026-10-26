@@ -15,7 +15,9 @@ import {
   cropStatus,
   bedWeeds,
   hasBrush,
+  hasRubble,
   hasShelter,
+  treeAt,
   isEdgeKind,
   newCommandId,
   npcPosition,
@@ -63,6 +65,10 @@ export interface Action {
   /** The command to send on arrival, or a UI action. */
   command?: Command;
   open?: { kind: 'npc'; npcId: string } | { kind: 'project'; projectId: string };
+  /** Show as information rather than an error when it can't be done (crop progress). */
+  tone?: 'info';
+  /** A first click that only arms a destructive second click on this tile ("x,y"). */
+  arm?: string;
 }
 
 export type Preview =
@@ -92,6 +98,8 @@ export class Controller {
   private listeners = new Set<Listener>();
   private saveTimer: ReturnType<typeof setTimeout> | null = null;
   private justPlaced: string | null = null;
+  /** A bed whose crop the next Dig click will dig up. */
+  private armedFill: string | null = null;
   private hadShelter: boolean;
   facing: Point = { x: 1, y: 0 };
 
@@ -171,7 +179,11 @@ export class Controller {
       if (kind === 'garden' && a === 'tilled') this.setStatus('Dug a garden bed.', 'ok');
       if (kind === 'garden' && a === 'watered') this.setStatus('Watered.', 'ok');
       if (kind === 'garden' && a === 'weeded') this.setStatus('Weeds pulled.', 'ok');
-      if (kind === 'brush') this.setStatus('Cleared the scrub. Albizia wood makes rough boards.', 'ok');
+      if (kind === 'brush') this.setStatus('Cleared the scrub. Albizia wood makes rough boards. It grows back in time.', 'ok');
+      if (kind === 'rubble') this.setStatus('Cleared the rubble. Some of it was still usable.', 'ok');
+      if (kind === 'chop') this.setStatus(a === 'albizia tree' ? 'Chopped the albizia. It is invasive and fast: the stump will sprout and grow back in about a day.' : `Chopped the ${a ?? 'tree'} for boards.`, 'ok');
+      if (kind === 'garden' && a === 'filled') this.setStatus(b ? `Dug up the ${cropDefs[b]?.name.toLowerCase() ?? 'crop'} and filled in the bed.` : 'Filled in the bed. You can build here now.', 'ok');
+      if (kind === 'npc' && a === 'worked_together') this.toast(`${this.world.npcs.find((n) => n.id === b)?.name ?? 'Your neighbour'} liked working together  ♥`);
     }
   }
 
@@ -189,6 +201,7 @@ export class Controller {
 
   setTool(tool: Tool) {
     this.tool = tool;
+    this.armedFill = null;
     this.pendingTouch = false;
     this.preview = { kind: 'none' };
     this.emit('tool');
@@ -242,7 +255,26 @@ export class Controller {
       const up = tileAt(sx, sy, z);
       if (this.npcAt(up.x, up.y) || this.siteAtLive(up.x, up.y)) return up;
     }
+    // Trees are clicked on their trunk or canopy, unless the ground under the pointer
+    // has something of its own to do.
+    if (this.tool.mode === 'walk' && !this.groundHasUse(ground.x, ground.y)) {
+      for (const z of [12, 24, 36, 48]) {
+        const up = tileAt(sx, sy, z);
+        if (treeAt(this.town, this.world, up.x, up.y)) return up;
+      }
+    }
     return ground;
+  }
+
+  private groundHasUse(x: number, y: number): boolean {
+    const k = `${x},${y}`;
+    return (
+      treeAt(this.town, this.world, x, y) !== undefined ||
+      hasBrush(this.town, this.world, x, y) ||
+      hasRubble(this.town, this.world, x, y) ||
+      k in this.town.soil ||
+      this.world.projects.some((p) => p.tiles.some((t) => t.x === x && t.y === y))
+    );
   }
 
   updatePreview(slot: Slot | null) {
@@ -306,12 +338,26 @@ export class Controller {
     const t = this.tool;
     const id = newCommandId();
 
-    if (t.mode === 'dig') return this.preflight('Dig a bed', target, { type: 'till', id, x, y, nowMs: now });
+    if (t.mode === 'dig') {
+      if (key in this.town.soil) {
+        const crop = this.town.crops[key];
+        const name = crop ? (this.world.crops[crop.cropId]?.name.toLowerCase() ?? 'crop') : null;
+        const fill = this.preflight('Fill in the bed', target, { type: 'fill', id, x, y });
+        if (!fill.ok || !name) return fill;
+        // Digging up a crop throws it away: ask with a second click.
+        if (this.armedFill === key) return { ...fill, message: `Click again to dig up the ${name} (it will be lost)` };
+        return { ...fill, label: 'Dig up', message: `The ${name} would be lost. Click to confirm, then click again.`, command: undefined, arm: key };
+      }
+      return this.preflight('Dig a bed', target, { type: 'till', id, x, y, nowMs: now });
+    }
     if (t.mode === 'plant') {
       const name = cropDefs[t.cropId]?.name ?? t.cropId;
       return this.preflight(`Plant ${name.toLowerCase()}`, target, { type: 'plant', id, x, y, cropId: t.cropId, nowMs: now });
     }
-    if (t.mode === 'water') return this.preflight('Water', target, { type: 'water', id, x, y, nowMs: now });
+    if (t.mode === 'water') {
+      if (key in this.town.soil && !this.town.crops[key]) return { label: 'Water', target, ok: false, message: 'This bed is empty. Beds with a crop have a coloured tag on a stake.', path: [] };
+      return this.preflight('Water', target, { type: 'water', id, x, y, nowMs: now });
+    }
 
     const npc = this.npcAt(x, y);
     if (npc) {
@@ -332,24 +378,42 @@ export class Controller {
     const site = this.siteAtLive(x, y);
     if (site) {
       const left = siteRemaining(this.town, site);
-      return this.preflight(`Salvage the ${site.name.toLowerCase()}`, target, { type: 'salvage', id, siteId: site.id }, `Salvage the ${site.name.toLowerCase()} (${left} left)`);
+      const yields = Object.entries(site.yields).map(([m, n]) => `${n} ${ITEMS[m]?.name.toLowerCase() ?? m}`).join(', ');
+      const renew = site.refillMs ? ', more turns up over time' : '';
+      return this.preflight(`Salvage the ${site.name.toLowerCase()}`, target, { type: 'salvage', id, siteId: site.id, nowMs: now }, `Salvage the ${site.name.toLowerCase()}: +${yields} (${left} left${renew})`);
     }
-    if (hasBrush(this.town, this.world, x, y)) return this.preflight('Clear brush', target, { type: 'clearBrush', id, x, y });
+    if (hasBrush(this.town, this.world, x, y)) return this.preflight('Clear brush', target, { type: 'clearBrush', id, x, y }, 'Clear the brush: +1 board (it grows back)');
+    if (hasRubble(this.town, this.world, x, y)) return this.preflight('Clear rubble', target, { type: 'clearRubble', id, x, y }, 'Clear the rubble: +1 stone, +1 board');
+    const tree = treeAt(this.town, this.world, x, y);
+    if (tree) {
+      const yields = Object.entries(tree.yields).map(([m, n]) => `${n} ${ITEMS[m]?.name.toLowerCase() ?? m}`).join(', ');
+      const back = tree.regrowMs ? ' (it grows back in a day)' : '';
+      return this.preflight(`Chop the ${tree.name}`, target, { type: 'chop', id, x, y, nowMs: now }, `Chop the ${tree.name}: +${yields}${back}`);
+    }
 
     const crop = this.town.crops[key];
     if (crop) {
       const def = this.world.crops[crop.cropId];
       if (def) {
         const st = cropStatus(this.town, def, crop, now);
-        if (st.ready) return this.preflight(`Harvest ${def.name.toLowerCase()}`, target, { type: 'harvest', id, x, y, nowMs: now });
-        if (bedWeeds(this.town, key, now) >= 0.05) return this.preflight('Pull weeds', target, { type: 'weed', id, x, y, nowMs: now });
-        if (!st.wateredToday) return this.preflight(`Water ${def.name.toLowerCase()}`, target, { type: 'water', id, x, y, nowMs: now });
-        return { label: def.name, target, ok: false, message: `${def.name}: ${st.growth} of ${st.need} watered days. Already watered today.`, path: [] };
+        const days = st.need - st.growth;
+        const info = `${def.name}: ${st.growth} of ${st.need} days grown`;
+        if (st.ready) return this.preflight(`Harvest ${def.name.toLowerCase()}`, target, { type: 'harvest', id, x, y, nowMs: now }, `Harvest the ${def.name.toLowerCase()}`);
+        if (bedWeeds(this.town, key, now) >= 0.05) return this.preflight('Pull weeds', target, { type: 'weed', id, x, y, nowMs: now }, `${info}. Pull the weeds (they cut the harvest)`);
+        if (!st.wateredToday) return this.preflight(`Water ${def.name.toLowerCase()}`, target, { type: 'water', id, x, y, nowMs: now }, `${info}. Water it: it only grows on days it gets water`);
+        return {
+          label: def.name,
+          target,
+          ok: false,
+          tone: 'info',
+          message: `${info}. Watered today${days === 1 ? '; ready tomorrow' : `; ${days} more days`} (a day is 48 minutes).`,
+          path: [],
+        };
       }
     }
     if (key in this.town.soil) {
       if (bedWeeds(this.town, key, now) >= 0.05) return this.preflight('Pull weeds', target, { type: 'weed', id, x, y, nowMs: now });
-      return { label: 'Garden bed', target, ok: false, message: 'Empty bed. Pick seeds in the bar below to plant.', path: [] };
+      return { label: 'Garden bed', target, ok: false, tone: 'info', message: 'Empty bed. Pick seeds in the bar below to plant. (Dig bed on it fills it in.)', path: [] };
     }
 
     if (x === this.town.player.x && y === this.town.player.y) return null;
@@ -387,9 +451,16 @@ export class Controller {
   /** Walk if needed, then do the action. */
   perform(action: Action) {
     if (!action.ok) {
-      this.setStatus(action.message, 'error');
+      this.setStatus(action.message, action.tone ?? 'error');
       return;
     }
+    if (action.arm) {
+      this.armedFill = action.arm;
+      this.setStatus(`Click the bed again to dig up its crop.`, 'warn');
+      this.updatePreview(tile(action.target.x, action.target.y));
+      return;
+    }
+    this.armedFill = null;
     const finish = () => {
       if (action.command) {
         // Re-stamp time and id: the walk took a moment.

@@ -55,6 +55,9 @@ function shiftBack(town: Town, ms: number) {
     s.tilledMs -= ms;
     s.lastWeededMs -= ms;
   }
+  for (const k of Object.keys(town.felled)) town.felled[k]! -= ms;
+  if (town.growMs != null) town.growMs -= ms;
+  for (const s of Object.values(town.sites)) if (s.refillMs != null) s.refillMs -= ms;
   for (const p of Object.values(town.projects)) {
     if (p.startedMs != null) p.startedMs -= ms;
     if (p.completedMs != null) p.completedMs -= ms;

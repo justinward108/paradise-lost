@@ -79,9 +79,19 @@ function v1to2(old: Data, ctx: MigrationContext = {}): Data {
   };
 }
 
+/**
+ * v3 (Sprint 2.5): the land recovers. Trees can be chopped, brush grows back, some sites
+ * refill. Nothing existing changes; regrowth starts counting from the first action after
+ * the update, so an old save doesn't get a burst of brush all at once.
+ */
+function v2to3(old: Data): Data {
+  return { ...old, sprouts: [], felled: {}, growMs: null };
+}
+
 /** One function per schema bump: migrations[n] turns a version-n town into version n+1. */
 export const migrations: Record<number, (old: Data, ctx?: MigrationContext) => Data> = {
   1: v1to2,
+  2: v2to3,
 };
 
 export function encodeSnapshot(town: Town, savedAt: number): Snapshot {

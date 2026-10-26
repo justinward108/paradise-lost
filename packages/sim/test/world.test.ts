@@ -162,7 +162,7 @@ describe('garden', () => {
     expect(go(t, { type: 'till', x: 1, y: 0, nowMs: at(0) })).toMatchObject({ reason: 'Already a garden bed' });
     expect(go(t, { type: 'harvest', x: 1, y: 0, nowMs: at(0) })).toMatchObject({ ok: false });
     expect(go(t, { type: 'till', x: 6, y: 1, nowMs: at(0) })).toMatchObject({ reason: 'You can only dig on your own lot' });
-    expect(checkPlace(t, catalog, 'pier', tile(1, 0), 0, world)).toEqual({ ok: false, reason: "There's a garden bed here" });
+    expect(checkPlace(t, catalog, 'pier', tile(1, 0), 0, world)).toMatchObject({ ok: false, reason: expect.stringContaining("There's a garden bed here") });
   });
 
   it('perennials regrow after harvest', () => {
@@ -325,7 +325,8 @@ describe('save migration v1 → v2', () => {
     const snap = { ...encodeSnapshot(v1 as unknown as Town, 1), schemaVersion: 1, body };
     snap.checksum = encodeSnapshot(JSON.parse(body), 1).checksum;
     const t = decodeSnapshot(snap, { world: shifted, catalog });
-    expect(t.schemaVersion).toBe(2);
+    expect(t.schemaVersion).toBe(3);
+    expect(t).toMatchObject({ sprouts: [], felled: {}, growMs: null });
     expect(Object.keys(t.pieces)).toContain('0|t|6,5|foundation'); // 4+2, 4+1
     expect(t.cleared).toEqual(['6,5']); // brush under the old foundation is cleared
     expect(t.soil).toEqual({ '3,4': { tilledMs: 7, lastWeededMs: 7 } });

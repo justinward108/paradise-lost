@@ -432,7 +432,9 @@ There are no classes: players raise any mix of skills by doing things, can chang
 | Source | Yields | Renewal |
 | --- | --- | --- |
 | Salvage sites (damaged houses, vehicles, warehouses) | Boards, metal, fixtures, rare parts | Finite per site; new sites appear as the map opens; stops being the main source by mid-game |
-| Invasive plant clearing (albizia, strawberry guava, etc.; pending review) | Wood, mulch | Regrows; clearing invasives also improves land, which turns a chore into stewardship |
+| Invasive plant clearing (albizia, strawberry guava, etc.; pending review) | Wood, mulch | Regrows; clearing invasives also improves land, which turns a chore into stewardship. Prototype: albizia trees give 3 boards and regrow in a real day; brush regrows on the lot every few hours |
+| Burnt and dead trees | Boards | Finite; clearing them is part of the recovery |
+| Loose lava rock, lot rubble | Stone (rubble also gives a board) | Rock refills one use every two real hours; rubble is finite |
 | Shoreline | Driftwood, stones, shells, seaweed | Daily refresh |
 | Fishing spots | Fish | Population model: overfishing lowers catch until it recovers |
 | Gardens and trees | Food, fibre | See section 8 |
@@ -1691,6 +1693,11 @@ Newest first. One line per decision; detail lives in the section cited.
 
 | Date | Decision | Status | Section |
 | --- | --- | --- | --- |
+| 2026-10-25 | No dead ends: renewable materials always available (albizia regrows in a real day, brush regrows on the lot, loose rock refills); one-off salvage stays finite | Confirmed (creator playtest) | 9.2 |
+| 2026-10-25 | Roofs need only a supporting wall (reach 2 tiles past it for eaves/porches), not a fully enclosed room; shelter still needs an enclosed, roofed room with a door | Confirmed (creator playtest) | 7.4 |
+| 2026-10-25 | Opening map shows bomb damage: craters, scorched ground, burnt trees, ruins, wrecked cars, rubble on the lot | Confirmed (creator playtest) | 4, 6.1 |
+| 2026-10-25 | Garden beds can be filled in; crops carry a coloured tag and need-water / ready markers | Confirmed (creator playtest) | 8 |
+| 2026-10-25 | No daily work-hours or energy cap for now (it would make dead ends worse) | Prototype choice, revisit | 9 |
 | 2026-10-25 | D1: isometric 2:1 camera | Confirmed (creator) | 7.2, 29 |
 | 2026-10-25 | GDD v0.1 drafted from the creator handoff | Draft | All |
 | 2026-10-25 | Browser first, deployed on Netlify at paradiselost.poor.camp; iOS/iPadOS later | Confirmed (handoff) | 1, 22 |

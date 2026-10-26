@@ -2,6 +2,7 @@
  * The world around the lot: terrain map, salvage sites, crops, NPCs and community
  * projects. The content package authors these; the sim only knows the rules for them.
  */
+import { slotKey, tile } from './grid.ts';
 import type { PlacedPiece, Town } from './types.ts';
 
 /**
@@ -10,8 +11,12 @@ import type { PlacedPiece, Town } from './types.ts';
  *  p  path         r  road              o  lava rock
  *  =  footbridge   ~  stream (blocks)   T  tree (blocks)
  *  X  damaged path (blocks until its project is finished, then becomes path)
+ *  D  dead or burnt tree (blocks; can be chopped)
+ *  s  scorched ground  c  bomb crater (walkable)  R  cracked road
+ *
+ * Trees (T, D) the player has chopped read as grass ('.') until they grow back.
  */
-export type TerrainChar = '.' | 'L' | 'y' | 'p' | 'r' | 'o' | '=' | '~' | 'T' | 'X';
+export type TerrainChar = '.' | 'L' | 'y' | 'p' | 'r' | 'o' | '=' | '~' | 'T' | 'X' | 'D' | 's' | 'c' | 'R';
 
 export interface Rect {
   x: number;
@@ -36,6 +41,8 @@ export interface MapDef {
   spawn: Point;
   /** Tiles ("x,y") covered by invasive brush at the start. */
   brush: string[];
+  /** Tiles ("x,y") on the lot covered by rubble at the start. */
+  rubble?: string[];
 }
 
 export interface SiteDef {
@@ -50,6 +57,27 @@ export interface SiteDef {
   art: string;
   /** The site can't be reached until this project is complete. */
   requiresProject?: string;
+  /** Renewable sites get one use back every `refillMs` of real time. */
+  refillMs?: number;
+}
+
+/** What chopping a kind of tree gives, and how long until it grows back (never, if unset). */
+export interface ChopDef {
+  name: string;
+  yields: Record<string, number>;
+  regrowMs?: number;
+}
+
+/** How the land recovers on its own, in real time. */
+export interface RegrowDef {
+  /** Every this often, some brush sprouts on empty ground on the lot. */
+  brushEveryMs: number;
+  brushPerTime: number;
+  /** Never more than this much brush on the lot at once. */
+  brushCap: number;
+  /** What clearing brush and rubble gives. */
+  brushYields: Record<string, number>;
+  rubbleYields: Record<string, number>;
 }
 
 export interface CropDef {
@@ -111,11 +139,23 @@ export interface World {
   projects: ProjectDef[];
   /** Pre-built structures that belong to NPCs (the neighbour's house). */
   fixedPieces: PlacedPiece[];
+  /** Choppable trees, keyed by terrain character ('T', 'D'). */
+  chop?: Readonly<Record<string, ChopDef>>;
+  regrow?: RegrowDef;
 }
+
+export const DEFAULT_REGROW: RegrowDef = {
+  brushEveryMs: 4 * 3_600_000,
+  brushPerTime: 2,
+  brushCap: 16,
+  brushYields: { boards: 1 },
+  rubbleYields: { stone: 1, boards: 1 },
+};
 
 export function terrainAt(town: Town, world: World, x: number, y: number): TerrainChar | null {
   if (x < 0 || y < 0 || x >= world.map.width || y >= world.map.height) return null;
   const c = (world.map.rows[y]?.[x] ?? '.') as TerrainChar;
+  if ((c === 'T' || c === 'D') && town.felled?.[`${x},${y}`] !== undefined) return '.';
   if (c === 'X') {
     const repaired = world.projects.some(
       (p) => town.projects[p.id]?.completedMs != null && p.tiles.some((t) => t.x === x && t.y === y),
@@ -132,7 +172,39 @@ export function inLot(town: Pick<Town, 'lot'>, x: number, y: number): boolean {
 
 export function hasBrush(town: Town, world: World, x: number, y: number): boolean {
   const id = `${x},${y}`;
-  return world.map.brush.includes(id) && !town.cleared.includes(id);
+  return (world.map.brush.includes(id) && !town.cleared.includes(id)) || (town.sprouts ?? []).includes(id);
+}
+
+/** Is anything built on this tile (foundation, floor or furniture)? */
+export function tileBuilt(town: Town, x: number, y: number): boolean {
+  return (['foundation', 'floor', 'object'] as const).some((layer) => slotKey(tile(x, y), layer) in town.pieces);
+}
+
+/** Rubble left on the lot. Rubble under a bed or a building counts as cleared (older saves). */
+export function hasRubble(town: Town, world: World, x: number, y: number): boolean {
+  const id = `${x},${y}`;
+  if (!(world.map.rubble ?? []).includes(id) || town.cleared.includes(id)) return false;
+  return !(id in town.soil) && !tileBuilt(town, x, y);
+}
+
+/** The tree on this tile that can be chopped, if any. */
+export function treeAt(town: Town, world: World, x: number, y: number): ChopDef | undefined {
+  if (!inBounds2(world, x, y) || x === 0 || y === 0 || x === world.map.width - 1 || y === world.map.height - 1) return undefined;
+  const c = world.map.rows[y]?.[x];
+  if (c !== 'T' && c !== 'D') return undefined;
+  if (town.felled?.[`${x},${y}`] !== undefined) return undefined;
+  return world.chop?.[c];
+}
+
+/** A felled tree's stump (still there until the tree grows back; dead trees leave one for good). */
+export function stumpAt(town: Town, world: World, x: number, y: number): 'T' | 'D' | undefined {
+  const c = world.map.rows[y]?.[x];
+  if ((c === 'T' || c === 'D') && town.felled?.[`${x},${y}`] !== undefined) return c;
+  return undefined;
+}
+
+function inBounds2(world: World, x: number, y: number): boolean {
+  return x >= 0 && y >= 0 && x < world.map.width && y < world.map.height;
 }
 
 export function siteAt(world: World, x: number, y: number): SiteDef | undefined {

@@ -19,6 +19,7 @@ export const GENERATORS = [
   'foundation', 'floor', 'wall', 'window', 'door', 'roof', 'bedroll', 'crate',
   'terrain', 'water', 'bridge', 'soil',
   'tree', 'bush', 'rubble', 'carport', 'rockpile', 'store', 'debris', 'crop', 'weeds', 'person',
+  'deadtree', 'stump', 'ruin', 'carwreck', 'smallrubble', 'marker', 'crater',
 ] as const;
 export type GeneratorName = (typeof GENERATORS)[number];
 
@@ -116,6 +117,18 @@ export const terrainArt: ArtManifest = {
     e('soil', { base: '#4a3420', furrow: '#2f2014', light: '#5e4430' }, ONE),
     e('soil', { base: '#7a5a3c', furrow: '#5c4229', light: '#8f6e4f' }, ONE),
   ),
+  scorched: both(
+    e('terrain', { base: '#4f5034', speck: '#3a3a28', light: '#6a6440', scorch: '#3e3c2a' }, ONE),
+    e('terrain', { base: '#8f8e68', speck: '#7a785a', light: '#a39e78', scorch: '#78735c' }, ONE),
+  ),
+  crater: both(
+    e('crater', { base: '#4a4a32', rim: '#5e5640', hole: '#231f18', mid: '#3a3326' }, ONE),
+    e('crater', { base: '#8a8763', rim: '#a08e70', hole: '#4a3f33', mid: '#6e604d' }, ONE),
+  ),
+  road_cracked: both(
+    e('terrain', { base: '#55524c', speck: '#45433e', light: '#6c6862', crack: '#2a2826' }, ONE),
+    e('terrain', { base: '#8f8b84', speck: '#7c7872', light: '#a7a39c', crack: '#5a5752' }, ONE),
+  ),
 };
 
 /** Which terrain art each map character uses. */
@@ -130,6 +143,10 @@ export const TERRAIN_ART_FOR: Readonly<Record<string, string>> = {
   o: 'rock',
   '~': 'water',
   '=': 'bridge',
+  D: 'grass',
+  s: 'scorched',
+  c: 'crater',
+  R: 'road_cracked',
 };
 
 const greensSb = { leaf: '#7fae5a', dark: '#5d8a42', fruit: '#a8cf7a' };
@@ -158,14 +175,45 @@ export const objectArt: ArtManifest = {
     e('debris', { log: '#5a4128', bark: '#3a2a18', hole: '#2a1d12', mud: '#6b5434', board: '#b08d5b' }, ['r0', 'r1', 'r2']),
     e('debris', { log: '#7d6247', bark: '#5b4636', hole: '#4d3a2a', mud: '#9a8160', board: '#d2b48a' }, ['r0', 'r1', 'r2']),
   ),
-  crop_greens: both(e('crop', greensPx, STAGES), e('crop', greensSb, STAGES)),
+  // Each crop has its own shape and a coloured tag on a stake, so beds can be told apart
+  // from the day they are planted: greens = green tag, sweet potato = purple, papaya = orange.
+  crop_greens: both(
+    e('crop', { ...greensPx, shape: 'rosette', tag: '#4fbf3a', stake: '#c8a878' }, STAGES),
+    e('crop', { ...greensSb, shape: 'rosette', tag: '#5fcf4a', stake: '#e0c49a' }, STAGES),
+  ),
   crop_sweet_potato: both(
-    e('crop', { leaf: '#4e8f3a', dark: '#346626', fruit: '#9a4a8a' }, STAGES),
-    e('crop', { leaf: '#86b066', dark: '#628c4a', fruit: '#b9739f' }, STAGES),
+    e('crop', { leaf: '#4e8f3a', dark: '#346626', fruit: '#9a3a8a', stem: '#7a2e6a', shape: 'vine', tag: '#a83ab8', stake: '#c8a878' }, STAGES),
+    e('crop', { leaf: '#86b066', dark: '#628c4a', fruit: '#b9639f', stem: '#9a5a8a', shape: 'vine', tag: '#b85ac8', stake: '#e0c49a' }, STAGES),
   ),
   crop_papaya: both(
-    e('crop', { leaf: '#3f8a34', dark: '#2a6224', fruit: '#e08a2a', trunk: '#7a6a4a' }, STAGES),
-    e('crop', { leaf: '#7db068', dark: '#5a8a4a', fruit: '#f0a85a', trunk: '#a8977a' }, STAGES),
+    e('crop', { leaf: '#3f8a34', dark: '#2a6224', fruit: '#e08a2a', trunk: '#7a6a4a', shape: 'palm', tag: '#f08a1a', stake: '#c8a878' }, STAGES),
+    e('crop', { leaf: '#7db068', dark: '#5a8a4a', fruit: '#f0a85a', trunk: '#a8977a', shape: 'palm', tag: '#f8a040', stake: '#e0c49a' }, STAGES),
+  ),
+  /** Small icons over beds: needs water today / ready to harvest. */
+  marker: both(
+    e('marker', { water: '#2f8fd8', ready: '#f2c230', line: '#1a1410', light: '#ffffff' }, ['water', 'ready']),
+    e('marker', { water: '#4aa3e0', ready: '#f5cc4a', line: '#3a2e26', light: '#ffffff' }, ['water', 'ready']),
+  ),
+  deadtree: both(
+    e('deadtree', { trunk: '#3a2e24', char: '#1e1814', light: '#5a4a3a' }, ['r0', 'r1']),
+    e('deadtree', { trunk: '#6a5a4a', char: '#4a3e34', light: '#8a7a68' }, ['r0', 'r1']),
+  ),
+  /** r0: a living tree's stump (grows back); r1: a dead tree's stump. */
+  stump: both(
+    e('stump', { wood: '#8a6a3f', ring: '#c8a878', bark: '#4a3420', sprout: '#4c8a3c' }, ['r0', 'r1']),
+    e('stump', { wood: '#b08e63', ring: '#e0c49a', bark: '#7d6247', sprout: '#7fae5a' }, ['r0', 'r1']),
+  ),
+  ruin: both(
+    e('ruin', { ...salvageWoodPx, char: '#2a221a', tin: '#738891' }, ['r0', 'r1']),
+    e('ruin', { ...salvageWoodSb, char: '#5a4e44', tin: '#9cb0b5' }, ['r0', 'r1']),
+  ),
+  carwreck: both(
+    e('carwreck', { body: '#6a3a2a', rust: '#8a4a26', char: '#2a221a', glass: '#3a4a4e', tyre: '#1a1814' }, ['r0', 'r1']),
+    e('carwreck', { body: '#9a6a56', rust: '#b8744e', char: '#5a4e44', glass: '#6e8086', tyre: '#4a443e' }, ['r0', 'r1']),
+  ),
+  smallrubble: both(
+    e('smallrubble', { ...blockPx, wood: '#5a4128', char: '#2a221a' }, ONE),
+    e('smallrubble', { ...blockSb, wood: '#7d6247', char: '#5a4e44' }, ONE),
   ),
   weeds: both(
     e('weeds', { leaf: '#6fae3a', dark: '#4a7a26' }, ['r0', 'r1', 'r2']),

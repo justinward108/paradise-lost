@@ -66,7 +66,7 @@ describe('validation reasons', () => {
     ['floor without foundation', (t) => checkPlace(t, catalog, 'floor', tile(0, 0)), 'Needs a foundation underneath'],
     ['wall without floor', (t) => checkPlace(t, catalog, 'wall', edge(0, 0, 'n')), 'Walls need a floor on at least one side'],
     ['furniture without floor', (t) => checkPlace(t, catalog, 'bedroll', tile(0, 0)), 'Needs a floor'],
-    ['roof without room', (t) => checkPlace(t, catalog, 'roof', tile(0, 0)), 'Roofs need a room enclosed by walls'],
+    ['roof without room', (t) => checkPlace(t, catalog, 'roof', tile(0, 0)), 'Roofs need a wall beside them, or a roof next to them (reaching up to 2 tiles past a wall)'],
   ];
   for (const [name, run, reason] of cases) {
     it(name, () => expect(run(newTown())).toEqual({ ok: false, reason }));
@@ -129,22 +129,43 @@ describe('rooms and shelter', () => {
     expect(rooms(t, catalog)[0]).toMatchObject({ enclosed: true, doors: 0, shelter: false });
   });
 
-  it('removing a wall that holds a roof is refused, then cascades when confirmed', () => {
+  it('removing the only wall that holds a roof is refused, then cascades when confirmed', () => {
     const t = newTown();
-    buildRoom(t);
-    const wall = edge(2, 2, 'w');
+    place(t, 'pier', tile(2, 2));
+    place(t, 'floor', tile(2, 2));
+    const wall = edge(2, 2, 'n');
+    expect(place(t, 'wall', wall).ok).toBe(true);
+    expect(place(t, 'roof', tile(2, 2)).ok).toBe(true);
+    expect(place(t, 'roof', tile(2, 3)).ok).toBe(true); // an eave, held by the roof beside it
     const refused = apply(t, catalog, { type: 'remove', id: id(), slot: wall, layer: 'wall' });
-    expect(refused).toMatchObject({ ok: false, reason: 'This holds up 4× Tin roof' });
-    expect(hasShelter(t, catalog)).toBe(true);
+    expect(refused).toMatchObject({ ok: false, reason: 'This holds up 2× Tin roof' });
 
     const boardsBefore = t.inventory.boards!;
     const roofingBefore = t.inventory.roofing!;
     const done = apply(t, catalog, { type: 'remove', id: id(), slot: wall, layer: 'wall', cascade: true });
     expect(done.ok).toBe(true);
-    expect(hasShelter(t, catalog)).toBe(false);
     expect(Object.values(t.pieces).filter((p) => p.pieceId === 'roof')).toHaveLength(0);
     expect(t.inventory.boards).toBe(boardsBefore + 3);
-    expect(t.inventory.roofing).toBe(roofingBefore + 8);
+    expect(t.inventory.roofing).toBe(roofingBefore + 4);
+  });
+
+  it('a roof needs only one wall, and reaches two tiles past it', () => {
+    const t = newTown();
+    place(t, 'pier', tile(2, 2));
+    place(t, 'floor', tile(2, 2));
+    expect(place(t, 'wall', edge(2, 2, 'w')).ok).toBe(true);
+    expect(place(t, 'roof', tile(2, 2)).ok).toBe(true);
+    expect(place(t, 'roof', tile(3, 2)).ok).toBe(true);
+    expect(place(t, 'roof', tile(4, 2)).ok).toBe(true);
+    expect(checkPlace(t, catalog, 'roof', tile(5, 2)).ok).toBe(false);
+  });
+
+  it('removing one wall of a roofed room leaves the roof up (the other walls hold it)', () => {
+    const t = newTown();
+    buildRoom(t);
+    expect(apply(t, catalog, { type: 'remove', id: id(), slot: edge(2, 2, 'w'), layer: 'wall' }).ok).toBe(true);
+    expect(Object.values(t.pieces).filter((p) => p.pieceId === 'roof')).toHaveLength(4);
+    expect(hasShelter(t, catalog)).toBe(false); // no longer enclosed
   });
 
   it('removing a floor takes walls that lose their only floor, and the roof above', () => {

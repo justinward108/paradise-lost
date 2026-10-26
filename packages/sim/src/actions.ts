@@ -12,12 +12,16 @@ import { addFriendship, FRIENDSHIP, npcPosition } from './npc.ts';
 import { materialsMet, settleProjects, helperLabour } from './project.ts';
 import { rainOnDay } from './time.ts';
 import type { Catalog, Town } from './types.ts';
-import { hasBrush, inLot, projectComplete, siteRemaining, terrainAt, type Point, type World } from './world.ts';
+import { growBack } from './regrow.ts';
+import { DEFAULT_REGROW, hasBrush, hasRubble, inLot, projectComplete, siteRemaining, terrainAt, treeAt, type Point, type World } from './world.ts';
 
 export type WorldCommand =
   | { type: 'move'; id: string; to: Point }
   | { type: 'clearBrush'; id: string; x: number; y: number }
-  | { type: 'salvage'; id: string; siteId: string }
+  | { type: 'clearRubble'; id: string; x: number; y: number }
+  | { type: 'chop'; id: string; x: number; y: number; nowMs: number }
+  | { type: 'salvage'; id: string; siteId: string; nowMs?: number }
+  | { type: 'fill'; id: string; x: number; y: number }
   | { type: 'till'; id: string; x: number; y: number; nowMs: number }
   | { type: 'plant'; id: string; x: number; y: number; cropId: string; nowMs: number }
   | { type: 'water'; id: string; x: number; y: number; nowMs: number }
@@ -60,7 +64,7 @@ function bedKey(x: number, y: number) {
 
 export function applyWorld(town: Town, catalog: Catalog, world: World, cmd: WorldCommand): ActionResult {
   const nowMs = 'nowMs' in cmd ? cmd.nowMs : undefined;
-  const pre = nowMs !== undefined ? settleProjects(town, world, nowMs) : [];
+  const pre = nowMs !== undefined ? [...growBack(town, world, nowMs), ...settleProjects(town, world, nowMs)] : [];
   const result = run(town, catalog, world, cmd);
   if (pre.length > 0) {
     // Time passing finished something before this action; report it either way.
@@ -87,10 +91,42 @@ function run(town: Town, catalog: Catalog, world: World, cmd: WorldCommand): Act
     case 'clearBrush': {
       if (!hasBrush(town, world, cmd.x, cmd.y)) return no('No brush here');
       if (tooFar(town, cmd)) return no(FAR);
-      town.cleared.push(bedKey(cmd.x, cmd.y));
+      const key = bedKey(cmd.x, cmd.y);
+      const sprout = town.sprouts.indexOf(key);
+      if (sprout >= 0) town.sprouts.splice(sprout, 1);
+      else town.cleared.push(key);
       const events = ['brush:cleared'];
-      gain(town, { boards: 1 }, events);
+      gain(town, (world.regrow ?? DEFAULT_REGROW).brushYields, events);
       return yes(events);
+    }
+
+    case 'clearRubble': {
+      if (!hasRubble(town, world, cmd.x, cmd.y)) return no('No rubble here');
+      if (tooFar(town, cmd)) return no(FAR);
+      town.cleared.push(bedKey(cmd.x, cmd.y));
+      const events = ['rubble:cleared'];
+      gain(town, (world.regrow ?? DEFAULT_REGROW).rubbleYields, events);
+      return yes(events);
+    }
+
+    case 'chop': {
+      const tree = treeAt(town, world, cmd.x, cmd.y);
+      if (!tree) return no('No tree to chop here');
+      if (tooFar(town, cmd)) return no(FAR);
+      town.felled[bedKey(cmd.x, cmd.y)] = cmd.nowMs;
+      const events = [`chop:${tree.name}`];
+      gain(town, tree.yields, events);
+      return yes(events);
+    }
+
+    case 'fill': {
+      const key = bedKey(cmd.x, cmd.y);
+      if (!(key in town.soil)) return no('No garden bed here');
+      if (tooFar(town, cmd)) return no(FAR);
+      const crop = town.crops[key];
+      delete town.soil[key];
+      delete town.crops[key];
+      return yes([crop ? `garden:filled:${crop.cropId}` : 'garden:filled']);
     }
 
     case 'salvage': {
@@ -99,7 +135,9 @@ function run(town: Town, catalog: Catalog, world: World, cmd: WorldCommand): Act
       if (site.requiresProject && !projectComplete(town, site.requiresProject)) return no('The way there is still blocked');
       if (siteRemaining(town, site) <= 0) return no('Nothing useful left here');
       if (tooFar(town, site)) return no(FAR);
-      town.sites[site.id] = { used: (town.sites[site.id]?.used ?? 0) + 1 };
+      const prev = town.sites[site.id];
+      town.sites[site.id] = { ...prev, used: (prev?.used ?? 0) + 1 };
+      if (site.refillMs && cmd.nowMs !== undefined) town.sites[site.id]!.refillMs ??= cmd.nowMs;
       const events = [`salvage:${site.id}`];
       gain(town, site.yields, events);
       if (siteRemaining(town, site) === 0) events.push(`salvage:empty:${site.id}`);
@@ -111,6 +149,7 @@ function run(town: Town, catalog: Catalog, world: World, cmd: WorldCommand): Act
       if (!inLot(town, x, y)) return no('You can only dig on your own lot');
       if (terrainAt(town, world, x, y) !== 'L') return no("The ground here can't be dug");
       if (hasBrush(town, world, x, y)) return no('Clear the brush first');
+      if (hasRubble(town, world, x, y)) return no('Clear the rubble first');
       if (bedKey(x, y) in town.soil) return no('Already a garden bed');
       for (const layer of ['foundation', 'floor', 'object'] as const) {
         if (slotKey(tile(x, y), layer) in town.pieces) return no('Something is built here');
@@ -256,7 +295,17 @@ function run(town: Town, catalog: Catalog, world: World, cmd: WorldCommand): Act
       stage.startedMs ??= cmd.nowMs;
       stage.playerLabour += 1;
       st.ledger.push({ what: 'labour', amount: 1, ms: cmd.nowMs });
-      const events = [`project:worked:${def.id}`, ...settleProjects(town, world, cmd.nowMs)];
+      const events = [`project:worked:${def.id}`];
+      // Working alongside the neighbour brings you closer, once a day.
+      const helper = def.helper ? town.npcs[def.helper] : undefined;
+      const d = today(town, cmd.nowMs);
+      if (def.helper && helper?.met && helper.lastWorkDay !== d) {
+        helper.lastWorkDay = d;
+        addFriendship(town, def.helper, FRIENDSHIP.workedTogether);
+        events.push(`npc:worked_together:${def.helper}`);
+        teachIfReady(town, world, def.helper, events);
+      }
+      events.push(...settleProjects(town, world, cmd.nowMs));
       return yes(events);
     }
   }
