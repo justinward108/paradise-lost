@@ -20,6 +20,7 @@ export const GENERATORS = [
   'terrain', 'water', 'bridge', 'soil',
   'tree', 'bush', 'rubble', 'carport', 'rockpile', 'store', 'debris', 'crop', 'weeds', 'person',
   'deadtree', 'stump', 'ruin', 'carwreck', 'smallrubble', 'marker', 'crater',
+  'table', 'chair', 'lantern', 'rug', 'kiosk',
 ] as const;
 export type GeneratorName = (typeof GENERATORS)[number];
 
@@ -61,7 +62,20 @@ const e = (generator: GeneratorName, palette: Record<string, string>, frames: st
 const WALL = ['n', 'w'];
 const ONE = ['r0'];
 
+const R2 = ['r0', 'r1'];
+const R4 = ['r0', 'r1', 'r2', 'r3'];
+
 export const art: ArtManifest = {
+  table: both(e('table', lumberPx, R2), e('table', lumberSb, R2)),
+  chair: both(e('chair', lumberPx, R4), e('chair', lumberSb, R4)),
+  lantern: both(
+    e('lantern', { body: '#3a3a36', glass: '#f2d36b', panel: '#2f4f6f', line: '#1a1814' }, ONE),
+    e('lantern', { body: '#6a6862', glass: '#f7df8e', panel: '#5a7a96', line: '#3a3632' }, ONE),
+  ),
+  rug: both(
+    e('rug', { base: '#a8543a', stripe: '#e8c87a', edge: '#5a2e20' }, R2),
+    e('rug', { base: '#c47a5e', stripe: '#f0d79a', edge: '#8a5a48' }, R2),
+  ),
   pier_foundation: both(e('foundation', salvageWoodPx, ONE), e('foundation', salvageWoodSb, ONE)),
   plank_floor: both(e('floor', salvageWoodPx, ONE), e('floor', salvageWoodSb, ONE)),
   plank_wall: both(e('wall', salvageWoodPx, WALL), e('wall', salvageWoodSb, WALL)),
@@ -188,6 +202,19 @@ export const objectArt: ArtManifest = {
   crop_papaya: both(
     e('crop', { leaf: '#3f8a34', dark: '#2a6224', fruit: '#e08a2a', trunk: '#7a6a4a', shape: 'palm', tag: '#f08a1a', stake: '#c8a878' }, STAGES),
     e('crop', { leaf: '#7db068', dark: '#5a8a4a', fruit: '#f0a85a', trunk: '#a8977a', shape: 'palm', tag: '#f8a040', stake: '#e0c49a' }, STAGES),
+  ),
+  crop_long_beans: both(
+    e('crop', { leaf: '#4f9a3a', dark: '#2f6a22', fruit: '#9cc84a', stake: '#c8a878', shape: 'trellis', tag: '#2fa8a0' }, STAGES),
+    e('crop', { leaf: '#83b46a', dark: '#5e8f4c', fruit: '#b9d878', stake: '#e0c49a', shape: 'trellis', tag: '#4fbcb4' }, STAGES),
+  ),
+  crop_banana: both(
+    e('crop', { leaf: '#5aa83a', dark: '#3a7a26', fruit: '#e8d24a', trunk: '#6a7a3a', shape: 'banana', tag: '#e8d24a', stake: '#c8a878' }, STAGES),
+    e('crop', { leaf: '#8cc06a', dark: '#64944c', fruit: '#f0de78', trunk: '#94a064', shape: 'banana', tag: '#f0de78', stake: '#e0c49a' }, STAGES),
+  ),
+  /** The Ministry relief kiosk: regime red and gold, a screen, the cross-and-star seal. */
+  kiosk: both(
+    e('kiosk', { body: '#8a1f1f', dark: '#5a1414', trim: '#c9a23a', screen: '#2a3a3a', glow: '#7fd0c0', line: '#1a0e0e', paper: '#eae2cc' }, ONE),
+    e('kiosk', { body: '#a8443e', dark: '#7a2e2a', trim: '#d8b45a', screen: '#4a5a5a', glow: '#a8e2d6', line: '#4a2a26', paper: '#f4ecd8' }, ONE),
   ),
   /** Small icons over beds: needs water today / ready to harvest. */
   marker: both(

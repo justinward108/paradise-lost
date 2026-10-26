@@ -139,6 +139,8 @@ export interface World {
   projects: ProjectDef[];
   /** Pre-built structures that belong to NPCs (the neighbour's house). */
   fixedPieces: PlacedPiece[];
+  /** The Ministry relief kiosk, where Rapture Credits change hands (poor.camp). */
+  kiosk?: { x: number; y: number; name: string };
   /** Choppable trees, keyed by terrain character ('T', 'D'). */
   chop?: Readonly<Record<string, ChopDef>>;
   regrow?: RegrowDef;

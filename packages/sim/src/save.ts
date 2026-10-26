@@ -88,10 +88,23 @@ function v2to3(old: Data): Data {
   return { ...old, sprouts: [], felled: {}, growMs: null };
 }
 
+/**
+ * v4: the relief kiosk (Rapture Credits) and a harvest count for its milestone. A town
+ * already holding food has harvested at least once.
+ */
+function v3to4(old: Data, ctx: MigrationContext = {}): Data {
+  const inv = (old['inventory'] ?? {}) as Record<string, number>;
+  const foods = Object.values(ctx.world?.crops ?? {}).flatMap((c) => Object.keys(c.yields));
+  const harvested = foods.some((f) => (inv[f] ?? 0) > 0) ? 1 : 0;
+  const progress = { ...(old['progress'] as object), harvests: harvested };
+  return { ...old, progress, kiosk: { pendingSales: [], pendingOrders: [] } };
+}
+
 /** One function per schema bump: migrations[n] turns a version-n town into version n+1. */
 export const migrations: Record<number, (old: Data, ctx?: MigrationContext) => Data> = {
   1: v1to2,
   2: v2to3,
+  3: v3to4,
 };
 
 export function encodeSnapshot(town: Town, savedAt: number): Snapshot {

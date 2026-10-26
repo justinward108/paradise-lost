@@ -218,7 +218,7 @@ describe('save v2 → v3', () => {
     const body = JSON.stringify(old);
     const snap = { schemaVersion: 2, savedAt: 1, body, checksum: hashString(body).toString(16) };
     const back = decodeSnapshot(snap, { world: W, catalog });
-    expect(back).toMatchObject({ schemaVersion: 3, sprouts: [], felled: {}, growMs: null, inventory: { boards: 7 } });
+    expect(back).toMatchObject({ schemaVersion: 4, sprouts: [], felled: {}, growMs: null, inventory: { boards: 7 }, kiosk: { pendingSales: [], pendingOrders: [] } });
   });
 });
 

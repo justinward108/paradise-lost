@@ -7,6 +7,8 @@ import { ambientTime, friendshipLevel, goals, helperLabour, materialsMet } from 
 import { drawFrame } from '../art/generate.ts';
 import { closeHelp, isHelpOpen, showHelp, Tips } from './help.ts';
 import { isFeedbackOpen, showFeedback } from './feedback.ts';
+import { kioskPanel } from './kioskPanel.ts';
+import { rc } from '../game/kiosk.ts';
 import type { Controller } from '../game/controller.ts';
 
 export interface UiHooks {
@@ -50,6 +52,7 @@ function nightAlpha(hour: number) {
 function helpSectionFor(ctrl: Controller): string {
   if (ctrl.panel?.kind === 'npc') return 'rosa';
   if (ctrl.panel?.kind === 'project') return 'projects';
+  if (ctrl.panel?.kind === 'kiosk') return 'kiosk';
   if (ctrl.mode === 'build') return ctrl.tool.mode === 'demolish' ? 'changing' : 'building';
   if (ctrl.tool.mode === 'dig' || ctrl.tool.mode === 'plant' || ctrl.tool.mode === 'water') return 'garden';
   return 'start';
@@ -85,8 +88,9 @@ export function mountUi(root: HTMLElement, ctrl: Controller, hooks: UiHooks): Ti
   const styleBtn = btn('', { title: 'Switch art style' });
   const meBtn = btn('◎', { title: 'Centre on me', 'aria-label': 'Centre on me' }, () => hooks.follow());
   const helpBtn = btn('? Help', { title: 'Help (H)', 'aria-label': 'Help' }, () => openHelp(helpSectionFor(ctrl)));
+  const credits = btn('', { class: 'chip credits hidden', title: 'Rapture Credits (your Poor Camp account)' }, () => ctrl.openPanel({ kind: 'kiosk' }));
   const noteBtn = btn('✎ Note', { title: 'Write a playtest note (N)', 'aria-label': 'Write a playtest note' }, () => showFeedback(root, ctrl));
-  top.append(clock, inv, undo, redo, roofBtn, styleBtn, meBtn, noteBtn, helpBtn);
+  top.append(clock, inv, credits, undo, redo, roofBtn, styleBtn, meBtn, noteBtn, helpBtn);
 
   // ----- goals -----
   const goalsBox = el('section', { class: 'goals', 'aria-label': 'Goals' });
@@ -328,6 +332,12 @@ export function mountUi(root: HTMLElement, ctrl: Controller, hooks: UiHooks): Ti
     if (!p) return;
     const close = btn('✕', { class: 'close', 'aria-label': 'Close' }, () => ctrl.openPanel(null));
     if (p.kind === 'project') tips.trigger('project');
+    if (p.kind === 'kiosk') {
+      tips.trigger('kiosk');
+      panel.replaceChildren(...(ctrl.kiosk ? kioskPanel(ctrl, ctrl.kiosk, close) : [close, el('h2', {}, 'Relief kiosk'), el('p', { class: 'line' }, 'Not available.')]));
+      if (ctrl.kiosk && !ctrl.kiosk.state && ctrl.kiosk.signedIn) void ctrl.kiosk.sync();
+      return;
+    }
     if (p.kind === 'npc') {
       const def = ctrl.world.npcs.find((n) => n.id === p.npcId);
       const st = ctrl.town.npcs[p.npcId];
@@ -384,6 +394,12 @@ export function mountUi(root: HTMLElement, ctrl: Controller, hooks: UiHooks): Ti
     if (what === 'tool') renderTool();
     if (what === 'mode') renderMode();
     if (what === 'panel') renderPanel();
+    if (what === 'credits') {
+      const k = ctrl.kiosk;
+      const show = Boolean(k?.signedIn && k.state);
+      credits.classList.toggle('hidden', !show);
+      if (show) credits.textContent = `◈ ${rc(k!.state!.balance)}`;
+    }
     if (what === 'clock') {
       renderClock();
       renderTown();

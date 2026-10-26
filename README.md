@@ -6,9 +6,16 @@ Browser first (Netlify, paradiselost.poor.camp); iOS/iPadOS later.
 
 - Design document: [docs/GDD.md](docs/GDD.md)
 - How to play: [docs/HOW_TO_PLAY.md](docs/HOW_TO_PLAY.md) (the same text as the in-game Help, press H)
-- Status: **Sprint 2.5** — the opening loop, reworked after the first playtest, on placeholder art.
+- Status: **Sprint 2.6** — the opening loop with Rapture Credits, on placeholder art.
 
 ## What works now
+
+**Rapture Credits (Sprint 2.6)**
+- A Ministry relief kiosk on the stream bank by the footbridge trades in Rapture Credits, the poor.camp portal currency
+- Sign in with your Poor Camp account (poor.camp single sign-on); the game is fully playable without signing in
+- Sell crops and salvage (capped per day by poor.camp), collect one-time relief awards, buy seeds (including long beans and banana), materials, lumber and block, and furniture kits (table, chair, solar lantern, rug)
+- Trades survive a closed tab or a dropped connection, and are never paid or charged twice
+- poor.camp holds every price, cap and balance (`/api/paradise-lost` in the poor.camp repository); this site proxies only that route and the sign-on endpoints (`packages/client/public/_redirects`)
 
 **After the first playtest (Sprint 2.5)**
 - No dead ends: chop albizia trees for boards (they grow back in a real day), brush grows back on the lot, loose lava rock refills, burnt trees and lot rubble can be cleared

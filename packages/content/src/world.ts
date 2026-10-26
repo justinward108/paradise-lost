@@ -18,6 +18,13 @@ const LOT = { x: 3, y: 3, w: 14, h: 14 };
 const SPAWN = { x: 9, y: 15 };
 const HOUR = 3_600_000;
 
+/**
+ * The Ministry relief kiosk: a Greater America buy-back and ration machine still running
+ * on the stream bank by the footbridge, the regime present only as a vending machine.
+ * It trades in Rapture Credits through the player's poor.camp account.
+ */
+const KIOSK = { x: 17, y: 7, name: 'Ministry relief kiosk' };
+
 /** Bomb craters (centre tiles). Scorched ground rings each one. */
 const CRATERS = [
   { x: 28, y: 15 },
@@ -106,11 +113,11 @@ function buildRows(): string[] {
   // Tree border, then scattered trees on open grass.
   for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) if (x < 2 || y < 2 || x >= W - 2 || y >= H - 2) set(x, y, 'T');
   const rand = mulberry32(hashString('starter-map-trees'));
-  const keepClear = new Set(SITES.map((s) => `${s.x},${s.y}`));
+  const keepClear = new Set([...SITES, KIOSK].map((s) => `${s.x},${s.y}`));
   for (let y = 2; y < H - 2; y++) {
     for (let x = 2; x < W - 2; x++) {
       if (g[y]![x] !== '.') continue;
-      const nearSite = SITES.some((s) => Math.abs(s.x - x) <= 1 && Math.abs(s.y - y) <= 1);
+      const nearSite = [...SITES, KIOSK].some((s) => Math.abs(s.x - x) <= 1 && Math.abs(s.y - y) <= 1);
       const nearPath = Math.abs(x - 9) <= 1 && y > LOT.y + LOT.h;
       if (nearSite || nearPath || keepClear.has(`${x},${y}`)) continue;
       if (rand() < 0.1) g[y]![x] = 'T';
@@ -184,6 +191,9 @@ export const crops: Record<string, CropDef> = {
   greens: { id: 'greens', name: 'Leafy greens', seed: 'seed_greens', days: 2, yields: { greens: 3 } },
   sweet_potato: { id: 'sweet_potato', name: 'Sweet potato', seed: 'slip_sweet_potato', days: 5, yields: { sweet_potato: 4 } },
   papaya: { id: 'papaya', name: 'Papaya', seed: 'seed_papaya', days: 8, regrowDays: 3, yields: { papaya: 2 } },
+  // Only from the relief kiosk.
+  long_beans: { id: 'long_beans', name: 'Long beans', seed: 'seed_long_beans', days: 3, regrowDays: 2, yields: { long_beans: 4 } },
+  banana: { id: 'banana', name: 'Banana', seed: 'keiki_banana', days: 10, regrowDays: 5, yields: { banana: 3 } },
 };
 
 export const NEIGHBOUR_ID = 'rosa';
@@ -206,7 +216,7 @@ export const world: World = {
         { fromHour: 18, x: 25, y: 8 }, // porch
         { fromHour: 22, x: 25, y: 6, inside: true }, // home for the night
       ],
-      likes: ['papaya', 'sweet_potato'],
+      likes: ['papaya', 'sweet_potato', 'banana'],
       firstGift: { seed_greens: 6, slip_sweet_potato: 3, seed_papaya: 2 },
       lessonAt: 20,
       lessonGift: { lumber: 24, block: 8 },
@@ -228,6 +238,7 @@ export const world: World = {
     },
   ],
   fixedPieces: neighbourHouse(),
+  kiosk: KIOSK,
   chop: {
     // Living trees are invasive albizia (GDD 9.2: native forest is never harvestable).
     T: { name: 'albizia tree', yields: { boards: 3 }, regrowMs: 24 * HOUR },
@@ -253,7 +264,15 @@ export const ITEMS: Readonly<Record<string, { name: string; kind: 'material' | '
   seed_greens: { name: 'Greens seeds', kind: 'seed' },
   slip_sweet_potato: { name: 'Sweet potato slips', kind: 'seed' },
   seed_papaya: { name: 'Papaya seeds', kind: 'seed' },
+  seed_long_beans: { name: 'Long bean seeds', kind: 'seed' },
+  keiki_banana: { name: 'Banana keiki', kind: 'seed' },
+  kit_table: { name: 'Table kit', kind: 'material' },
+  kit_chair: { name: 'Chair kit', kind: 'material' },
+  kit_lantern: { name: 'Solar lantern', kind: 'material' },
+  kit_rug: { name: 'Woven rug', kind: 'material' },
   greens: { name: 'Greens', kind: 'food' },
   sweet_potato: { name: 'Sweet potato', kind: 'food' },
   papaya: { name: 'Papaya', kind: 'food' },
+  long_beans: { name: 'Long beans', kind: 'food' },
+  banana: { name: 'Banana', kind: 'food' },
 };

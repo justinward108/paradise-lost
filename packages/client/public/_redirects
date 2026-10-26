@@ -1,0 +1,7 @@
+# Paradise Lost is an enrolled poor.camp property (poor.camp docs/ecosystem-accounts.md).
+# Only its own kiosk API and the single sign-on endpoints are forwarded to poor.camp;
+# poor.camp checks the browser's Origin and this host's own session cookie.
+/api/paradise-lost   https://poor.camp/api/paradise-lost   200
+/api/sso/session     https://poor.camp/api/sso/session     200
+/api/sso/callback    https://poor.camp/api/sso/callback    200
+/api/sso/logout      https://poor.camp/api/sso/logout      200

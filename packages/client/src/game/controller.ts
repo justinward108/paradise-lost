@@ -41,6 +41,7 @@ import {
 } from '@paradise-lost/sim';
 import { crops as cropDefs, describeGain, ITEMS, PROJECT_TEXT, ROSA, type Style } from '@paradise-lost/content';
 import type { TownStore } from '../store/townStore.ts';
+import type { KioskSession } from './kiosk.ts';
 import { edgeAt, FOUND_H, tileAt, toWorld } from '../iso.ts';
 
 export type Mode = 'play' | 'build';
@@ -64,7 +65,7 @@ export interface Action {
   path: Point[];
   /** The command to send on arrival, or a UI action. */
   command?: Command;
-  open?: { kind: 'npc'; npcId: string } | { kind: 'project'; projectId: string };
+  open?: { kind: 'npc'; npcId: string } | { kind: 'project'; projectId: string } | { kind: 'kiosk' };
   /** Show as information rather than an error when it can't be done (crop progress). */
   tone?: 'info';
   /** A first click that only arms a destructive second click on this tile ("x,y"). */
@@ -77,9 +78,9 @@ export type Preview =
   | { kind: 'remove'; slot: Slot; layer: Layer; ok: boolean; message: string; dependents: string[] }
   | { kind: 'action'; action: Action };
 
-export type Panel = null | { kind: 'npc'; npcId: string; lines: string[] } | { kind: 'project'; projectId: string; note?: string };
+export type Panel = null | { kind: 'npc'; npcId: string; lines: string[] } | { kind: 'project'; projectId: string; note?: string } | { kind: 'kiosk' };
 
-export type Change = 'town' | 'tool' | 'preview' | 'style' | 'status' | 'panel' | 'walk' | 'clock' | 'mode';
+export type Change = 'town' | 'tool' | 'preview' | 'style' | 'status' | 'panel' | 'walk' | 'clock' | 'mode' | 'credits';
 type Listener = (what: Change, data?: unknown) => void;
 
 const STEP_MS = 230;
@@ -98,6 +99,8 @@ export class Controller {
   private listeners = new Set<Listener>();
   private saveTimer: ReturnType<typeof setTimeout> | null = null;
   private justPlaced: string | null = null;
+  /** Rapture Credits at the relief kiosk (set up in main.ts). */
+  kiosk: KioskSession | null = null;
   /** A bed whose crop the next Dig click will dig up. */
   private armedFill: string | null = null;
   private hadShelter: boolean;
@@ -232,6 +235,24 @@ export class Controller {
     this.emit('panel');
   }
 
+  /** The Rapture Credits view changed (balance, account, kiosk catalogue). */
+  creditsChanged() {
+    this.emit('credits');
+    if (this.panel?.kind === 'kiosk') this.emit('panel');
+  }
+
+  /** Save immediately and synchronously (before leaving the page to sign in). */
+  flushSave() {
+    void this.store.save(this.town);
+    this.store.flushSync();
+  }
+
+  /** Is the player close enough to the kiosk to trade? */
+  atKiosk(): boolean {
+    const k = this.world.kiosk;
+    return k !== undefined && Math.max(Math.abs(this.town.player.x - k.x), Math.abs(this.town.player.y - k.y)) <= 1;
+  }
+
   // ---------- pointing ----------
 
   /** The slot or tile the current tool acts on at a world-space screen point. */
@@ -254,6 +275,7 @@ export class Controller {
     for (const z of [36, 18]) {
       const up = tileAt(sx, sy, z);
       if (this.npcAt(up.x, up.y) || this.siteAtLive(up.x, up.y)) return up;
+      if (this.world.kiosk && up.x === this.world.kiosk.x && up.y === this.world.kiosk.y) return up;
     }
     // Trees are clicked on their trunk or canopy, unless the ground under the pointer
     // has something of its own to do.
@@ -367,6 +389,14 @@ export class Controller {
         : { label: `Talk to ${npc.name}`, target, ok: false, message: "You can't reach her from here", path: [] };
     }
 
+    const kiosk = this.world.kiosk;
+    if (kiosk && kiosk.x === x && kiosk.y === y) {
+      const path = pathToReach(this.town, this.world, this.catalog, target);
+      return path
+        ? { label: kiosk.name, target, ok: true, message: `${kiosk.name}: trade for Rapture Credits`, path, open: { kind: 'kiosk' } }
+        : { label: kiosk.name, target, ok: false, message: "You can't reach that from here", path: [] };
+    }
+
     const project = this.world.projects.find((p) => p.tiles.some((tt) => tt.x === x && tt.y === y));
     if (project && !projectComplete(this.town, project.id)) {
       const path = pathToReach(this.town, this.world, this.catalog, target);
@@ -475,6 +505,7 @@ export class Controller {
         this.announceShelter();
       }
       if (action.open?.kind === 'project') this.openPanel({ kind: 'project', projectId: action.open.projectId });
+      if (action.open?.kind === 'kiosk') this.openPanel({ kind: 'kiosk' });
       this.updatePreview(tile(action.target.x, action.target.y));
     };
     this.walk(action.path, finish);

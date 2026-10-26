@@ -1693,6 +1693,7 @@ Newest first. One line per decision; detail lives in the section cited.
 
 | Date | Decision | Status | Section |
 | --- | --- | --- | --- |
+| 2026-10-26 | Rapture Credits (the poor.camp portal currency) at a Ministry relief kiosk: sell goods (server-capped per day) and one-time milestone awards; spend on seeds and new crops, materials, tier-2 materials, furniture kits. Uses the shared Poor Camp account through poor.camp single sign-on; signing in is optional | Confirmed (creator) | 12, 23 |
 | 2026-10-25 | No dead ends: renewable materials always available (albizia regrows in a real day, brush regrows on the lot, loose rock refills); one-off salvage stays finite | Confirmed (creator playtest) | 9.2 |
 | 2026-10-25 | Roofs need only a supporting wall (reach 2 tiles past it for eaves/porches), not a fully enclosed room; shelter still needs an enclosed, roofed room with a door | Confirmed (creator playtest) | 7.4 |
 | 2026-10-25 | Opening map shows bomb damage: craters, scorched ground, burnt trees, ruins, wrecked cars, rubble on the lot | Confirmed (creator playtest) | 4, 6.1 |

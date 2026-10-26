@@ -325,7 +325,7 @@ describe('save migration v1 → v2', () => {
     const snap = { ...encodeSnapshot(v1 as unknown as Town, 1), schemaVersion: 1, body };
     snap.checksum = encodeSnapshot(JSON.parse(body), 1).checksum;
     const t = decodeSnapshot(snap, { world: shifted, catalog });
-    expect(t.schemaVersion).toBe(3);
+    expect(t.schemaVersion).toBe(4);
     expect(t).toMatchObject({ sprouts: [], felled: {}, growMs: null });
     expect(Object.keys(t.pieces)).toContain('0|t|6,5|foundation'); // 4+2, 4+1
     expect(t.cleared).toEqual(['6,5']); // brush under the old foundation is cleared

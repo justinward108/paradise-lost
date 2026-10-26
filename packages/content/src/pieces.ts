@@ -16,6 +16,11 @@ const defs: PieceDef[] = [
   { id: 'tin_roof', name: 'Corrugated roof', kind: 'roof', tier: 1, cost: { roofing: 2 }, rotations: 1, category: 'Roofs' },
   { id: 'bedroll', name: 'Bedroll', kind: 'furniture', tier: 1, cost: { cloth: 3 }, rotations: 2, category: 'Furniture' },
   { id: 'crate', name: 'Crate', kind: 'furniture', tier: 1, cost: { boards: 2 }, rotations: 1, category: 'Furniture', solid: true },
+  // Furniture kits bought with Rapture Credits at the relief kiosk.
+  { id: 'table', name: 'Table', kind: 'furniture', tier: 1, cost: { kit_table: 1 }, rotations: 2, category: 'Furniture', solid: true },
+  { id: 'chair', name: 'Chair', kind: 'furniture', tier: 1, cost: { kit_chair: 1 }, rotations: 4, category: 'Furniture' },
+  { id: 'lantern', name: 'Solar lantern', kind: 'furniture', tier: 1, cost: { kit_lantern: 1 }, rotations: 1, category: 'Furniture' },
+  { id: 'rug', name: 'Woven rug', kind: 'furniture', tier: 1, cost: { kit_rug: 1 }, rotations: 2, category: 'Furniture' },
   // Tier 2 — rough-built (locked at the start; shows the progression gate)
   { id: 'block_foundation', name: 'Cinder block foundation', kind: 'foundation', tier: 2, cost: { block: 2 }, rotations: 1, category: 'Foundations' },
   { id: 'board_floor', name: 'Rough lumber floor', kind: 'floor', tier: 2, cost: { lumber: 2 }, rotations: 1, category: 'Floors' },

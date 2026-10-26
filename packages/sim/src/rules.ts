@@ -21,6 +21,10 @@ const MATERIAL_NAMES: Record<string, string> = {
   cloth: 'cloth',
   lumber: 'milled lumber',
   block: 'cinder blocks',
+  kit_table: 'table kit (relief kiosk)',
+  kit_chair: 'chair kit (relief kiosk)',
+  kit_lantern: 'solar lantern (relief kiosk)',
+  kit_rug: 'woven rug (relief kiosk)',
 };
 
 function materialName(id: string): string {

@@ -42,9 +42,24 @@ There is always somewhere to get more. Point at anything to see what it gives.
 - Boards: chop trees (3 from an albizia, which grows back in a real day; 2 from a burnt tree, which is gone for good), clear brush (1, and it keeps growing back on your lot), clear rubble, salvage wrecks and ruins
 - Roofing: the fallen carport, the bombed-out house and the burnt-out car east of the stream, and more past the path once it is fixed
 - Stone: the loose lava rock east of the stream (more turns up every couple of hours), rubble on your lot, the burnt-out car
-- Lumber and block: Rosa gives you some when she teaches you to build with them
+- Lumber and block: Rosa gives you some when she teaches you to build with them; the relief kiosk sells them for Rapture Credits
+- Anything above can also be bought at the relief kiosk, and goods sold there for Rapture Credits
 
 Wrecks and ruins run out; trees, brush and rock come back.
+
+## Relief kiosk and Rapture Credits
+
+A Ministry relief kiosk still runs on the stream bank by the footbridge, north of the path to Rosa’s. It trades in Rapture Credits, the currency used across poor.camp.
+
+To use it, sign in with your Poor Camp account: the same account as poor.camp, so your credits are the same ones you see in the Treasury, the Gaming Hall and the Testament Drawing. Signing in takes you to poor.camp and straight back; your town is saved first. Everything else in the game works without an account.
+
+- Sell crops, boards, stone and roofing for credits. The kiosk pays fixed prices, up to a daily limit; after that it pays again the next day.
+- Buy seeds (including long beans and banana, which only the kiosk has), building materials, lumber and block, and furniture kits.
+- Relief awards: one-time payments when you meet Rosa, harvest, build a shelter, finish each stage of the path, and learn tier-2 building. They are paid automatically, once per account.
+
+If the connection drops mid-trade, nothing is lost: sold goods are held and bought goods are delivered when the kiosk next answers, and you are never charged twice.
+
+Rapture Credits are fictional site currency. They cannot be bought, sold or exchanged for anything of real-world value.
 
 ## Building
 
@@ -93,8 +108,10 @@ Crops grow one step for each in-game day they get water. It rains here most days
 - Leafy greens: 2 watered days
 - Sweet potato: 5 watered days
 - Papaya: 8 watered days, then fruits again every 3
+- Long beans (relief kiosk only): 3 watered days, then again every 2
+- Banana (relief kiosk only): 10 watered days, then again every 5
 
-Every planted bed has a stake with a coloured tag: green for greens, purple for sweet potato, orange for papaya. Each crop also has its own shape as it grows: greens are a round clump, sweet potato spreads out on purple stems, papaya grows a trunk.
+Every planted bed has a stake with a coloured tag: green for greens, purple for sweet potato, orange for papaya, teal for long beans, yellow for banana. Each crop also has its own shape as it grows: greens are a round clump, sweet potato spreads out on purple stems, papaya grows a trunk, long beans climb two poles, banana grows big paddle leaves.
 
 A blue drop over a crop means it needs water today. A yellow star means it is ready to harvest. Point at a crop to see how many days it has grown.
 

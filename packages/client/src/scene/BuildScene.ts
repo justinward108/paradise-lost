@@ -237,6 +237,10 @@ export class BuildScene extends Phaser.Scene {
       const p = at(x, y);
       out.push({ key: `rubble:${id}`, tex: 'obj.smallrubble:r0', x: p.x, y: p.y, depth: stand(x, y, 2) });
     }
+    if (world.kiosk) {
+      const p = at(world.kiosk.x, world.kiosk.y);
+      out.push({ key: 'kiosk', tex: 'obj.kiosk:r0', x: p.x, y: p.y, depth: stand(world.kiosk.x, world.kiosk.y, 2) });
+    }
     for (const s of world.sites) {
       const left = siteRemaining(town, s);
       if (left <= 0) continue;

@@ -105,6 +105,11 @@ export interface ProjectState {
   ledger: { what: string; amount: number; ms: number }[];
 }
 
+export interface KioskState {
+  pendingSales: { key: string; item: string; qty: number }[];
+  pendingOrders: { key: string; offer: string }[];
+}
+
 /** One reversible change to the piece map. */
 export type Op =
   | { kind: 'add'; key: string; piece: PlacedPiece }
@@ -117,7 +122,7 @@ export interface HistoryEntry {
   inventoryDelta: Record<string, number>;
 }
 
-export const SCHEMA_VERSION = 3 as const;
+export const SCHEMA_VERSION = 4 as const;
 
 /** Everything needed to restore a town. This is exactly what gets saved. */
 export interface Town {
@@ -133,7 +138,8 @@ export interface Town {
   mapId: string;
   pieces: Record<string, PlacedPiece>;
   inventory: Record<string, number>;
-  progress: { tier: number };
+  /** Building tier unlocked, and how many crops have been harvested (ever). */
+  progress: { tier: number; harvests: number };
   clock: { epochMs: number };
   /** Player position in tile coordinates (the tile's top corner; centre is +0.5). */
   player: { x: number; y: number };
@@ -145,6 +151,13 @@ export interface Town {
   felled: Record<string, number>;
   /** Real time the land's regrowth was last worked out up to (null until the first action). */
   growMs: number | null;
+  /**
+   * Trades with the relief kiosk that poor.camp hasn't confirmed yet. Goods for a sale
+   * leave the inventory before the request is sent; an order is recorded before it is
+   * sent. Both are retried with the same request key until poor.camp answers, so a
+   * closed tab never loses goods or a paid purchase.
+   */
+  kiosk: KioskState;
   /** `refillMs`: when the next use of a renewable site started counting back. */
   sites: Record<string, { used: number; refillMs?: number }>;
   soil: Record<string, Soil>;

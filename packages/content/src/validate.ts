@@ -100,5 +100,9 @@ export function validateWorld(
   for (const p of world.projects) {
     if (!p.tiles.some((t) => reach(t.x, t.y))) problems.push(`project ${p.id}: no tile reachable`);
   }
+  if (world.kiosk) {
+    if (!reach(world.kiosk.x, world.kiosk.y)) problems.push('kiosk: unreachable from the spawn point');
+    if (Object.keys(objectArt).length > 0 && !objectArt.kiosk) problems.push('kiosk: no art');
+  }
   return problems;
 }

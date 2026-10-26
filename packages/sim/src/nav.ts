@@ -11,6 +11,7 @@ const BLOCKING_TERRAIN = new Set(['~', 'T', 'X', 'D']);
 export function walkable(town: Town, world: World, catalog: Catalog, x: number, y: number): boolean {
   const t = terrainAt(town, world, x, y);
   if (t === null || BLOCKING_TERRAIN.has(t)) return false;
+  if (world.kiosk && world.kiosk.x === x && world.kiosk.y === y) return false;
   const site = siteAt(world, x, y);
   if (site && siteRemaining(town, site) > 0) return false;
   const obj = town.pieces[slotKey(tile(x, y), 'object')];

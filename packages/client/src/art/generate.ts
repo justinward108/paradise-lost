@@ -468,6 +468,28 @@ const painters: Record<ArtEntry['generator'], { up: number; paint: Painter } | '
         if (stage === 3) for (const dx of [-3, 0, 3]) pen.dot({ x: dx, y: -h + 5 }, 2.6, pal.fruit ?? '#e08a2a');
         return;
       }
+      if (shape === 'trellis') {
+        // Long beans: two poles with a vine climbing them and hanging pods.
+        const h = [6, 14, 24, 30][stage]!;
+        for (const dx of [-0.15, 0.15]) pen.line(P(dx, 0.1), P(dx, 0.1, 30), pal.stake ?? '#c8a878', 1.5);
+        for (let i = 0; i < 2 + stage * 2; i++) {
+          const z = (i / (2 + stage * 2)) * h;
+          blob(pen, P(i % 2 ? 0.15 : -0.15, 0.1, z).x, P(0, 0.1, z).y, 3.5, 2.5, i % 2 ? leaf : dark);
+        }
+        if (stage === 3) for (const dx of [-0.15, 0.15]) pen.line(P(dx, 0.12, 20), P(dx, 0.12, 10), pal.fruit ?? '#9cc84a', 1.5);
+        return;
+      }
+      if (shape === 'banana') {
+        // Banana: a thick pseudostem and big drooping paddle leaves.
+        const h = [6, 14, 26, 36][stage]!;
+        pen.line(P(0, 0), P(0, 0, h), pal.trunk ?? '#6a7a3a', stage === 0 ? 2 : 4);
+        const span = 4 + stage * 4;
+        for (const [dx, dy] of [[-1, 0.2], [1, 0.1], [-0.4, -0.6], [0.5, -0.5]] as const) {
+          pen.poly([{ x: 0, y: -h }, { x: dx * span, y: -h + dy * span - 2 }, { x: dx * span * 1.1, y: -h + dy * span + 3 }], leaf, dark);
+        }
+        if (stage === 3) for (const dy of [4, 7]) blob(pen, 3, -h + dy, 3, 1.5, pal.fruit ?? '#e8d24a');
+        return;
+      }
       if (shape === 'vine') {
         // Sweet potato: purple stems sprawling flat, heart-shaped leaves.
         const reach = [0.12, 0.22, 0.34, 0.42][stage]!;
@@ -511,6 +533,72 @@ const painters: Record<ArtEntry['generator'], { up: number; paint: Painter } | '
       pen.poly([{ x: -7, y: -13 }, { x: 7, y: -13 }, { x: 6, y: -29 }, { x: -6, y: -29 }], pal.shirt ?? '#3f6a9a', line);
       blob(pen, 0, -35, 6, 6.5, pal.skin ?? '#b07a52', line);
       blob(pen, -1, -39, 6.5, 3.5, pal.hair ?? '#2a1d14');
+    },
+  },
+  table: {
+    up: 26,
+    paint(pen, pal, frame) {
+      const c = fromPalette(pal);
+      const along = frame === 'r1';
+      const hx = along ? 0.22 : 0.36;
+      const hy = along ? 0.36 : 0.22;
+      for (const [x, y] of [[-hx + 0.04, hy - 0.04], [hx - 0.04, hy - 0.04], [hx - 0.04, -hy + 0.04]] as const) pen.line(P(x, y, 0), P(x, y, 14), c.left, 2.5);
+      box(pen, 0, 0, hx, hy, 14, 17, c);
+    },
+  },
+  chair: {
+    up: 30,
+    paint(pen, pal, frame) {
+      const c = fromPalette(pal);
+      const r = Number(frame.slice(1));
+      for (const [x, y] of [[-0.12, 0.12], [0.12, 0.12], [0.12, -0.12]] as const) pen.line(P(x, y, 0), P(x, y, 9), c.left, 2);
+      box(pen, 0, 0, 0.14, 0.14, 9, 11, c);
+      // Back rest on the side the chair faces away from.
+      const [bx, by, hx, hy] = [[0, -0.13, 0.14, 0.02], [0.13, 0, 0.02, 0.14], [0, 0.13, 0.14, 0.02], [-0.13, 0, 0.02, 0.14]][r] as [number, number, number, number];
+      box(pen, bx, by, hx, hy, 11, 24, c);
+    },
+  },
+  lantern: {
+    up: 26,
+    paint(pen, pal) {
+      const line = pal.line ?? '#1a1814';
+      box(pen, 0, 0, 0.07, 0.07, 0, 12, { top: pal.glass ?? '#f2d36b', left: shade(pal.glass ?? '#f2d36b', -0.15), right: pal.glass ?? '#f2d36b', line });
+      pen.poly([P(-0.1, -0.1, 13), P(0.1, -0.1, 13), P(0.1, 0.1, 13), P(-0.1, 0.1, 13)], pal.panel ?? '#2f4f6f', line);
+      pen.line(P(0, 0, 13), P(0, 0, 18), pal.body ?? '#3a3a36', 1.5);
+      blob(pen, 0, -6, 9, 5, 'rgba(255,220,120,0.25)');
+    },
+  },
+  rug: {
+    up: 2,
+    paint(pen, pal, frame) {
+      const along = frame === 'r1';
+      const hx = along ? 0.3 : 0.42;
+      const hy = along ? 0.42 : 0.3;
+      pen.poly([P(-hx, -hy, 1), P(hx, -hy, 1), P(hx, hy, 1), P(-hx, hy, 1)], pal.base ?? '#a8543a', pal.edge);
+      for (const k of [-0.5, 0, 0.5]) {
+        if (along) pen.line(P(-hx, k * hy, 1.2), P(hx, k * hy, 1.2), pal.stripe ?? '#e8c87a', 2);
+        else pen.line(P(k * hx, -hy, 1.2), P(k * hx, hy, 1.2), pal.stripe ?? '#e8c87a', 2);
+      }
+    },
+  },
+  kiosk: {
+    up: 64,
+    paint(pen, pal) {
+      const line = pal.line ?? '#1a0e0e';
+      const body = pal.body ?? '#8a1f1f';
+      box(pen, 0, 0, 0.3, 0.24, 0, 54, { top: pal.trim ?? '#c9a23a', left: pal.dark ?? '#5a1414', right: body, line });
+      // Screen and slot on the front (south-west) face.
+      const f = (u: number, z: number) => P(-0.3 + u * 0.6, 0.24, z);
+      pen.poly([f(0.15, 26), f(0.85, 26), f(0.85, 46), f(0.15, 46)], pal.screen ?? '#2a3a3a', line);
+      pen.poly([f(0.22, 30), f(0.78, 30), f(0.78, 42), f(0.22, 42)], pal.glow ?? '#7fd0c0');
+      pen.poly([f(0.3, 14), f(0.7, 14), f(0.7, 18), f(0.3, 18)], line);
+      pen.poly([f(0.35, 4), f(0.65, 4), f(0.65, 12), f(0.35, 12)], pal.paper ?? '#eae2cc', line);
+      // Cross-and-star seal on the side.
+      const side = (v: number, z: number) => P(0.3, -0.24 + v * 0.48, z);
+      const c = side(0.5, 38);
+      pen.line({ x: c.x, y: c.y - 7 }, { x: c.x, y: c.y + 7 }, pal.trim ?? '#c9a23a', 2);
+      pen.line({ x: c.x - 5, y: c.y - 2 }, { x: c.x + 5, y: c.y - 2 }, pal.trim ?? '#c9a23a', 2);
+      pen.dot({ x: c.x, y: c.y - 10 }, 1.6, pal.trim ?? '#c9a23a');
     },
   },
   wall: 'wall',

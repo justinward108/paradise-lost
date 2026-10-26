@@ -31,7 +31,12 @@ export type WorldCommand =
   | { type: 'gift'; id: string; npcId: string; item: string; nowMs: number }
   | { type: 'contribute'; id: string; projectId: string; item: string; amount: number; nowMs: number }
   | { type: 'work'; id: string; projectId: string; nowMs: number }
-  | { type: 'tick'; id: string; nowMs: number };
+  | { type: 'tick'; id: string; nowMs: number }
+  | { type: 'kioskSell'; id: string; requestKey: string; item: string; qty: number }
+  | { type: 'kioskSettle'; id: string; requestKey: string; acceptedQty: number }
+  | { type: 'kioskOrder'; id: string; requestKey: string; offer: string }
+  | { type: 'kioskDeliver'; id: string; requestKey: string; item: string; qty: number }
+  | { type: 'kioskCancel'; id: string; requestKey: string };
 
 export interface ActionResult {
   ok: boolean;
@@ -77,6 +82,13 @@ function run(town: Town, catalog: Catalog, world: World, cmd: WorldCommand): Act
   switch (cmd.type) {
     case 'tick':
       return { ok: true, changed: false, events: [] };
+
+    case 'kioskSell':
+    case 'kioskSettle':
+    case 'kioskOrder':
+    case 'kioskDeliver':
+    case 'kioskCancel':
+      return runKiosk(town, world, cmd);
 
     case 'move': {
       const { x, y } = cmd.to;
@@ -204,6 +216,7 @@ function run(town: Town, catalog: Catalog, world: World, cmd: WorldCommand): Act
       if (tooFar(town, cmd)) return no(FAR);
       const weeds = bedWeeds(town, key, cmd.nowMs);
       const events = [`garden:harvested:${def.id}`];
+      town.progress.harvests = (town.progress.harvests ?? 0) + 1;
       gain(town, Object.fromEntries(Object.entries(def.yields).map(([m, n]) => [m, harvestAmount(n, weeds)])), events);
       if (def.regrowDays) {
         crop.sinceDay = today(town, cmd.nowMs);
@@ -307,6 +320,57 @@ function run(town: Town, catalog: Catalog, world: World, cmd: WorldCommand): Act
       }
       events.push(...settleProjects(town, world, cmd.nowMs));
       return yes(events);
+    }
+  }
+}
+
+/** Most goods the kiosk takes in one sale (poor.camp enforces the same limit). */
+export const KIOSK_MAX_SALE = 50;
+
+function runKiosk(town: Town, world: World, cmd: Extract<WorldCommand, { type: `kiosk${string}` }>): ActionResult {
+  const k = (town.kiosk ??= { pendingSales: [], pendingOrders: [] });
+  const atKiosk = () => world.kiosk !== undefined && inReach(town.player, world.kiosk);
+  switch (cmd.type) {
+    case 'kioskSell': {
+      if (!world.kiosk) return no('There is no kiosk here');
+      if (!atKiosk()) return no(FAR);
+      if (!Number.isSafeInteger(cmd.qty) || cmd.qty < 1 || cmd.qty > KIOSK_MAX_SALE) return no(`Sell between 1 and ${KIOSK_MAX_SALE} at a time`);
+      if ((town.inventory[cmd.item] ?? 0) < cmd.qty) return no("You don't have that many");
+      if (k.pendingSales.some((s) => s.key === cmd.requestKey)) return no('Already sent');
+      town.inventory[cmd.item]! -= cmd.qty;
+      k.pendingSales.push({ key: cmd.requestKey, item: cmd.item, qty: cmd.qty });
+      return yes([`kiosk:selling:${cmd.item}:${cmd.qty}`]);
+    }
+    case 'kioskSettle': {
+      const i = k.pendingSales.findIndex((s) => s.key === cmd.requestKey);
+      if (i < 0) return no('No such sale');
+      const sale = k.pendingSales[i]!;
+      const accepted = Math.max(0, Math.min(sale.qty, Math.floor(cmd.acceptedQty)));
+      k.pendingSales.splice(i, 1);
+      if (sale.qty > accepted) town.inventory[sale.item] = (town.inventory[sale.item] ?? 0) + sale.qty - accepted;
+      return yes([`kiosk:sold:${sale.item}:${accepted}`, ...(sale.qty > accepted ? [`kiosk:returned:${sale.item}:${sale.qty - accepted}`] : [])]);
+    }
+    case 'kioskOrder': {
+      if (!world.kiosk) return no('There is no kiosk here');
+      if (!atKiosk()) return no(FAR);
+      if (k.pendingOrders.some((o) => o.key === cmd.requestKey)) return no('Already ordered');
+      k.pendingOrders.push({ key: cmd.requestKey, offer: cmd.offer });
+      return yes([`kiosk:ordered:${cmd.offer}`]);
+    }
+    case 'kioskDeliver': {
+      const i = k.pendingOrders.findIndex((o) => o.key === cmd.requestKey);
+      if (i < 0) return no('Already delivered');
+      if (!Number.isSafeInteger(cmd.qty) || cmd.qty < 1) return no('Nothing to deliver');
+      k.pendingOrders.splice(i, 1);
+      const events = ['kiosk:delivered'];
+      gain(town, { [cmd.item]: cmd.qty }, events);
+      return yes(events);
+    }
+    case 'kioskCancel': {
+      const i = k.pendingOrders.findIndex((o) => o.key === cmd.requestKey);
+      if (i < 0) return no('No such order');
+      k.pendingOrders.splice(i, 1);
+      return yes(['kiosk:cancelled']);
     }
   }
 }

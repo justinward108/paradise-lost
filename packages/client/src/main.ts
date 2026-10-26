@@ -6,6 +6,7 @@ import { catalog, STARTER_INVENTORY, world, type Style } from '@paradise-lost/co
 import * as sim from '@paradise-lost/sim';
 import { AMBIENT_DAY_MS, createTown, summariseAbsence, type Town } from '@paradise-lost/sim';
 import { Controller } from './game/controller.ts';
+import { KioskSession } from './game/kiosk.ts';
 import { BuildScene } from './scene/BuildScene.ts';
 import { IndexedDbKV, LocalTownStore, MemoryKV, type TownStore } from './store/townStore.ts';
 import { mountUi, showAwayCard, showWelcome } from './ui/ui.ts';
@@ -101,6 +102,8 @@ async function boot() {
   }
 
   const ctrl = new Controller(town, catalog, world, store, readStyle());
+  const kiosk = new KioskSession(ctrl);
+  ctrl.kiosk = kiosk;
   if (loaded?.recovered) ctrl.setStatus('Your last save was damaged, so the one before it was restored.', 'warn');
 
   // Summarise before settling time, so the card can say what happened.
@@ -128,12 +131,25 @@ async function boot() {
     tips.trigger('away');
   }
 
+  // Rapture Credits: check the Poor Camp account, finish any half-done trades, and pay
+  // milestones as they are reached (poor.camp pays each once per account).
+  void kiosk.start();
+  let milestoneTimer: ReturnType<typeof setTimeout> | null = null;
+  ctrl.on((what) => {
+    if (what !== 'town' || !kiosk.signedIn || milestoneTimer) return;
+    milestoneTimer = setTimeout(() => {
+      milestoneTimer = null;
+      void kiosk.claimMilestones();
+    }, 1500);
+  });
+
   const markSeen = () => void store.setMeta('lastSeen', String(Date.now()));
   markSeen();
   setInterval(markSeen, 30_000);
   document.addEventListener('visibilitychange', () => {
     markSeen();
     if (document.visibilityState === 'hidden') store.flushSync();
+    else if (kiosk.signedIn) void kiosk.sync();
   });
   window.addEventListener('pagehide', () => store.flushSync());
 

@@ -822,3 +822,94 @@ body.style-pixel .feedback-card textarea {
   opacity: 0.45;
   cursor: default;
 }
+
+/* Relief kiosk and Rapture Credits */
+.chip.credits {
+  font-variant-numeric: tabular-nums;
+}
+
+.panel .balance {
+  margin: 10px 0 2px;
+  font-size: 18px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.panel h3 {
+  margin: 14px 0 6px;
+  font-size: 15px;
+}
+
+.panel h4 {
+  margin: 10px 0 4px;
+  font-size: 13px;
+  color: var(--ink-soft);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.panel .trade {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 2px 8px;
+  align-items: center;
+  padding: 6px 0;
+  border-top: 1px solid color-mix(in srgb, var(--edge) 35%, transparent);
+}
+
+.panel .trade .price {
+  font-variant-numeric: tabular-nums;
+  color: var(--ink-soft);
+  font-size: 13px;
+}
+
+.panel .trade .acts {
+  grid-column: 1 / -1;
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.panel .trade button {
+  min-height: 32px;
+  padding: 4px 10px;
+}
+
+.panel .kiosk-milestones ul {
+  margin: 4px 0;
+  padding-left: 0;
+  list-style: none;
+  line-height: 1.6;
+}
+
+.panel .kiosk-milestones li.done {
+  color: var(--ink-soft);
+}
+
+.panel .note.ok {
+  font-style: normal;
+  color: #3f7a2a;
+}
+
+.panel .note.error {
+  font-style: normal;
+  color: #b0402e;
+}
+
+body.style-pixel .panel .note.ok {
+  color: #8fd06a;
+}
+
+body.style-pixel .panel .note.error {
+  color: #ff8a70;
+}
+
+.panel .fine {
+  font-size: 11.5px;
+  color: var(--ink-soft);
+  margin-top: 12px;
+}
+
+.panel .kiosk-foot a {
+  color: inherit;
+}
