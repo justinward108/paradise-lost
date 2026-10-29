@@ -11,7 +11,8 @@
   ],
   "scripts": {
     "dev": "npm run dev -w @paradise-lost/client",
-    "build": "npm run validate-content && npm run typecheck && npm run build -w @paradise-lost/client",
+    "build": "npm run validate-content && npm run typecheck && npm run build -w @paradise-lost/client && node scripts/check.mjs",
+    "check": "node scripts/check.mjs",
     "typecheck": "tsc -b",
     "test": "vitest run",
     "validate-content": "node --experimental-strip-types packages/content/scripts/validate.ts",

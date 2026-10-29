@@ -1,0 +1,16 @@
+{
+  "name": "Paradise Lost — Poor Camp",
+  "short_name": "Paradise Lost",
+  "description": "Cozy life simulation game set on the Hilo and Puna side of Hawaiʻi Island in the world of Poor Camp.",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#a9c48b",
+  "theme_color": "#a9c48b",
+  "icons": [
+    {
+      "src": "/assets/portal-preview.png",
+      "sizes": "1200x630",
+      "type": "image/png"
+    }
+  ]
+}

@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /_archive/
+Disallow: /angel/tools/
+Disallow: /corporations/_templates/
+
+Sitemap: https://paradiselost.poor.camp/sitemap.xml
