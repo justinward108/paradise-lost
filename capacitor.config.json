@@ -3,13 +3,13 @@
   "appName": "Paradise Lost",
   "webDir": "dist/client",
   "bundledWebRuntime": false,
-  "backgroundColor": "#a9c48b",
+  "backgroundColor": "#263822",
   "server": {
     "androidScheme": "https"
   },
   "android": {
     "allowMixedContent": false,
-    "backgroundColor": "#a9c48b",
+    "backgroundColor": "#263822",
     "buildOptions": {
       "keystorePath": "release-key.keystore",
       "keystoreAlias": "paradise-lost"
@@ -17,14 +17,14 @@
   },
   "ios": {
     "contentInset": "always",
-    "backgroundColor": "#a9c48b",
+    "backgroundColor": "#263822",
     "preferredContentMode": "mobile"
   },
   "plugins": {
     "SplashScreen": {
       "launchShowDuration": 1200,
       "launchAutoHide": true,
-      "backgroundColor": "#a9c48b",
+      "backgroundColor": "#263822",
       "androidScaleType": "CENTER_CROP",
       "showSpinner": false,
       "splashFullScreen": true,
@@ -32,7 +32,7 @@
     },
     "StatusBar": {
       "style": "DARK",
-      "backgroundColor": "#a9c48b",
+      "backgroundColor": "#263822",
       "overlaysWebView": true
     },
     "Keyboard": {
