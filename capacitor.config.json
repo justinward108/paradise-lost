@@ -1,5 +1,43 @@
 {
   "appId": "camp.poor.paradiselost",
   "appName": "Paradise Lost",
-  "webDir": "dist/client"
+  "webDir": "dist/client",
+  "bundledWebRuntime": false,
+  "backgroundColor": "#a9c48b",
+  "server": {
+    "androidScheme": "https"
+  },
+  "android": {
+    "allowMixedContent": false,
+    "backgroundColor": "#a9c48b",
+    "buildOptions": {
+      "keystorePath": "release-key.keystore",
+      "keystoreAlias": "paradise-lost"
+    }
+  },
+  "ios": {
+    "contentInset": "always",
+    "backgroundColor": "#a9c48b",
+    "preferredContentMode": "mobile"
+  },
+  "plugins": {
+    "SplashScreen": {
+      "launchShowDuration": 1200,
+      "launchAutoHide": true,
+      "backgroundColor": "#a9c48b",
+      "androidScaleType": "CENTER_CROP",
+      "showSpinner": false,
+      "splashFullScreen": true,
+      "splashImmersive": true
+    },
+    "StatusBar": {
+      "style": "DARK",
+      "backgroundColor": "#a9c48b",
+      "overlaysWebView": true
+    },
+    "Keyboard": {
+      "resize": "body",
+      "resizeOnFullScreen": true
+    }
+  }
 }

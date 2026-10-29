@@ -1,0 +1,2 @@
+rootProject.name = "paradise-lost"
+include(":app")

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Paradise Lost</string>
+    <string name="title_activity_main">Paradise Lost</string>
+    <string name="package_name">camp.poor.paradiselost</string>
+    <string name="custom_url_scheme">camp.poor.paradiselost</string>
+</resources>
