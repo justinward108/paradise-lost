@@ -4,3 +4,34 @@
 
 [build.environment]
   NODE_VERSION = "22"
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Content-Type-Options = "nosniff"
+    X-Frame-Options = "SAMEORIGIN"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+
+[[redirects]]
+  from = "/api/arcade/*"
+  to = "https://poor.camp/api/arcade/:splat"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/api/sso/callback"
+  to = "https://poor.camp/api/sso/callback"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/api/sso/session"
+  to = "https://poor.camp/api/sso/session"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/api/sso/logout"
+  to = "https://poor.camp/api/sso/logout"
+  status = 200
+  force = true
