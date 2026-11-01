@@ -1,3 +1,5 @@
+import {WorldConnection} from './net/world.ts';
+import {account,signIn,servicesHere} from './net/poorcamp.ts';
 /**
  * Entry point: load (or create) the town, start the renderer, mount the UI.
  */
@@ -46,7 +48,9 @@ function openStore(): TownStore {
 function newTown(now: number): Town {
   // Start the town's first day at 8 in the morning rather than midnight.
   const epoch = now - (8 / 24) * AMBIENT_DAY_MS;
-  return createTown({ townId: TOWN_ID, seed: `${TOWN_ID}-${now.toString(36)}`, nowMs: epoch, inventory: { ...STARTER_INVENTORY }, world, catalog });
+  const created = createTown({ townId: TOWN_ID, seed: `${TOWN_ID}-${now.toString(36)}`, nowMs: epoch, inventory: { ...STARTER_INVENTORY }, world, catalog });
+  sim.apply(created, catalog, { type: 'expandPrivatePlot', id: 'initial-private-plot', nowMs: now }, world);
+  return created;
 }
 
 /** Developer aid: pretend the player was away for `ms` (moves every timestamp back). */
@@ -71,12 +75,31 @@ function shiftBack(town: Town, ms: number) {
 async function boot() {
   const root = document.getElementById('app')!;
   const now = Date.now();
+  const online = servicesHere() ? new WorldConnection() : null;
+  let serverSnapshot: Awaited<ReturnType<WorldConnection['load']>> | null = null;
+  if(online){
+    root.textContent='Connecting to the shared world…';
+    try{
+      const user=await account();
+      if(user.state!=='signed-in'){
+        root.textContent='Sign in to enter the shared Paradise Lost world. Existing browser progress is preserved.';
+        const login=document.createElement('button');login.textContent='Sign in with poor.camp';login.onclick=()=>void signIn('/');root.append(login);return;
+      }
+      serverSnapshot=await online.load();
+      if(!serverSnapshot.exists)serverSnapshot=await online.create();
+      if(!serverSnapshot.state||serverSnapshot.revision===undefined)throw new Error('Invalid world state');
+    }catch{
+      root.textContent='The world server is unavailable. Your world has not been replaced by a local save.';
+      const retry=document.createElement('button');retry.textContent='Reconnect';retry.onclick=()=>location.reload();root.append(retry);return;
+    }
+    root.replaceChildren();
+  }
   const store = openStore();
   void navigator.storage?.persist?.();
 
   const params = new URLSearchParams(location.search);
   let fresh = false;
-  if (params.has('reset')) {
+  if (!online && params.has('reset')) {
     await store.save(newTown(now));
     fresh = true;
     history.replaceState(null, '', location.pathname);
@@ -84,30 +107,31 @@ async function boot() {
 
   let loaded: Awaited<ReturnType<TownStore['load']>> = null;
   try {
-    loaded = await store.load(TOWN_ID);
+    if(!online)loaded = await store.load(TOWN_ID);
   } catch (err) {
     console.warn('Could not read the save:', err);
   }
-  const town = loaded?.town ?? newTown(now);
-  if (!loaded) {
+  const town = serverSnapshot?.state ?? loaded?.town ?? newTown(now);
+  if (!loaded && !online) {
     fresh = true;
     await store.save(town);
   }
 
   let lastSeen = Number((await store.getMeta('lastSeen')) ?? now);
   const away = Number(params.get('away'));
-  if (away > 0) {
+  if (!online && away > 0) {
     shiftBack(town, away * HOUR);
     lastSeen = now - away * HOUR;
   }
 
   const ctrl = new Controller(town, catalog, world, store, readStyle());
+  if(online)await ctrl.connectOnline(online,serverSnapshot!.revision!);
   const kiosk = new KioskSession(ctrl);
   ctrl.kiosk = kiosk;
   if (loaded?.recovered) ctrl.setStatus('Your last save was damaged, so the one before it was restored.', 'warn');
 
   // Summarise before settling time, so the card can say what happened.
-  const summary = summariseAbsence(town, world, lastSeen, now);
+  const summary = summariseAbsence(town, ctrl.world, lastSeen, now);
 
   const scene = new BuildScene();
   const game = new Phaser.Game({
@@ -124,6 +148,8 @@ async function boot() {
   const tips = mountUi(root, ctrl, { zoom: (f) => scene.zoomBy(f), setRoofs: (s) => scene.setRoofs(s), follow: () => scene.follow() });
   ctrl.tick();
   setInterval(() => ctrl.tick(), TICK_MS);
+  if(online)setInterval(()=>void ctrl.refreshCenter(),10000);
+  if(online)setInterval(()=>{void online.social('heartbeat').catch(()=>undefined);},30000);
 
   if (fresh) showWelcome(root, () => undefined);
   else if (summary.lines.length > 0) {
@@ -133,7 +159,7 @@ async function boot() {
 
   // Rapture Credits: check the Poor Camp account, finish any half-done trades, and pay
   // milestones as they are reached (poor.camp pays each once per account).
-  void kiosk.start();
+  if(!online)void kiosk.start();
   let milestoneTimer: ReturnType<typeof setTimeout> | null = null;
   ctrl.on((what) => {
     if (what !== 'town' || !kiosk.signedIn || milestoneTimer) return;

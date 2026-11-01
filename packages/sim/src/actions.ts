@@ -5,6 +5,13 @@
  * Actions that depend on time carry the moment they happened (`nowMs`), so replaying a
  * command log gives the same town.
  */
+import { runWellbeing, settleWellbeing, socialReward, type WellbeingCommand } from './wellbeing.ts';
+import { runAnimals, type AnimalCommand } from './animals.ts';
+import { runDaily, type DailyCommand } from './daily.ts';
+import {runStaffing,type StaffingCommand} from './staffing.ts';
+import {runProduction,type ProductionCommand} from './productionActivities.ts';
+import { runTravel, type TravelCommand } from './travel.ts';
+import { runCareer, type CareerCommand } from './progression.ts';
 import { bedWeeds, cropStatus, harvestAmount, recordWatering, today } from './garden.ts';
 import { slotKey, tile } from './grid.ts';
 import { inReach, findPath, walkable } from './nav.ts';
@@ -16,6 +23,13 @@ import { growBack } from './regrow.ts';
 import { DEFAULT_REGROW, hasBrush, hasRubble, inLot, projectComplete, siteRemaining, terrainAt, treeAt, type Point, type World } from './world.ts';
 
 export type WorldCommand =
+  | StaffingCommand
+  | ProductionCommand
+  | DailyCommand
+  | AnimalCommand
+  | WellbeingCommand
+  | TravelCommand
+  | CareerCommand
   | { type: 'move'; id: string; to: Point }
   | { type: 'clearBrush'; id: string; x: number; y: number }
   | { type: 'clearRubble'; id: string; x: number; y: number }
@@ -28,6 +42,7 @@ export type WorldCommand =
   | { type: 'weed'; id: string; x: number; y: number; nowMs: number }
   | { type: 'harvest'; id: string; x: number; y: number; nowMs: number }
   | { type: 'talk'; id: string; npcId: string; nowMs: number }
+  | { type: 'trade'; id: string; npcId: string; offerId: string; nowMs: number }
   | { type: 'gift'; id: string; npcId: string; item: string; nowMs: number }
   | { type: 'contribute'; id: string; projectId: string; item: string; amount: number; nowMs: number }
   | { type: 'work'; id: string; projectId: string; nowMs: number }
@@ -80,8 +95,56 @@ export function applyWorld(town: Town, catalog: Catalog, world: World, cmd: Worl
 
 function run(town: Town, catalog: Catalog, world: World, cmd: WorldCommand): ActionResult {
   switch (cmd.type) {
+    case 'obtainAnimal':
+    case 'feedAnimal':
+    case 'waterAnimal':
+    case 'playAnimal':
+    case 'collectAnimal':
+    case 'sellAnimal':
+    case 'slaughterAnimal':
+    case 'treatAnimal':
+      return runAnimals(town, world.animalDefs, cmd);
+
+    case 'consume':
+    case 'buildWaterSource':
+    case 'drawWater':
+      return runWellbeing(town, world, cmd);
+
+    case 'advertiseTeacher':
+    case 'hireTeacher':
+    case 'dismissTeacher':
+    case 'attendLesson':
+      return runStaffing(town,world.workshop,cmd);
+
+    case 'fertilize':
+    case 'prospect':
+    case 'equipClothing':
+    case 'playConsole':
+    case 'finishConsole':
+      return runProduction(town,cmd);
+
+    case 'donateFood':
+    case 'completeDailyRequest':
+      return runDaily(town, world, cmd);
+
+    case 'expandPrivatePlot':
+    case 'foundTown':
+    case 'visitTown':
+    case 'returnToPlot':
+    case 'moveResidence':
+    case 'appointMayor':
+      return runTravel(town, catalog, world, cmd);
+
+    case 'study':
+    case 'craft':
+    case 'learnRecipe':
+    case 'finishActivity':
+    case 'qualify':
+    case 'certifyTeacher':
+      return runCareer(town, world.workshop, cmd);
+
     case 'tick':
-      return { ok: true, changed: false, events: [] };
+      return world.wellbeing ? settleWellbeing(town, cmd.nowMs) : { ok: true, changed: false, events: [] };
 
     case 'kioskSell':
     case 'kioskSettle':
@@ -180,7 +243,7 @@ function run(town: Town, catalog: Catalog, world: World, cmd: WorldCommand): Act
       if ((town.inventory[def.seed] ?? 0) < 1) return no(`You have no ${def.name} to plant`);
       if (tooFar(town, cmd)) return no(FAR);
       town.inventory[def.seed]! -= 1;
-      town.crops[key] = { cropId: def.id, sinceDay: today(town, cmd.nowMs), wateredDays: [], harvests: 0 };
+      town.crops[key] = { plantingId: cmd.id, cropId: def.id, sinceDay: today(town, cmd.nowMs), wateredDays: [], harvests: 0 };
       return yes([`garden:planted:${def.id}`]);
     }
 
@@ -191,6 +254,8 @@ function run(town: Town, catalog: Catalog, world: World, cmd: WorldCommand): Act
       if (rainOnDay(town, d)) return no('The rain has watered it today');
       if (crop.wateredDays.includes(d)) return no('Already watered today');
       if (tooFar(town, cmd)) return no(FAR);
+      if (world.wellbeing && !(town.inventory.water! > 0)) return no('You need 1 water; barter with Rosa or use your plot water source');
+      if (world.wellbeing) town.inventory.water!--;
       recordWatering(crop, d);
       return yes(['garden:watered']);
     }
@@ -217,7 +282,9 @@ function run(town: Town, catalog: Catalog, world: World, cmd: WorldCommand): Act
       const weeds = bedWeeds(town, key, cmd.nowMs);
       const events = [`garden:harvested:${def.id}`];
       town.progress.harvests = (town.progress.harvests ?? 0) + 1;
-      gain(town, Object.fromEntries(Object.entries(def.yields).map(([m, n]) => [m, harvestAmount(n, weeds)])), events);
+      gain(town, { [def.seed]: 1 }, events);
+      gain(town, Object.fromEntries(Object.entries(def.yields).map(([m, n]) => [m, harvestAmount(n, weeds)+(town.soil[key]?.harvestBoost??0)])), events);
+      if(town.soil[key])delete town.soil[key]!.harvestBoost;
       if (def.regrowDays) {
         crop.sinceDay = today(town, cmd.nowMs);
         crop.harvests += 1;
@@ -248,8 +315,30 @@ function run(town: Town, catalog: Catalog, world: World, cmd: WorldCommand): Act
       } else {
         events.push(`npc:chat_again:${def.id}`);
       }
+      if (world.wellbeing && events.some(e => e.startsWith('npc:first_meet:') || e.startsWith('npc:chat:'))) socialReward(town, cmd.nowMs, 'charisma');
       teachIfReady(town, world, def.id, events);
       return { ok: true, changed: true, events };
+    }
+
+    case 'trade': {
+      const def = world.npcs.find((n) => n.id === cmd.npcId);
+      const st = town.npcs[cmd.npcId];
+      if (!def || !st) return no('Nobody here');
+      if (!st.met) return no('Say hello first');
+      const pos = npcPosition(town, world, def, cmd.nowMs);
+      if (pos.inside) return no(`${def.name} has gone in for the night`);
+      if (tooFar(town, pos)) return no(FAR);
+      const offer = def.trades?.find((o) => o.id === cmd.offerId);
+      if (!offer) return no('That trade is not available');
+      const valid = (items: Record<string, number>) => Object.keys(items).length > 0 && Object.values(items).every((n) => Number.isSafeInteger(n) && n > 0);
+      if (!valid(offer.cost) || !valid(offer.gives)) return no('That trade is not available');
+      for (const [item, qty] of Object.entries(offer.cost)) {
+        if ((town.inventory[item] ?? 0) < qty) return no('You do not have the goods for this trade');
+      }
+      for (const [item, qty] of Object.entries(offer.cost)) town.inventory[item]! -= qty;
+      const events = [`npc:traded:${def.id}:${offer.id}`];
+      gain(town, offer.gives, events);
+      return yes(events);
     }
 
     case 'gift': {
@@ -265,6 +354,7 @@ function run(town: Town, catalog: Catalog, world: World, cmd: WorldCommand): Act
       if (tooFar(town, pos)) return no(FAR);
       town.inventory[cmd.item]! -= 1;
       st.lastGiftDay = d;
+      if (world.wellbeing) socialReward(town, cmd.nowMs, 'kindness');
       const liked = def.likes.includes(cmd.item);
       addFriendship(town, def.id, liked ? FRIENDSHIP.likedGift : FRIENDSHIP.gift);
       const events = [liked ? `npc:gift_liked:${def.id}:${cmd.item}` : `npc:gift:${def.id}:${cmd.item}`];

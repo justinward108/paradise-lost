@@ -58,6 +58,8 @@ export class BuildScene extends Phaser.Scene {
   private lastPainted = '';
   private walkFrom: Point | null = null;
   private walkT = 0;
+  private wardrobeSignature = '';
+  private npcClock = 0;
   showRoofs = true;
   private hoverDepth = -1;
   private hoverAt: Point | null = null;
@@ -88,11 +90,19 @@ export class BuildScene extends Phaser.Scene {
     this.placeAvatar(this.ctrl.town.player);
 
     const cam = this.cameras.main;
-    const lotPx = ((this.ctrl.town.lot.w + this.ctrl.town.lot.h) * TW) / 2;
+    const lotPx = ((Math.min(this.ctrl.town.lot.w,24) + Math.min(this.ctrl.town.lot.h,24)) * TW) / 2;
     cam.setZoom(Phaser.Math.Clamp((this.scale.width * 1.1) / lotPx, 0.5, 1.4));
     cam.startFollow(this.avatar, true, 0.15, 0.15);
 
-    this.ctrl.on((what) => {
+    this.ctrl.on((what, data) => {
+      if (what === 'focus') {
+        const point = data as Point;
+        const target = toScreen(point.x + 0.5, point.y + 0.5);
+        cam.stopFollow();
+        cam.pan(target.x, target.y, 450);
+        this.ctrl.updatePreview({kind:'tile',x:point.x,y:point.y,level:0});
+      }
+      if (what === 'location') this.reloadLocation();
       if (what === 'town' || what === 'clock') this.syncAll();
       if (what === 'style') this.applyStyle();
       if (what === 'walk') cam.startFollow(this.avatar, true, 0.15, 0.15);
@@ -104,6 +114,33 @@ export class BuildScene extends Phaser.Scene {
     this.input.on('pointerdown', this.onDown, this);
     this.input.on('pointerup', this.onUp, this);
     this.input.on('wheel', (_p: unknown, _o: unknown, _dx: number, dy: number) => this.zoomBy(dy > 0 ? 0.9 : 1.1));
+  }
+
+  private reloadLocation() {
+    for (const img of this.statics) img.destroy();
+    this.statics = [];
+    for (const collection of [this.sprites, this.overlays, this.npcs]) {
+      for (const img of collection.values()) img.destroy();
+      collection.clear();
+    }
+    this.highlighted = null;
+    this.walkFrom = null;
+    this.walkT = 0;
+    this.dragPan = null;
+    this.touchDown = null;
+    this.painting = false;
+    this.hover.clear();
+    this.ghost.setVisible(false);
+    this.drawStatics();
+    for (const n of this.ctrl.world.npcs) {
+      const img = this.add.image(0, 0, '__DEFAULT');
+      img.setData('art', `obj.${n.id}`);
+      this.setTex(img, this.key(`obj.${n.id}`, 'r0'));
+      this.npcs.set(n.id, img);
+    }
+    this.syncAll();
+    this.placeAvatar(this.ctrl.town.player);
+    this.follow();
   }
 
   // ---------- textures ----------
@@ -168,7 +205,7 @@ export class BuildScene extends Phaser.Scene {
   private placeSprite(img: Phaser.GameObjects.Image, p: PlacedPiece) {
     const layer = LAYER_OF[this.ctrl.catalog[p.pieceId]!.kind];
     const a = slotAnchor(p.slot);
-    const z = layer === 'foundation' ? 0 : layer === 'roof' ? FOUND_H + WALL_H : FOUND_H;
+    const z = layer === 'foundation' || this.ctrl.catalog[p.pieceId]?.outdoor ? 0 : layer === 'roof' ? FOUND_H + WALL_H : FOUND_H;
     img.setPosition(a.x, a.y - z);
     const d = slotDepth(p.slot);
     if (layer === 'foundation') img.setDepth(BAND.ground + d);
@@ -178,6 +215,7 @@ export class BuildScene extends Phaser.Scene {
   }
 
   private syncAll() {
+    this.applyWardrobe();
     this.syncPieces();
     this.syncOverlays();
     this.syncNpcs();
@@ -311,7 +349,7 @@ export class BuildScene extends Phaser.Scene {
       const moved = img.getData('at') !== `${pos.x},${pos.y}`;
       img.setData('at', `${pos.x},${pos.y}`);
       if (moved && img.getData('placed')) this.tweens.add({ targets: img, x: p.x, y: p.y - 2, duration: 1200, ease: 'Sine.easeInOut' });
-      else img.setPosition(p.x, p.y - 2);
+      else if (!img.getData('placed')) img.setPosition(p.x, p.y - 2);
       img.setData('placed', true);
       img.setDepth(BAND.standing + (pos.x + pos.y + 1) * 10 + 4);
     }
@@ -324,6 +362,8 @@ export class BuildScene extends Phaser.Scene {
   }
 
   override update(_time: number, delta: number) {
+    this.npcClock += delta;
+    if (this.npcClock >= 250) { this.npcClock = 0; this.syncNpcs(); }
     const route = this.ctrl.route;
     if (route.length === 0) {
       this.walkFrom = null;
@@ -347,8 +387,25 @@ export class BuildScene extends Phaser.Scene {
     }
   }
 
+  private applyWardrobe() {
+    const wardrobe = Object.fromEntries(Object.entries(this.ctrl.town.wardrobe?.equipped ?? {}).filter(([,id]) => (this.ctrl.town.inventory[id] ?? 0) > 0));
+    const signature = this.ctrl.style + JSON.stringify(wardrobe);
+    if (signature === this.wardrobeSignature) return;
+    this.wardrobeSignature = signature;
+    const entry = structuredClone(objectArt.player![this.ctrl.style]);
+    if (wardrobe.shirt || wardrobe.outfit) entry.palette.shirt = '#9b5976';
+    if (wardrobe.pants || wardrobe.outfit) entry.palette.pants = '#526c80';
+    if (wardrobe.shoes || wardrobe.outfit) entry.palette.shoes = '#91663c';
+    if (wardrobe.hat) entry.palette.hat = '#c6a760';
+    if (wardrobe.bag) entry.palette.bag = '#87653f';
+    const key = this.key(`obj.wardrobe-${hashString(signature)}`, 'r0');
+    if (!this.textures.exists(key)) this.addTexture(key, entry, this.ctrl.style, 'r0');
+    this.setTex(this.avatar, key);
+  }
+
   private applyStyle() {
     this.applyBackground();
+    this.applyWardrobe();
     for (const img of this.statics) this.restyle(img);
     this.restyle(this.avatar);
     for (const img of this.npcs.values()) this.restyle(img);

@@ -5,3 +5,5 @@
 /api/sso/session     https://poor.camp/api/sso/session     200
 /api/sso/callback    https://poor.camp/api/sso/callback    200
 /api/sso/logout      https://poor.camp/api/sso/logout      200
+
+/api/paradise-world  https://poor.camp/api/paradise-world  200

@@ -93,6 +93,8 @@ export interface CropDef {
 }
 
 export interface ScheduleStop {
+  /** Adjacent authored patrol loop; empty means stay at this stop. */
+  patrol?: Point[];
   fromHour: number;
   x: number;
   y: number;
@@ -102,6 +104,7 @@ export interface ScheduleStop {
 }
 
 export interface NpcDef {
+  greeting?: string;
   id: string;
   name: string;
   schedule: ScheduleStop[];
@@ -112,6 +115,8 @@ export interface NpcDef {
   lessonAt: number;
   lessonGift: Record<string, number>;
   lessonTier: number;
+  /** Fixed barter offers; the command contains an offer id, never client-supplied prices. */
+  trades?: { id: string; cost: Record<string, number>; gives: Record<string, number> }[];
 }
 
 export interface ProjectStageDef {
@@ -132,6 +137,11 @@ export interface ProjectDef {
 }
 
 export interface World {
+  animalDefs?: Record<string, import('./animals.ts').AnimalDef>;
+  wellbeing?: import('./wellbeing.ts').WellbeingDef;
+  /** Runtime link only, never serialized into a save. */
+  travelBase?: World;
+  workshop?: import('./progression.ts').WorkshopDef;
   map: MapDef;
   sites: SiteDef[];
   crops: Readonly<Record<string, CropDef>>;

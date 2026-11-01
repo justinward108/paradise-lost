@@ -21,7 +21,10 @@ export function npcPosition(town: Town, world: World, def: NpcDef, nowMs: number
   const sorted = [...valid].sort((a, b) => a.fromHour - b.fromHour);
   let stop = sorted[sorted.length - 1]!; // before the first stop of the day, the last one (night) applies
   for (const s of sorted) if (s.fromHour <= hour) stop = s;
-  return { x: stop.x, y: stop.y, inside: Boolean(stop.inside), stop };
+  const elapsed = Math.max(0, (hour - stop.fromHour) * 60);
+  const patrol = !stop.inside ? stop.patrol : undefined;
+  const point = patrol?.length ? patrol[Math.floor(elapsed / 8) % patrol.length]! : stop;
+  return { x: point.x, y: point.y, inside: Boolean(stop.inside), stop };
 }
 
 export const FRIENDSHIP = {

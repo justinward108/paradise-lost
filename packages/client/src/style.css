@@ -913,3 +913,10 @@ body.style-pixel .panel .note.error {
 .panel .kiosk-foot a {
   color: inherit;
 }
+
+/* Keep the expanded activity set out of the playfield and planting toolbar. */
+.activity-menu { display: grid; grid-template-columns: 1fr; gap: 8px; margin-top: 12px; }
+.topbar .inventory { max-height: 48px; overflow-y: auto; }
+#pc-studio-audio-btn { left: auto !important; right: 12px !important; bottom: calc(env(safe-area-inset-bottom) + 106px) !important; }
+
+.panel .close { position: sticky; top: 0; z-index: 1; }

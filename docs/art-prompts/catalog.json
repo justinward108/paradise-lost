@@ -1,0 +1,5049 @@
+{
+  "date": "2026-10-31",
+  "assets": [
+    {
+      "id": "existing.pieces.table",
+      "group": "Existing pieces",
+      "subject": "table",
+      "states": [
+        "r0",
+        "r1"
+      ],
+      "status": "code-defined-placeholder",
+      "kind": "object",
+      "notes": "Exact manifest frame IDs preserved. Code is implementation evidence, not visual approval.",
+      "palette": {
+        "pixel": {
+          "light": "#d9b779",
+          "mid": "#b8925a",
+          "dark": "#7f6138",
+          "line": "#3a2a18"
+        },
+        "storybook": {
+          "light": "#ead1a2",
+          "mid": "#cfae7c",
+          "dark": "#9b7b56",
+          "line": "#6e5741"
+        }
+      }
+    },
+    {
+      "id": "existing.pieces.chair",
+      "group": "Existing pieces",
+      "subject": "chair",
+      "states": [
+        "r0",
+        "r1",
+        "r2",
+        "r3"
+      ],
+      "status": "code-defined-placeholder",
+      "kind": "object",
+      "notes": "Exact manifest frame IDs preserved. Code is implementation evidence, not visual approval.",
+      "palette": {
+        "pixel": {
+          "light": "#d9b779",
+          "mid": "#b8925a",
+          "dark": "#7f6138",
+          "line": "#3a2a18"
+        },
+        "storybook": {
+          "light": "#ead1a2",
+          "mid": "#cfae7c",
+          "dark": "#9b7b56",
+          "line": "#6e5741"
+        }
+      }
+    },
+    {
+      "id": "existing.pieces.lantern",
+      "group": "Existing pieces",
+      "subject": "lantern",
+      "states": [
+        "r0"
+      ],
+      "status": "code-defined-placeholder",
+      "kind": "object",
+      "notes": "Exact manifest frame IDs preserved. Code is implementation evidence, not visual approval.",
+      "palette": {
+        "pixel": {
+          "body": "#3a3a36",
+          "glass": "#f2d36b",
+          "panel": "#2f4f6f",
+          "line": "#1a1814"
+        },
+        "storybook": {
+          "body": "#6a6862",
+          "glass": "#f7df8e",
+          "panel": "#5a7a96",
+          "line": "#3a3632"
+        }
+      }
+    },
+    {
+      "id": "existing.pieces.rug",
+      "group": "Existing pieces",
+      "subject": "rug",
+      "states": [
+        "r0",
+        "r1"
+      ],
+      "status": "code-defined-placeholder",
+      "kind": "object",
+      "notes": "Exact manifest frame IDs preserved. Code is implementation evidence, not visual approval.",
+      "palette": {
+        "pixel": {
+          "base": "#a8543a",
+          "stripe": "#e8c87a",
+          "edge": "#5a2e20"
+        },
+        "storybook": {
+          "base": "#c47a5e",
+          "stripe": "#f0d79a",
+          "edge": "#8a5a48"
+        }
+      }
+    },
+    {
+      "id": "existing.pieces.pier_foundation",
+      "group": "Existing pieces",
+      "subject": "pier foundation",
+      "states": [
+        "r0"
+      ],
+      "status": "code-defined-placeholder",
+      "kind": "object",
+      "notes": "Exact manifest frame IDs preserved. Code is implementation evidence, not visual approval.",
+      "palette": {
+        "pixel": {
+          "light": "#b08d5b",
+          "mid": "#8a6a3f",
+          "dark": "#5a4128",
+          "line": "#2e2216"
+        },
+        "storybook": {
+          "light": "#d2b48a",
+          "mid": "#b08e63",
+          "dark": "#7d6247",
+          "line": "#5b4636"
+        }
+      }
+    },
+    {
+      "id": "existing.pieces.plank_floor",
+      "group": "Existing pieces",
+      "subject": "plank floor",
+      "states": [
+        "r0"
+      ],
+      "status": "code-defined-placeholder",
+      "kind": "object",
+      "notes": "Exact manifest frame IDs preserved. Code is implementation evidence, not visual approval.",
+      "palette": {
+        "pixel": {
+          "light": "#b08d5b",
+          "mid": "#8a6a3f",
+          "dark": "#5a4128",
+          "line": "#2e2216"
+        },
+        "storybook": {
+          "light": "#d2b48a",
+          "mid": "#b08e63",
+          "dark": "#7d6247",
+          "line": "#5b4636"
+        }
+      }
+    },
+    {
+      "id": "existing.pieces.plank_wall",
+      "group": "Existing pieces",
+      "subject": "plank wall",
+      "states": [
+        "n",
+        "w"
+      ],
+      "status": "code-defined-placeholder",
+      "kind": "object",
+      "notes": "Exact manifest frame IDs preserved. Code is implementation evidence, not visual approval.",
+      "palette": {
+        "pixel": {
+          "light": "#b08d5b",
+          "mid": "#8a6a3f",
+          "dark": "#5a4128",
+          "line": "#2e2216"
+        },
+        "storybook": {
+          "light": "#d2b48a",
+          "mid": "#b08e63",
+          "dark": "#7d6247",
+          "line": "#5b4636"
+        }
+      }
+    },
+    {
+      "id": "existing.pieces.plank_window",
+      "group": "Existing pieces",
+      "subject": "plank window",
+      "states": [
+        "n",
+        "w"
+      ],
+      "status": "code-defined-placeholder",
+      "kind": "object",
+      "notes": "Exact manifest frame IDs preserved. Code is implementation evidence, not visual approval.",
+      "palette": {
+        "pixel": {
+          "light": "#b08d5b",
+          "mid": "#8a6a3f",
+          "dark": "#5a4128",
+          "line": "#2e2216",
+          "glass": "#7fc4d8"
+        },
+        "storybook": {
+          "light": "#d2b48a",
+          "mid": "#b08e63",
+          "dark": "#7d6247",
+          "line": "#5b4636",
+          "glass": "#a9d8e3"
+        }
+      }
+    },
+    {
+      "id": "existing.pieces.plank_door",
+      "group": "Existing pieces",
+      "subject": "plank door",
+      "states": [
+        "n",
+        "w"
+      ],
+      "status": "code-defined-placeholder",
+      "kind": "object",
+      "notes": "Exact manifest frame IDs preserved. Code is implementation evidence, not visual approval.",
+      "palette": {
+        "pixel": {
+          "light": "#b08d5b",
+          "mid": "#8a6a3f",
+          "dark": "#5a4128",
+          "line": "#2e2216",
+          "panel": "#6b3f22"
+        },
+        "storybook": {
+          "light": "#d2b48a",
+          "mid": "#b08e63",
+          "dark": "#7d6247",
+          "line": "#5b4636",
+          "panel": "#8c5a3a"
+        }
+      }
+    },
+    {
+      "id": "existing.pieces.tin_roof",
+      "group": "Existing pieces",
+      "subject": "tin roof",
+      "states": [
+        "r0"
+      ],
+      "status": "code-defined-placeholder",
+      "kind": "object",
+      "notes": "Exact manifest frame IDs preserved. Code is implementation evidence, not visual approval.",
+      "palette": {
+        "pixel": {
+          "light": "#9fb1b8",
+          "mid": "#738891",
+          "dark": "#4b5c63",
+          "line": "#273136",
+          "rust": "#a0522d"
+        },
+        "storybook": {
+          "light": "#c3d1d4",
+          "mid": "#9cb0b5",
+          "dark": "#728990",
+          "line": "#55666b",
+          "rust": "#c07a52"
+        }
+      }
+    },
+    {
+      "id": "existing.pieces.bedroll",
+      "group": "Existing pieces",
+      "subject": "bedroll",
+      "states": [
+        "r0",
+        "r1"
+      ],
+      "status": "code-defined-placeholder",
+      "kind": "object",
+      "notes": "Exact manifest frame IDs preserved. Code is implementation evidence, not visual approval.",
+      "palette": {
+        "pixel": {
+          "cloth": "#7a8f4e",
+          "pillow": "#e6dcc0",
+          "line": "#2f3820"
+        },
+        "storybook": {
+          "cloth": "#9fb07a",
+          "pillow": "#f3ead6",
+          "line": "#56603f"
+        }
+      }
+    },
+    {
+      "id": "existing.pieces.crate",
+      "group": "Existing pieces",
+      "subject": "crate",
+      "states": [
+        "r0"
+      ],
+      "status": "code-defined-placeholder",
+      "kind": "object",
+      "notes": "Exact manifest frame IDs preserved. Code is implementation evidence, not visual approval.",
+      "palette": {
+        "pixel": {
+          "light": "#b08d5b",
+          "mid": "#8a6a3f",
+          "dark": "#5a4128",
+          "line": "#2e2216"
+        },
+        "storybook": {
+          "light": "#d2b48a",
+          "mid": "#b08e63",
+          "dark": "#7d6247",
+          "line": "#5b4636"
+        }
+      }
+    },
+    {
+      "id": "existing.pieces.block_foundation",
+      "group": "Existing pieces",
+      "subject": "block foundation",
+      "states": [
+        "r0"
+      ],
+      "status": "code-defined-placeholder",
+      "kind": "object",
+      "notes": "Exact manifest frame IDs preserved. Code is implementation evidence, not visual approval.",
+      "palette": {
+        "pixel": {
+          "light": "#a3a3a0",
+          "mid": "#7d7d7a",
+          "dark": "#545452",
+          "line": "#2a2a29"
+        },
+        "storybook": {
+          "light": "#cfcdc6",
+          "mid": "#aeaba3",
+          "dark": "#86837c",
+          "line": "#605e59"
+        }
+      }
+    },
+    {
+      "id": "existing.pieces.board_floor",
+      "group": "Existing pieces",
+      "subject": "board floor",
+      "states": [
+        "r0"
+      ],
+      "status": "code-defined-placeholder",
+      "kind": "object",
+      "notes": "Exact manifest frame IDs preserved. Code is implementation evidence, not visual approval.",
+      "palette": {
+        "pixel": {
+          "light": "#d9b779",
+          "mid": "#b8925a",
+          "dark": "#7f6138",
+          "line": "#3a2a18"
+        },
+        "storybook": {
+          "light": "#ead1a2",
+          "mid": "#cfae7c",
+          "dark": "#9b7b56",
+          "line": "#6e5741"
+        }
+      }
+    },
+    {
+      "id": "existing.pieces.board_wall",
+      "group": "Existing pieces",
+      "subject": "board wall",
+      "states": [
+        "n",
+        "w"
+      ],
+      "status": "code-defined-placeholder",
+      "kind": "object",
+      "notes": "Exact manifest frame IDs preserved. Code is implementation evidence, not visual approval.",
+      "palette": {
+        "pixel": {
+          "light": "#d9b779",
+          "mid": "#b8925a",
+          "dark": "#7f6138",
+          "line": "#3a2a18"
+        },
+        "storybook": {
+          "light": "#ead1a2",
+          "mid": "#cfae7c",
+          "dark": "#9b7b56",
+          "line": "#6e5741"
+        }
+      }
+    },
+    {
+      "id": "existing.pieces.board_window",
+      "group": "Existing pieces",
+      "subject": "board window",
+      "states": [
+        "n",
+        "w"
+      ],
+      "status": "code-defined-placeholder",
+      "kind": "object",
+      "notes": "Exact manifest frame IDs preserved. Code is implementation evidence, not visual approval.",
+      "palette": {
+        "pixel": {
+          "light": "#d9b779",
+          "mid": "#b8925a",
+          "dark": "#7f6138",
+          "line": "#3a2a18",
+          "glass": "#7fc4d8"
+        },
+        "storybook": {
+          "light": "#ead1a2",
+          "mid": "#cfae7c",
+          "dark": "#9b7b56",
+          "line": "#6e5741",
+          "glass": "#a9d8e3"
+        }
+      }
+    },
+    {
+      "id": "existing.terrain.grass",
+      "group": "Existing terrain",
+      "subject": "grass",
+      "states": [
+        "r0"
+      ],
+      "status": "code-defined-placeholder",
+      "kind": "terrain",
+      "notes": "Exact manifest frame IDs preserved. Code is implementation evidence, not visual approval.",
+      "palette": {
+        "pixel": {
+          "base": "#5d8a3a",
+          "speck": "#4a7330",
+          "light": "#74a248"
+        },
+        "storybook": {
+          "base": "#8fb06a",
+          "speck": "#7a9c58",
+          "light": "#a8c486"
+        }
+      }
+    },
+    {
+      "id": "existing.terrain.lot",
+      "group": "Existing terrain",
+      "subject": "lot",
+      "states": [
+        "r0"
+      ],
+      "status": "code-defined-placeholder",
+      "kind": "terrain",
+      "notes": "Exact manifest frame IDs preserved. Code is implementation evidence, not visual approval.",
+      "palette": {
+        "pixel": {
+          "base": "#7d6a45",
+          "speck": "#685838",
+          "light": "#93805a"
+        },
+        "storybook": {
+          "base": "#b39d77",
+          "speck": "#9f8a65",
+          "light": "#c7b490"
+        }
+      }
+    },
+    {
+      "id": "existing.terrain.yard",
+      "group": "Existing terrain",
+      "subject": "yard",
+      "states": [
+        "r0"
+      ],
+      "status": "code-defined-placeholder",
+      "kind": "terrain",
+      "notes": "Exact manifest frame IDs preserved. Code is implementation evidence, not visual approval.",
+      "palette": {
+        "pixel": {
+          "base": "#6b9a45",
+          "speck": "#5a843a",
+          "light": "#84b25a"
+        },
+        "storybook": {
+          "base": "#9dbb76",
+          "speck": "#88a865",
+          "light": "#b5cd93"
+        }
+      }
+    },
+    {
+      "id": "existing.terrain.path",
+      "group": "Existing terrain",
+      "subject": "path",
+      "states": [
+        "r0"
+      ],
+      "status": "code-defined-placeholder",
+      "kind": "terrain",
+      "notes": "Exact manifest frame IDs preserved. Code is implementation evidence, not visual approval.",
+      "palette": {
+        "pixel": {
+          "base": "#9a8458",
+          "speck": "#86714a",
+          "light": "#b09a6c"
+        },
+        "storybook": {
+          "base": "#c9b48c",
+          "speck": "#b39f79",
+          "light": "#dccaa6"
+        }
+      }
+    },
+    {
+      "id": "existing.terrain.road",
+      "group": "Existing terrain",
+      "subject": "road",
+      "states": [
+        "r0"
+      ],
+      "status": "code-defined-placeholder",
+      "kind": "terrain",
+      "notes": "Exact manifest frame IDs preserved. Code is implementation evidence, not visual approval.",
+      "palette": {
+        "pixel": {
+          "base": "#55524c",
+          "speck": "#45433e",
+          "light": "#6c6862"
+        },
+        "storybook": {
+          "base": "#8f8b84",
+          "speck": "#7c7872",
+          "light": "#a7a39c"
+        }
+      }
+    },
+    {
+      "id": "existing.terrain.rock",
+      "group": "Existing terrain",
+      "subject": "rock",
+      "states": [
+        "r0"
+      ],
+      "status": "code-defined-placeholder",
+      "kind": "terrain",
+      "notes": "Exact manifest frame IDs preserved. Code is implementation evidence, not visual approval.",
+      "palette": {
+        "pixel": {
+          "base": "#3a3634",
+          "speck": "#2a2726",
+          "light": "#57514d"
+        },
+        "storybook": {
+          "base": "#6e6762",
+          "speck": "#5d5752",
+          "light": "#8a837d"
+        }
+      }
+    },
+    {
+      "id": "existing.terrain.water",
+      "group": "Existing terrain",
+      "subject": "water",
+      "states": [
+        "r0"
+      ],
+      "status": "code-defined-placeholder",
+      "kind": "terrain",
+      "notes": "Exact manifest frame IDs preserved. Code is implementation evidence, not visual approval.",
+      "palette": {
+        "pixel": {
+          "base": "#2f6f8f",
+          "light": "#5fa3c2",
+          "dark": "#1f5068"
+        },
+        "storybook": {
+          "base": "#7fb3c9",
+          "light": "#b0d4e2",
+          "dark": "#5f95ab"
+        }
+      }
+    },
+    {
+      "id": "existing.terrain.bridge",
+      "group": "Existing terrain",
+      "subject": "bridge",
+      "states": [
+        "r0"
+      ],
+      "status": "code-defined-placeholder",
+      "kind": "terrain",
+      "notes": "Exact manifest frame IDs preserved. Code is implementation evidence, not visual approval.",
+      "palette": {
+        "pixel": {
+          "base": "#2f6f8f",
+          "light": "#b08d5b",
+          "mid": "#8a6a3f",
+          "dark": "#5a4128",
+          "line": "#2e2216"
+        },
+        "storybook": {
+          "base": "#7fb3c9",
+          "light": "#d2b48a",
+          "mid": "#b08e63",
+          "dark": "#7d6247",
+          "line": "#5b4636"
+        }
+      }
+    },
+    {
+      "id": "existing.terrain.soil",
+      "group": "Existing terrain",
+      "subject": "soil",
+      "states": [
+        "r0"
+      ],
+      "status": "code-defined-placeholder",
+      "kind": "terrain",
+      "notes": "Exact manifest frame IDs preserved. Code is implementation evidence, not visual approval.",
+      "palette": {
+        "pixel": {
+          "base": "#4a3420",
+          "furrow": "#2f2014",
+          "light": "#5e4430"
+        },
+        "storybook": {
+          "base": "#7a5a3c",
+          "furrow": "#5c4229",
+          "light": "#8f6e4f"
+        }
+      }
+    },
+    {
+      "id": "existing.terrain.scorched",
+      "group": "Existing terrain",
+      "subject": "scorched",
+      "states": [
+        "r0"
+      ],
+      "status": "code-defined-placeholder",
+      "kind": "terrain",
+      "notes": "Exact manifest frame IDs preserved. Code is implementation evidence, not visual approval.",
+      "palette": {
+        "pixel": {
+          "base": "#4f5034",
+          "speck": "#3a3a28",
+          "light": "#6a6440",
+          "scorch": "#3e3c2a"
+        },
+        "storybook": {
+          "base": "#8f8e68",
+          "speck": "#7a785a",
+          "light": "#a39e78",
+          "scorch": "#78735c"
+        }
+      }
+    },
+    {
+      "id": "existing.terrain.crater",
+      "group": "Existing terrain",
+      "subject": "crater",
+      "states": [
+        "r0"
+      ],
+      "status": "code-defined-placeholder",
+      "kind": "terrain",
+      "notes": "Exact manifest frame IDs preserved. Code is implementation evidence, not visual approval.",
+      "palette": {
+        "pixel": {
+          "base": "#4a4a32",
+          "rim": "#5e5640",
+          "hole": "#231f18",
+          "mid": "#3a3326"
+        },
+        "storybook": {
+          "base": "#8a8763",
+          "rim": "#a08e70",
+          "hole": "#4a3f33",
+          "mid": "#6e604d"
+        }
+      }
+    },
+    {
+      "id": "existing.terrain.road_cracked",
+      "group": "Existing terrain",
+      "subject": "road cracked",
+      "states": [
+        "r0"
+      ],
+      "status": "code-defined-placeholder",
+      "kind": "terrain",
+      "notes": "Exact manifest frame IDs preserved. Code is implementation evidence, not visual approval.",
+      "palette": {
+        "pixel": {
+          "base": "#55524c",
+          "speck": "#45433e",
+          "light": "#6c6862",
+          "crack": "#2a2826"
+        },
+        "storybook": {
+          "base": "#8f8b84",
+          "speck": "#7c7872",
+          "light": "#a7a39c",
+          "crack": "#5a5752"
+        }
+      }
+    },
+    {
+      "id": "existing.objects.tree",
+      "group": "Existing objects",
+      "subject": "tree",
+      "states": [
+        "r0",
+        "r1"
+      ],
+      "status": "code-defined-placeholder",
+      "kind": "object",
+      "notes": "Exact manifest frame IDs preserved. Code is implementation evidence, not visual approval. r0/r1 are visual variants, not a promised directional rotation.",
+      "palette": {
+        "pixel": {
+          "trunk": "#5a4128",
+          "leaf": "#2f6b2a",
+          "light": "#4c8a3c",
+          "dark": "#1f4a1c"
+        },
+        "storybook": {
+          "trunk": "#7d6247",
+          "leaf": "#6f9b52",
+          "light": "#93b872",
+          "dark": "#557c3d"
+        }
+      }
+    },
+    {
+      "id": "existing.objects.bush",
+      "group": "Existing objects",
+      "subject": "bush",
+      "states": [
+        "r0"
+      ],
+      "status": "code-defined-placeholder",
+      "kind": "object",
+      "notes": "Exact manifest frame IDs preserved. Code is implementation evidence, not visual approval.",
+      "palette": {
+        "pixel": {
+          "leaf": "#4f7d2f",
+          "light": "#6f9e45",
+          "dark": "#355620"
+        },
+        "storybook": {
+          "leaf": "#86a85f",
+          "light": "#a7c27f",
+          "dark": "#6a8a4a"
+        }
+      }
+    },
+    {
+      "id": "existing.objects.shed",
+      "group": "Existing objects",
+      "subject": "shed",
+      "states": [
+        "r0",
+        "r1"
+      ],
+      "status": "code-defined-placeholder",
+      "kind": "object",
+      "notes": "Exact manifest frame IDs preserved. Code is implementation evidence, not visual approval. r0 = fuller salvage remains; r1 = depleted remains, not a rotation.",
+      "palette": {
+        "pixel": {
+          "light": "#b08d5b",
+          "mid": "#8a6a3f",
+          "dark": "#5a4128",
+          "line": "#2e2216"
+        },
+        "storybook": {
+          "light": "#d2b48a",
+          "mid": "#b08e63",
+          "dark": "#7d6247",
+          "line": "#5b4636"
+        }
+      }
+    },
+    {
+      "id": "existing.objects.carport",
+      "group": "Existing objects",
+      "subject": "carport",
+      "states": [
+        "r0",
+        "r1"
+      ],
+      "status": "code-defined-placeholder",
+      "kind": "object",
+      "notes": "Exact manifest frame IDs preserved. Code is implementation evidence, not visual approval. r0 = fuller salvage remains; r1 = depleted remains, not a rotation.",
+      "palette": {
+        "pixel": {
+          "light": "#9fb1b8",
+          "mid": "#738891",
+          "dark": "#4b5c63",
+          "line": "#273136",
+          "rust": "#a0522d",
+          "wood": "#8a6a3f"
+        },
+        "storybook": {
+          "light": "#c3d1d4",
+          "mid": "#9cb0b5",
+          "dark": "#728990",
+          "line": "#55666b",
+          "rust": "#c07a52",
+          "wood": "#b08e63"
+        }
+      }
+    },
+    {
+      "id": "existing.objects.rocks",
+      "group": "Existing objects",
+      "subject": "rocks",
+      "states": [
+        "r0",
+        "r1"
+      ],
+      "status": "code-defined-placeholder",
+      "kind": "object",
+      "notes": "Exact manifest frame IDs preserved. Code is implementation evidence, not visual approval. r0 = fuller salvage remains; r1 = depleted remains, not a rotation.",
+      "palette": {
+        "pixel": {
+          "light": "#a3a3a0",
+          "mid": "#7d7d7a",
+          "dark": "#545452",
+          "line": "#2a2a29"
+        },
+        "storybook": {
+          "light": "#cfcdc6",
+          "mid": "#aeaba3",
+          "dark": "#86837c",
+          "line": "#605e59"
+        }
+      }
+    },
+    {
+      "id": "existing.objects.store",
+      "group": "Existing objects",
+      "subject": "store",
+      "states": [
+        "r0",
+        "r1"
+      ],
+      "status": "code-defined-placeholder",
+      "kind": "object",
+      "notes": "Exact manifest frame IDs preserved. Code is implementation evidence, not visual approval. r0 = fuller salvage remains; r1 = depleted remains, not a rotation.",
+      "palette": {
+        "pixel": {
+          "light": "#b08d5b",
+          "mid": "#8a6a3f",
+          "dark": "#5a4128",
+          "line": "#2e2216",
+          "sign": "#a33a2a",
+          "glass": "#4a6e78"
+        },
+        "storybook": {
+          "light": "#d2b48a",
+          "mid": "#b08e63",
+          "dark": "#7d6247",
+          "line": "#5b4636",
+          "sign": "#c0614f",
+          "glass": "#7e9ea6"
+        }
+      }
+    },
+    {
+      "id": "existing.objects.debris",
+      "group": "Existing objects",
+      "subject": "debris",
+      "states": [
+        "r0",
+        "r1",
+        "r2"
+      ],
+      "status": "code-defined-placeholder",
+      "kind": "object",
+      "notes": "Exact manifest frame IDs preserved. Code is implementation evidence, not visual approval. r0 = fallen log; r1 = open washout; r2 = washout reinforced with boards.",
+      "palette": {
+        "pixel": {
+          "log": "#5a4128",
+          "bark": "#3a2a18",
+          "hole": "#2a1d12",
+          "mud": "#6b5434",
+          "board": "#b08d5b"
+        },
+        "storybook": {
+          "log": "#7d6247",
+          "bark": "#5b4636",
+          "hole": "#4d3a2a",
+          "mud": "#9a8160",
+          "board": "#d2b48a"
+        }
+      }
+    },
+    {
+      "id": "existing.objects.crop_greens",
+      "group": "Existing objects",
+      "subject": "crop greens",
+      "states": [
+        "s0",
+        "s1",
+        "s2",
+        "s3"
+      ],
+      "status": "code-defined-placeholder",
+      "kind": "object",
+      "notes": "Exact manifest frame IDs preserved. Code is implementation evidence, not visual approval. s0/s1/s2/s3 are successive crop-growth stages, not rotations. Keep the crop-specific colored stake tag.",
+      "palette": {
+        "pixel": {
+          "leaf": "#5fa23a",
+          "dark": "#3f7426",
+          "fruit": "#86c45a",
+          "shape": "rosette",
+          "tag": "#4fbf3a",
+          "stake": "#c8a878"
+        },
+        "storybook": {
+          "leaf": "#7fae5a",
+          "dark": "#5d8a42",
+          "fruit": "#a8cf7a",
+          "shape": "rosette",
+          "tag": "#5fcf4a",
+          "stake": "#e0c49a"
+        }
+      }
+    },
+    {
+      "id": "existing.objects.crop_sweet_potato",
+      "group": "Existing objects",
+      "subject": "crop sweet potato",
+      "states": [
+        "s0",
+        "s1",
+        "s2",
+        "s3"
+      ],
+      "status": "code-defined-placeholder",
+      "kind": "object",
+      "notes": "Exact manifest frame IDs preserved. Code is implementation evidence, not visual approval. s0/s1/s2/s3 are successive crop-growth stages, not rotations. Keep the crop-specific colored stake tag.",
+      "palette": {
+        "pixel": {
+          "leaf": "#4e8f3a",
+          "dark": "#346626",
+          "fruit": "#9a3a8a",
+          "stem": "#7a2e6a",
+          "shape": "vine",
+          "tag": "#a83ab8",
+          "stake": "#c8a878"
+        },
+        "storybook": {
+          "leaf": "#86b066",
+          "dark": "#628c4a",
+          "fruit": "#b9639f",
+          "stem": "#9a5a8a",
+          "shape": "vine",
+          "tag": "#b85ac8",
+          "stake": "#e0c49a"
+        }
+      }
+    },
+    {
+      "id": "existing.objects.crop_papaya",
+      "group": "Existing objects",
+      "subject": "crop papaya",
+      "states": [
+        "s0",
+        "s1",
+        "s2",
+        "s3"
+      ],
+      "status": "code-defined-placeholder",
+      "kind": "object",
+      "notes": "Exact manifest frame IDs preserved. Code is implementation evidence, not visual approval. s0/s1/s2/s3 are successive crop-growth stages, not rotations. Keep the crop-specific colored stake tag.",
+      "palette": {
+        "pixel": {
+          "leaf": "#3f8a34",
+          "dark": "#2a6224",
+          "fruit": "#e08a2a",
+          "trunk": "#7a6a4a",
+          "shape": "palm",
+          "tag": "#f08a1a",
+          "stake": "#c8a878"
+        },
+        "storybook": {
+          "leaf": "#7db068",
+          "dark": "#5a8a4a",
+          "fruit": "#f0a85a",
+          "trunk": "#a8977a",
+          "shape": "palm",
+          "tag": "#f8a040",
+          "stake": "#e0c49a"
+        }
+      }
+    },
+    {
+      "id": "existing.objects.crop_long_beans",
+      "group": "Existing objects",
+      "subject": "crop long beans",
+      "states": [
+        "s0",
+        "s1",
+        "s2",
+        "s3"
+      ],
+      "status": "code-defined-placeholder",
+      "kind": "object",
+      "notes": "Exact manifest frame IDs preserved. Code is implementation evidence, not visual approval. s0/s1/s2/s3 are successive crop-growth stages, not rotations. Keep the crop-specific colored stake tag.",
+      "palette": {
+        "pixel": {
+          "leaf": "#4f9a3a",
+          "dark": "#2f6a22",
+          "fruit": "#9cc84a",
+          "stake": "#c8a878",
+          "shape": "trellis",
+          "tag": "#2fa8a0"
+        },
+        "storybook": {
+          "leaf": "#83b46a",
+          "dark": "#5e8f4c",
+          "fruit": "#b9d878",
+          "stake": "#e0c49a",
+          "shape": "trellis",
+          "tag": "#4fbcb4"
+        }
+      }
+    },
+    {
+      "id": "existing.objects.crop_banana",
+      "group": "Existing objects",
+      "subject": "crop banana",
+      "states": [
+        "s0",
+        "s1",
+        "s2",
+        "s3"
+      ],
+      "status": "code-defined-placeholder",
+      "kind": "object",
+      "notes": "Exact manifest frame IDs preserved. Code is implementation evidence, not visual approval. s0/s1/s2/s3 are successive crop-growth stages, not rotations. Keep the crop-specific colored stake tag.",
+      "palette": {
+        "pixel": {
+          "leaf": "#5aa83a",
+          "dark": "#3a7a26",
+          "fruit": "#e8d24a",
+          "trunk": "#6a7a3a",
+          "shape": "banana",
+          "tag": "#e8d24a",
+          "stake": "#c8a878"
+        },
+        "storybook": {
+          "leaf": "#8cc06a",
+          "dark": "#64944c",
+          "fruit": "#f0de78",
+          "trunk": "#94a064",
+          "shape": "banana",
+          "tag": "#f0de78",
+          "stake": "#e0c49a"
+        }
+      }
+    },
+    {
+      "id": "existing.objects.kiosk",
+      "group": "Existing objects",
+      "subject": "kiosk",
+      "states": [
+        "r0"
+      ],
+      "status": "needs-approved-symbol-reference",
+      "kind": "object",
+      "notes": "Exact manifest frame IDs preserved. Code is implementation evidence, not visual approval. Do not invent the Ministry emblem; its approved art and permission are unresolved. Leave the emblem area blank for a generic concept.",
+      "palette": {
+        "pixel": {
+          "body": "#8a1f1f",
+          "dark": "#5a1414",
+          "trim": "#c9a23a",
+          "screen": "#2a3a3a",
+          "glow": "#7fd0c0",
+          "line": "#1a0e0e",
+          "paper": "#eae2cc"
+        },
+        "storybook": {
+          "body": "#a8443e",
+          "dark": "#7a2e2a",
+          "trim": "#d8b45a",
+          "screen": "#4a5a5a",
+          "glow": "#a8e2d6",
+          "line": "#4a2a26",
+          "paper": "#f4ecd8"
+        }
+      }
+    },
+    {
+      "id": "existing.objects.marker",
+      "group": "Existing objects",
+      "subject": "marker",
+      "states": [
+        "water",
+        "ready"
+      ],
+      "status": "code-defined-placeholder",
+      "kind": "object",
+      "notes": "Exact manifest frame IDs preserved. Code is implementation evidence, not visual approval.",
+      "palette": {
+        "pixel": {
+          "water": "#2f8fd8",
+          "ready": "#f2c230",
+          "line": "#1a1410",
+          "light": "#ffffff"
+        },
+        "storybook": {
+          "water": "#4aa3e0",
+          "ready": "#f5cc4a",
+          "line": "#3a2e26",
+          "light": "#ffffff"
+        }
+      }
+    },
+    {
+      "id": "existing.objects.deadtree",
+      "group": "Existing objects",
+      "subject": "deadtree",
+      "states": [
+        "r0",
+        "r1"
+      ],
+      "status": "code-defined-placeholder",
+      "kind": "object",
+      "notes": "Exact manifest frame IDs preserved. Code is implementation evidence, not visual approval. r0/r1 are visual variants, not a promised directional rotation.",
+      "palette": {
+        "pixel": {
+          "trunk": "#3a2e24",
+          "char": "#1e1814",
+          "light": "#5a4a3a"
+        },
+        "storybook": {
+          "trunk": "#6a5a4a",
+          "char": "#4a3e34",
+          "light": "#8a7a68"
+        }
+      }
+    },
+    {
+      "id": "existing.objects.stump",
+      "group": "Existing objects",
+      "subject": "stump",
+      "states": [
+        "r0",
+        "r1"
+      ],
+      "status": "code-defined-placeholder",
+      "kind": "object",
+      "notes": "Exact manifest frame IDs preserved. Code is implementation evidence, not visual approval. r0 = living-tree stump with regrowth; r1 = dead-tree stump.",
+      "palette": {
+        "pixel": {
+          "wood": "#8a6a3f",
+          "ring": "#c8a878",
+          "bark": "#4a3420",
+          "sprout": "#4c8a3c"
+        },
+        "storybook": {
+          "wood": "#b08e63",
+          "ring": "#e0c49a",
+          "bark": "#7d6247",
+          "sprout": "#7fae5a"
+        }
+      }
+    },
+    {
+      "id": "existing.objects.ruin",
+      "group": "Existing objects",
+      "subject": "ruin",
+      "states": [
+        "r0",
+        "r1"
+      ],
+      "status": "code-defined-placeholder",
+      "kind": "object",
+      "notes": "Exact manifest frame IDs preserved. Code is implementation evidence, not visual approval. r0 = fuller salvage remains; r1 = depleted remains, not a rotation.",
+      "palette": {
+        "pixel": {
+          "light": "#b08d5b",
+          "mid": "#8a6a3f",
+          "dark": "#5a4128",
+          "line": "#2e2216",
+          "char": "#2a221a",
+          "tin": "#738891"
+        },
+        "storybook": {
+          "light": "#d2b48a",
+          "mid": "#b08e63",
+          "dark": "#7d6247",
+          "line": "#5b4636",
+          "char": "#5a4e44",
+          "tin": "#9cb0b5"
+        }
+      }
+    },
+    {
+      "id": "existing.objects.carwreck",
+      "group": "Existing objects",
+      "subject": "carwreck",
+      "states": [
+        "r0",
+        "r1"
+      ],
+      "status": "code-defined-placeholder",
+      "kind": "object",
+      "notes": "Exact manifest frame IDs preserved. Code is implementation evidence, not visual approval. r0/r1 are visual variants, not a promised directional rotation.",
+      "palette": {
+        "pixel": {
+          "body": "#6a3a2a",
+          "rust": "#8a4a26",
+          "char": "#2a221a",
+          "glass": "#3a4a4e",
+          "tyre": "#1a1814"
+        },
+        "storybook": {
+          "body": "#9a6a56",
+          "rust": "#b8744e",
+          "char": "#5a4e44",
+          "glass": "#6e8086",
+          "tyre": "#4a443e"
+        }
+      }
+    },
+    {
+      "id": "existing.objects.smallrubble",
+      "group": "Existing objects",
+      "subject": "smallrubble",
+      "states": [
+        "r0"
+      ],
+      "status": "code-defined-placeholder",
+      "kind": "object",
+      "notes": "Exact manifest frame IDs preserved. Code is implementation evidence, not visual approval.",
+      "palette": {
+        "pixel": {
+          "light": "#a3a3a0",
+          "mid": "#7d7d7a",
+          "dark": "#545452",
+          "line": "#2a2a29",
+          "wood": "#5a4128",
+          "char": "#2a221a"
+        },
+        "storybook": {
+          "light": "#cfcdc6",
+          "mid": "#aeaba3",
+          "dark": "#86837c",
+          "line": "#605e59",
+          "wood": "#7d6247",
+          "char": "#5a4e44"
+        }
+      }
+    },
+    {
+      "id": "existing.objects.weeds",
+      "group": "Existing objects",
+      "subject": "weeds",
+      "states": [
+        "r0",
+        "r1",
+        "r2"
+      ],
+      "status": "code-defined-placeholder",
+      "kind": "object",
+      "notes": "Exact manifest frame IDs preserved. Code is implementation evidence, not visual approval. r0/r1/r2 = sparse/medium/dense weed coverage.",
+      "palette": {
+        "pixel": {
+          "leaf": "#6fae3a",
+          "dark": "#4a7a26"
+        },
+        "storybook": {
+          "leaf": "#86b45a",
+          "dark": "#628c42"
+        }
+      }
+    },
+    {
+      "id": "existing.objects.player",
+      "group": "Existing objects",
+      "subject": "player",
+      "states": [
+        "r0"
+      ],
+      "status": "needs-approved-identity",
+      "kind": "character",
+      "notes": "Exact manifest frame IDs preserved. Code is implementation evidence, not visual approval.",
+      "palette": {
+        "pixel": {
+          "skin": "#b07a52",
+          "shirt": "#3f6a9a",
+          "pants": "#3a3a3a",
+          "hair": "#2a1d14",
+          "line": "#1a1410"
+        },
+        "storybook": {
+          "skin": "#c99671",
+          "shirt": "#6f93bd",
+          "pants": "#6a6560",
+          "hair": "#4a382a",
+          "line": "#3a2e26"
+        }
+      }
+    },
+    {
+      "id": "existing.objects.rosa",
+      "group": "Existing objects",
+      "subject": "rosa",
+      "states": [
+        "r0"
+      ],
+      "status": "needs-approved-identity",
+      "kind": "character",
+      "notes": "Exact manifest frame IDs preserved. Code is implementation evidence, not visual approval.",
+      "palette": {
+        "pixel": {
+          "skin": "#a8724c",
+          "shirt": "#b04a6a",
+          "pants": "#4a5a3a",
+          "hair": "#d0d0d0",
+          "line": "#1a1410"
+        },
+        "storybook": {
+          "skin": "#c08e6a",
+          "shirt": "#cf7d96",
+          "pants": "#7a8a66",
+          "hair": "#ececec",
+          "line": "#3a2e26"
+        }
+      }
+    },
+    {
+      "id": "building.general_store",
+      "group": "Buildings and public projects",
+      "subject": "general store selling clothes and useful goods",
+      "states": [
+        "foundation",
+        "construction",
+        "complete",
+        "worn"
+      ],
+      "status": "proposed-design",
+      "kind": "building",
+      "notes": "Concept candidate. Final footprint, capacity, materials and construction-stage count require gameplay design. Named park subtypes and harbor facilities are proposed interpretations, not approved new canon. No baked-in labels or signs.",
+      "palette": null
+    },
+    {
+      "id": "building.food_store",
+      "group": "Buildings and public projects",
+      "subject": "food shop",
+      "states": [
+        "foundation",
+        "construction",
+        "complete",
+        "worn"
+      ],
+      "status": "proposed-design",
+      "kind": "building",
+      "notes": "Concept candidate. Final footprint, capacity, materials and construction-stage count require gameplay design. Named park subtypes and harbor facilities are proposed interpretations, not approved new canon. No baked-in labels or signs.",
+      "palette": null
+    },
+    {
+      "id": "building.food_buyer",
+      "group": "Buildings and public projects",
+      "subject": "food-buying business",
+      "states": [
+        "foundation",
+        "construction",
+        "complete",
+        "worn"
+      ],
+      "status": "proposed-design",
+      "kind": "building",
+      "notes": "Concept candidate. Final footprint, capacity, materials and construction-stage count require gameplay design. Named park subtypes and harbor facilities are proposed interpretations, not approved new canon. No baked-in labels or signs.",
+      "palette": null
+    },
+    {
+      "id": "building.recipe_store",
+      "group": "Buildings and public projects",
+      "subject": "crafting recipe shop",
+      "states": [
+        "foundation",
+        "construction",
+        "complete",
+        "worn"
+      ],
+      "status": "proposed-design",
+      "kind": "building",
+      "notes": "Concept candidate. Final footprint, capacity, materials and construction-stage count require gameplay design. Named park subtypes and harbor facilities are proposed interpretations, not approved new canon. No baked-in labels or signs.",
+      "palette": null
+    },
+    {
+      "id": "building.travel_agency",
+      "group": "Buildings and public projects",
+      "subject": "boat travel agency",
+      "states": [
+        "foundation",
+        "construction",
+        "complete",
+        "worn"
+      ],
+      "status": "proposed-design",
+      "kind": "building",
+      "notes": "Concept candidate. Final footprint, capacity, materials and construction-stage count require gameplay design. Named park subtypes and harbor facilities are proposed interpretations, not approved new canon. No baked-in labels or signs.",
+      "palette": null
+    },
+    {
+      "id": "building.post_office",
+      "group": "Buildings and public projects",
+      "subject": "post office",
+      "states": [
+        "foundation",
+        "construction",
+        "complete",
+        "worn"
+      ],
+      "status": "proposed-design",
+      "kind": "building",
+      "notes": "Concept candidate. Final footprint, capacity, materials and construction-stage count require gameplay design. Named park subtypes and harbor facilities are proposed interpretations, not approved new canon. No baked-in labels or signs.",
+      "palette": null
+    },
+    {
+      "id": "building.auction_house",
+      "group": "Buildings and public projects",
+      "subject": "auction house",
+      "states": [
+        "foundation",
+        "construction",
+        "complete",
+        "worn"
+      ],
+      "status": "proposed-design",
+      "kind": "building",
+      "notes": "Concept candidate. Final footprint, capacity, materials and construction-stage count require gameplay design. Named park subtypes and harbor facilities are proposed interpretations, not approved new canon. No baked-in labels or signs.",
+      "palette": null
+    },
+    {
+      "id": "building.library",
+      "group": "Buildings and public projects",
+      "subject": "public library",
+      "states": [
+        "foundation",
+        "construction",
+        "complete",
+        "worn"
+      ],
+      "status": "proposed-design",
+      "kind": "building",
+      "notes": "Concept candidate. Final footprint, capacity, materials and construction-stage count require gameplay design. Named park subtypes and harbor facilities are proposed interpretations, not approved new canon. No baked-in labels or signs.",
+      "palette": null
+    },
+    {
+      "id": "building.school",
+      "group": "Buildings and public projects",
+      "subject": "school",
+      "states": [
+        "foundation",
+        "construction",
+        "complete",
+        "worn"
+      ],
+      "status": "proposed-design",
+      "kind": "building",
+      "notes": "Concept candidate. Final footprint, capacity, materials and construction-stage count require gameplay design. Named park subtypes and harbor facilities are proposed interpretations, not approved new canon. No baked-in labels or signs.",
+      "palette": null
+    },
+    {
+      "id": "building.city_hall",
+      "group": "Buildings and public projects",
+      "subject": "city hall",
+      "states": [
+        "foundation",
+        "construction",
+        "complete",
+        "worn"
+      ],
+      "status": "proposed-design",
+      "kind": "building",
+      "notes": "Concept candidate. Final footprint, capacity, materials and construction-stage count require gameplay design. Named park subtypes and harbor facilities are proposed interpretations, not approved new canon. No baked-in labels or signs.",
+      "palette": null
+    },
+    {
+      "id": "building.bank",
+      "group": "Buildings and public projects",
+      "subject": "bank",
+      "states": [
+        "foundation",
+        "construction",
+        "complete",
+        "worn"
+      ],
+      "status": "proposed-design",
+      "kind": "building",
+      "notes": "Concept candidate. Final footprint, capacity, materials and construction-stage count require gameplay design. Named park subtypes and harbor facilities are proposed interpretations, not approved new canon. No baked-in labels or signs.",
+      "palette": null
+    },
+    {
+      "id": "building.pool",
+      "group": "Buildings and public projects",
+      "subject": "community swimming pool",
+      "states": [
+        "foundation",
+        "construction",
+        "complete",
+        "worn"
+      ],
+      "status": "proposed-design",
+      "kind": "building",
+      "notes": "Concept candidate. Final footprint, capacity, materials and construction-stage count require gameplay design. Named park subtypes and harbor facilities are proposed interpretations, not approved new canon. No baked-in labels or signs.",
+      "palette": null
+    },
+    {
+      "id": "building.park",
+      "group": "Buildings and public projects",
+      "subject": "public park",
+      "states": [
+        "foundation",
+        "construction",
+        "complete",
+        "worn"
+      ],
+      "status": "proposed-design",
+      "kind": "building",
+      "notes": "Concept candidate. Final footprint, capacity, materials and construction-stage count require gameplay design. Named park subtypes and harbor facilities are proposed interpretations, not approved new canon. No baked-in labels or signs.",
+      "palette": null
+    },
+    {
+      "id": "building.playground",
+      "group": "Buildings and public projects",
+      "subject": "playground",
+      "states": [
+        "foundation",
+        "construction",
+        "complete",
+        "worn"
+      ],
+      "status": "proposed-design",
+      "kind": "building",
+      "notes": "Concept candidate. Final footprint, capacity, materials and construction-stage count require gameplay design. Named park subtypes and harbor facilities are proposed interpretations, not approved new canon. No baked-in labels or signs.",
+      "palette": null
+    },
+    {
+      "id": "building.community_center",
+      "group": "Buildings and public projects",
+      "subject": "community center",
+      "states": [
+        "foundation",
+        "construction",
+        "complete",
+        "worn"
+      ],
+      "status": "proposed-design",
+      "kind": "building",
+      "notes": "Concept candidate. Final footprint, capacity, materials and construction-stage count require gameplay design. Named park subtypes and harbor facilities are proposed interpretations, not approved new canon. No baked-in labels or signs.",
+      "palette": null
+    },
+    {
+      "id": "building.gym",
+      "group": "Buildings and public projects",
+      "subject": "gym",
+      "states": [
+        "foundation",
+        "construction",
+        "complete",
+        "worn"
+      ],
+      "status": "proposed-design",
+      "kind": "building",
+      "notes": "Concept candidate. Final footprint, capacity, materials and construction-stage count require gameplay design. Named park subtypes and harbor facilities are proposed interpretations, not approved new canon. No baked-in labels or signs.",
+      "palette": null
+    },
+    {
+      "id": "building.tennis_court",
+      "group": "Buildings and public projects",
+      "subject": "tennis court",
+      "states": [
+        "foundation",
+        "construction",
+        "complete",
+        "worn"
+      ],
+      "status": "proposed-design",
+      "kind": "building",
+      "notes": "Concept candidate. Final footprint, capacity, materials and construction-stage count require gameplay design. Named park subtypes and harbor facilities are proposed interpretations, not approved new canon. No baked-in labels or signs.",
+      "palette": null
+    },
+    {
+      "id": "building.baseball_field",
+      "group": "Buildings and public projects",
+      "subject": "baseball field",
+      "states": [
+        "foundation",
+        "construction",
+        "complete",
+        "worn"
+      ],
+      "status": "proposed-design",
+      "kind": "building",
+      "notes": "Concept candidate. Final footprint, capacity, materials and construction-stage count require gameplay design. Named park subtypes and harbor facilities are proposed interpretations, not approved new canon. No baked-in labels or signs.",
+      "palette": null
+    },
+    {
+      "id": "building.soccer_field",
+      "group": "Buildings and public projects",
+      "subject": "soccer field",
+      "states": [
+        "foundation",
+        "construction",
+        "complete",
+        "worn"
+      ],
+      "status": "proposed-design",
+      "kind": "building",
+      "notes": "Concept candidate. Final footprint, capacity, materials and construction-stage count require gameplay design. Named park subtypes and harbor facilities are proposed interpretations, not approved new canon. No baked-in labels or signs.",
+      "palette": null
+    },
+    {
+      "id": "building.old_mill",
+      "group": "Buildings and public projects",
+      "subject": "old mill",
+      "states": [
+        "foundation",
+        "construction",
+        "complete",
+        "worn"
+      ],
+      "status": "proposed-design",
+      "kind": "building",
+      "notes": "Concept candidate. Final footprint, capacity, materials and construction-stage count require gameplay design. Named park subtypes and harbor facilities are proposed interpretations, not approved new canon. No baked-in labels or signs.",
+      "palette": null
+    },
+    {
+      "id": "building.factory",
+      "group": "Buildings and public projects",
+      "subject": "small factory",
+      "states": [
+        "foundation",
+        "construction",
+        "complete",
+        "worn"
+      ],
+      "status": "proposed-design",
+      "kind": "building",
+      "notes": "Concept candidate. Final footprint, capacity, materials and construction-stage count require gameplay design. Named park subtypes and harbor facilities are proposed interpretations, not approved new canon. No baked-in labels or signs.",
+      "palette": null
+    },
+    {
+      "id": "building.brewery",
+      "group": "Buildings and public projects",
+      "subject": "brewery",
+      "states": [
+        "foundation",
+        "construction",
+        "complete",
+        "worn"
+      ],
+      "status": "proposed-design",
+      "kind": "building",
+      "notes": "Concept candidate. Final footprint, capacity, materials and construction-stage count require gameplay design. Named park subtypes and harbor facilities are proposed interpretations, not approved new canon. No baked-in labels or signs.",
+      "palette": null
+    },
+    {
+      "id": "building.bar",
+      "group": "Buildings and public projects",
+      "subject": "bar",
+      "states": [
+        "foundation",
+        "construction",
+        "complete",
+        "worn"
+      ],
+      "status": "proposed-design",
+      "kind": "building",
+      "notes": "Concept candidate. Final footprint, capacity, materials and construction-stage count require gameplay design. Named park subtypes and harbor facilities are proposed interpretations, not approved new canon. No baked-in labels or signs.",
+      "palette": null
+    },
+    {
+      "id": "building.club",
+      "group": "Buildings and public projects",
+      "subject": "music and social club",
+      "states": [
+        "foundation",
+        "construction",
+        "complete",
+        "worn"
+      ],
+      "status": "proposed-design",
+      "kind": "building",
+      "notes": "Concept candidate. Final footprint, capacity, materials and construction-stage count require gameplay design. Named park subtypes and harbor facilities are proposed interpretations, not approved new canon. No baked-in labels or signs.",
+      "palette": null
+    },
+    {
+      "id": "building.church",
+      "group": "Buildings and public projects",
+      "subject": "nondenominational church without an invented denomination or emblem",
+      "states": [
+        "foundation",
+        "construction",
+        "complete",
+        "worn"
+      ],
+      "status": "proposed-design",
+      "kind": "building",
+      "notes": "Concept candidate. Final footprint, capacity, materials and construction-stage count require gameplay design. Named park subtypes and harbor facilities are proposed interpretations, not approved new canon. No baked-in labels or signs.",
+      "palette": null
+    },
+    {
+      "id": "building.tower",
+      "group": "Buildings and public projects",
+      "subject": "tower",
+      "states": [
+        "foundation",
+        "construction",
+        "complete",
+        "worn"
+      ],
+      "status": "proposed-design",
+      "kind": "building",
+      "notes": "Concept candidate. Final footprint, capacity, materials and construction-stage count require gameplay design. Named park subtypes and harbor facilities are proposed interpretations, not approved new canon. No baked-in labels or signs.",
+      "palette": null
+    },
+    {
+      "id": "building.lighthouse",
+      "group": "Buildings and public projects",
+      "subject": "lighthouse",
+      "states": [
+        "foundation",
+        "construction",
+        "complete",
+        "worn"
+      ],
+      "status": "proposed-design",
+      "kind": "building",
+      "notes": "Concept candidate. Final footprint, capacity, materials and construction-stage count require gameplay design. Named park subtypes and harbor facilities are proposed interpretations, not approved new canon. No baked-in labels or signs.",
+      "palette": null
+    },
+    {
+      "id": "building.stadium",
+      "group": "Buildings and public projects",
+      "subject": "stadium",
+      "states": [
+        "foundation",
+        "construction",
+        "complete",
+        "worn"
+      ],
+      "status": "proposed-design",
+      "kind": "building",
+      "notes": "Concept candidate. Final footprint, capacity, materials and construction-stage count require gameplay design. Named park subtypes and harbor facilities are proposed interpretations, not approved new canon. No baked-in labels or signs.",
+      "palette": null
+    },
+    {
+      "id": "building.museum",
+      "group": "Buildings and public projects",
+      "subject": "museum",
+      "states": [
+        "foundation",
+        "construction",
+        "complete",
+        "worn"
+      ],
+      "status": "proposed-design",
+      "kind": "building",
+      "notes": "Concept candidate. Final footprint, capacity, materials and construction-stage count require gameplay design. Named park subtypes and harbor facilities are proposed interpretations, not approved new canon. No baked-in labels or signs.",
+      "palette": null
+    },
+    {
+      "id": "building.bandshell",
+      "group": "Buildings and public projects",
+      "subject": "bandshell",
+      "states": [
+        "foundation",
+        "construction",
+        "complete",
+        "worn"
+      ],
+      "status": "proposed-design",
+      "kind": "building",
+      "notes": "Concept candidate. Final footprint, capacity, materials and construction-stage count require gameplay design. Named park subtypes and harbor facilities are proposed interpretations, not approved new canon. No baked-in labels or signs.",
+      "palette": null
+    },
+    {
+      "id": "building.gazebo",
+      "group": "Buildings and public projects",
+      "subject": "gazebo",
+      "states": [
+        "foundation",
+        "construction",
+        "complete",
+        "worn"
+      ],
+      "status": "proposed-design",
+      "kind": "building",
+      "notes": "Concept candidate. Final footprint, capacity, materials and construction-stage count require gameplay design. Named park subtypes and harbor facilities are proposed interpretations, not approved new canon. No baked-in labels or signs.",
+      "palette": null
+    },
+    {
+      "id": "building.ferris_wheel",
+      "group": "Buildings and public projects",
+      "subject": "ferris wheel",
+      "states": [
+        "foundation",
+        "construction",
+        "complete",
+        "worn"
+      ],
+      "status": "proposed-design",
+      "kind": "building",
+      "notes": "Concept candidate. Final footprint, capacity, materials and construction-stage count require gameplay design. Named park subtypes and harbor facilities are proposed interpretations, not approved new canon. No baked-in labels or signs.",
+      "palette": null
+    },
+    {
+      "id": "building.fairgrounds",
+      "group": "Buildings and public projects",
+      "subject": "fairgrounds",
+      "states": [
+        "foundation",
+        "construction",
+        "complete",
+        "worn"
+      ],
+      "status": "proposed-design",
+      "kind": "building",
+      "notes": "Concept candidate. Final footprint, capacity, materials and construction-stage count require gameplay design. Named park subtypes and harbor facilities are proposed interpretations, not approved new canon. No baked-in labels or signs.",
+      "palette": null
+    },
+    {
+      "id": "building.town_square",
+      "group": "Buildings and public projects",
+      "subject": "shared town central square",
+      "states": [
+        "foundation",
+        "construction",
+        "complete",
+        "worn"
+      ],
+      "status": "proposed-design",
+      "kind": "building",
+      "notes": "Concept candidate. Final footprint, capacity, materials and construction-stage count require gameplay design. Named park subtypes and harbor facilities are proposed interpretations, not approved new canon. No baked-in labels or signs.",
+      "palette": null
+    },
+    {
+      "id": "building.public_garden",
+      "group": "Buildings and public projects",
+      "subject": "public garden park",
+      "states": [
+        "foundation",
+        "construction",
+        "complete",
+        "worn"
+      ],
+      "status": "proposed-design",
+      "kind": "building",
+      "notes": "Concept candidate. Final footprint, capacity, materials and construction-stage count require gameplay design. Named park subtypes and harbor facilities are proposed interpretations, not approved new canon. No baked-in labels or signs.",
+      "palette": null
+    },
+    {
+      "id": "building.sports_park",
+      "group": "Buildings and public projects",
+      "subject": "recreation park",
+      "states": [
+        "foundation",
+        "construction",
+        "complete",
+        "worn"
+      ],
+      "status": "proposed-design",
+      "kind": "building",
+      "notes": "Concept candidate. Final footprint, capacity, materials and construction-stage count require gameplay design. Named park subtypes and harbor facilities are proposed interpretations, not approved new canon. No baked-in labels or signs.",
+      "palette": null
+    },
+    {
+      "id": "building.waterfront_park",
+      "group": "Buildings and public projects",
+      "subject": "waterfront park",
+      "states": [
+        "foundation",
+        "construction",
+        "complete",
+        "worn"
+      ],
+      "status": "proposed-design",
+      "kind": "building",
+      "notes": "Concept candidate. Final footprint, capacity, materials and construction-stage count require gameplay design. Named park subtypes and harbor facilities are proposed interpretations, not approved new canon. No baked-in labels or signs.",
+      "palette": null
+    },
+    {
+      "id": "building.harbor",
+      "group": "Buildings and public projects",
+      "subject": "boat landing and dock facilities",
+      "states": [
+        "foundation",
+        "construction",
+        "complete",
+        "worn"
+      ],
+      "status": "proposed-design",
+      "kind": "building",
+      "notes": "Concept candidate. Final footprint, capacity, materials and construction-stage count require gameplay design. Named park subtypes and harbor facilities are proposed interpretations, not approved new canon. No baked-in labels or signs.",
+      "palette": null
+    },
+    {
+      "id": "module.shopfront",
+      "group": "Construction modules and interiors",
+      "subject": "modular shopfront with blank sign panel",
+      "states": [
+        "orientation-a",
+        "orientation-b"
+      ],
+      "status": "proposed-design",
+      "kind": "module",
+      "notes": "Proposed orientations only. Final footprint/anchor and collision must be set before atlas production. A/B are opposite isometric axes, not inferred existing frame IDs.",
+      "palette": null
+    },
+    {
+      "id": "module.shop_counter",
+      "group": "Construction modules and interiors",
+      "subject": "shop sales counter",
+      "states": [
+        "orientation-a",
+        "orientation-b"
+      ],
+      "status": "proposed-design",
+      "kind": "module",
+      "notes": "Proposed orientations only. Final footprint/anchor and collision must be set before atlas production. A/B are opposite isometric axes, not inferred existing frame IDs.",
+      "palette": null
+    },
+    {
+      "id": "module.display_shelf",
+      "group": "Construction modules and interiors",
+      "subject": "shop display shelf",
+      "states": [
+        "orientation-a",
+        "orientation-b"
+      ],
+      "status": "proposed-design",
+      "kind": "module",
+      "notes": "Proposed orientations only. Final footprint/anchor and collision must be set before atlas production. A/B are opposite isometric axes, not inferred existing frame IDs.",
+      "palette": null
+    },
+    {
+      "id": "module.clothing_rack",
+      "group": "Construction modules and interiors",
+      "subject": "clothing display rack",
+      "states": [
+        "orientation-a",
+        "orientation-b"
+      ],
+      "status": "proposed-design",
+      "kind": "module",
+      "notes": "Proposed orientations only. Final footprint/anchor and collision must be set before atlas production. A/B are opposite isometric axes, not inferred existing frame IDs.",
+      "palette": null
+    },
+    {
+      "id": "module.classroom_desk",
+      "group": "Construction modules and interiors",
+      "subject": "classroom desk",
+      "states": [
+        "orientation-a",
+        "orientation-b"
+      ],
+      "status": "proposed-design",
+      "kind": "module",
+      "notes": "Proposed orientations only. Final footprint/anchor and collision must be set before atlas production. A/B are opposite isometric axes, not inferred existing frame IDs.",
+      "palette": null
+    },
+    {
+      "id": "module.teacher_desk",
+      "group": "Construction modules and interiors",
+      "subject": "teacher desk",
+      "states": [
+        "orientation-a",
+        "orientation-b"
+      ],
+      "status": "proposed-design",
+      "kind": "module",
+      "notes": "Proposed orientations only. Final footprint/anchor and collision must be set before atlas production. A/B are opposite isometric axes, not inferred existing frame IDs.",
+      "palette": null
+    },
+    {
+      "id": "module.blackboard",
+      "group": "Construction modules and interiors",
+      "subject": "blank classroom board",
+      "states": [
+        "orientation-a",
+        "orientation-b"
+      ],
+      "status": "proposed-design",
+      "kind": "module",
+      "notes": "Proposed orientations only. Final footprint/anchor and collision must be set before atlas production. A/B are opposite isometric axes, not inferred existing frame IDs.",
+      "palette": null
+    },
+    {
+      "id": "module.library_shelf",
+      "group": "Construction modules and interiors",
+      "subject": "library bookshelf with unlettered book spines",
+      "states": [
+        "orientation-a",
+        "orientation-b"
+      ],
+      "status": "proposed-design",
+      "kind": "module",
+      "notes": "Proposed orientations only. Final footprint/anchor and collision must be set before atlas production. A/B are opposite isometric axes, not inferred existing frame IDs.",
+      "palette": null
+    },
+    {
+      "id": "module.bank_counter",
+      "group": "Construction modules and interiors",
+      "subject": "bank counter",
+      "states": [
+        "orientation-a",
+        "orientation-b"
+      ],
+      "status": "proposed-design",
+      "kind": "module",
+      "notes": "Proposed orientations only. Final footprint/anchor and collision must be set before atlas production. A/B are opposite isometric axes, not inferred existing frame IDs.",
+      "palette": null
+    },
+    {
+      "id": "module.service_counter",
+      "group": "Construction modules and interiors",
+      "subject": "public service counter",
+      "states": [
+        "orientation-a",
+        "orientation-b"
+      ],
+      "status": "proposed-design",
+      "kind": "module",
+      "notes": "Proposed orientations only. Final footprint/anchor and collision must be set before atlas production. A/B are opposite isometric axes, not inferred existing frame IDs.",
+      "palette": null
+    },
+    {
+      "id": "module.auction_display",
+      "group": "Construction modules and interiors",
+      "subject": "auction display pedestal",
+      "states": [
+        "orientation-a",
+        "orientation-b"
+      ],
+      "status": "proposed-design",
+      "kind": "module",
+      "notes": "Proposed orientations only. Final footprint/anchor and collision must be set before atlas production. A/B are opposite isometric axes, not inferred existing frame IDs.",
+      "palette": null
+    },
+    {
+      "id": "module.postal_sorting",
+      "group": "Construction modules and interiors",
+      "subject": "postal sorting furniture",
+      "states": [
+        "orientation-a",
+        "orientation-b"
+      ],
+      "status": "proposed-design",
+      "kind": "module",
+      "notes": "Proposed orientations only. Final footprint/anchor and collision must be set before atlas production. A/B are opposite isometric axes, not inferred existing frame IDs.",
+      "palette": null
+    },
+    {
+      "id": "module.mailbox",
+      "group": "Construction modules and interiors",
+      "subject": "personal mailbox",
+      "states": [
+        "orientation-a",
+        "orientation-b"
+      ],
+      "status": "proposed-design",
+      "kind": "module",
+      "notes": "Proposed orientations only. Final footprint/anchor and collision must be set before atlas production. A/B are opposite isometric axes, not inferred existing frame IDs.",
+      "palette": null
+    },
+    {
+      "id": "module.public_mailbox",
+      "group": "Construction modules and interiors",
+      "subject": "public postal collection box",
+      "states": [
+        "orientation-a",
+        "orientation-b"
+      ],
+      "status": "proposed-design",
+      "kind": "module",
+      "notes": "Proposed orientations only. Final footprint/anchor and collision must be set before atlas production. A/B are opposite isometric axes, not inferred existing frame IDs.",
+      "palette": null
+    },
+    {
+      "id": "module.travel_map_board",
+      "group": "Construction modules and interiors",
+      "subject": "travel-agency map display frame with blank replaceable screen",
+      "states": [
+        "orientation-a",
+        "orientation-b"
+      ],
+      "status": "proposed-design",
+      "kind": "module",
+      "notes": "Proposed orientations only. Final footprint/anchor and collision must be set before atlas production. A/B are opposite isometric axes, not inferred existing frame IDs.",
+      "palette": null
+    },
+    {
+      "id": "module.notice_board",
+      "group": "Construction modules and interiors",
+      "subject": "community notice board without baked-in text",
+      "states": [
+        "orientation-a",
+        "orientation-b"
+      ],
+      "status": "proposed-design",
+      "kind": "module",
+      "notes": "Proposed orientations only. Final footprint/anchor and collision must be set before atlas production. A/B are opposite isometric axes, not inferred existing frame IDs.",
+      "palette": null
+    },
+    {
+      "id": "module.door",
+      "group": "Construction modules and interiors",
+      "subject": "modular entrance door",
+      "states": [
+        "orientation-a",
+        "orientation-b"
+      ],
+      "status": "proposed-design",
+      "kind": "module",
+      "notes": "Proposed orientations only. Final footprint/anchor and collision must be set before atlas production. A/B are opposite isometric axes, not inferred existing frame IDs.",
+      "palette": null
+    },
+    {
+      "id": "module.window",
+      "group": "Construction modules and interiors",
+      "subject": "modular window",
+      "states": [
+        "orientation-a",
+        "orientation-b"
+      ],
+      "status": "proposed-design",
+      "kind": "module",
+      "notes": "Proposed orientations only. Final footprint/anchor and collision must be set before atlas production. A/B are opposite isometric axes, not inferred existing frame IDs.",
+      "palette": null
+    },
+    {
+      "id": "module.wall",
+      "group": "Construction modules and interiors",
+      "subject": "modular exterior wall",
+      "states": [
+        "orientation-a",
+        "orientation-b"
+      ],
+      "status": "proposed-design",
+      "kind": "module",
+      "notes": "Proposed orientations only. Final footprint/anchor and collision must be set before atlas production. A/B are opposite isometric axes, not inferred existing frame IDs.",
+      "palette": null
+    },
+    {
+      "id": "module.interior_wall",
+      "group": "Construction modules and interiors",
+      "subject": "modular interior wall",
+      "states": [
+        "orientation-a",
+        "orientation-b"
+      ],
+      "status": "proposed-design",
+      "kind": "module",
+      "notes": "Proposed orientations only. Final footprint/anchor and collision must be set before atlas production. A/B are opposite isometric axes, not inferred existing frame IDs.",
+      "palette": null
+    },
+    {
+      "id": "module.floor",
+      "group": "Construction modules and interiors",
+      "subject": "modular floor",
+      "states": [
+        "orientation-a",
+        "orientation-b"
+      ],
+      "status": "proposed-design",
+      "kind": "module",
+      "notes": "Proposed orientations only. Final footprint/anchor and collision must be set before atlas production. A/B are opposite isometric axes, not inferred existing frame IDs.",
+      "palette": null
+    },
+    {
+      "id": "module.roof",
+      "group": "Construction modules and interiors",
+      "subject": "modular roof",
+      "states": [
+        "orientation-a",
+        "orientation-b"
+      ],
+      "status": "proposed-design",
+      "kind": "module",
+      "notes": "Proposed orientations only. Final footprint/anchor and collision must be set before atlas production. A/B are opposite isometric axes, not inferred existing frame IDs.",
+      "palette": null
+    },
+    {
+      "id": "module.foundation",
+      "group": "Construction modules and interiors",
+      "subject": "modular foundation",
+      "states": [
+        "orientation-a",
+        "orientation-b"
+      ],
+      "status": "proposed-design",
+      "kind": "module",
+      "notes": "Proposed orientations only. Final footprint/anchor and collision must be set before atlas production. A/B are opposite isometric axes, not inferred existing frame IDs.",
+      "palette": null
+    },
+    {
+      "id": "module.stairs",
+      "group": "Construction modules and interiors",
+      "subject": "short access stairs",
+      "states": [
+        "orientation-a",
+        "orientation-b"
+      ],
+      "status": "proposed-design",
+      "kind": "module",
+      "notes": "Proposed orientations only. Final footprint/anchor and collision must be set before atlas production. A/B are opposite isometric axes, not inferred existing frame IDs.",
+      "palette": null
+    },
+    {
+      "id": "module.bridge",
+      "group": "Construction modules and interiors",
+      "subject": "constructible river bridge",
+      "states": [
+        "orientation-a",
+        "orientation-b"
+      ],
+      "status": "proposed-design",
+      "kind": "module",
+      "notes": "Proposed orientations only. Final footprint/anchor and collision must be set before atlas production. A/B are opposite isometric axes, not inferred existing frame IDs.",
+      "palette": null
+    },
+    {
+      "id": "module.ladder",
+      "group": "Construction modules and interiors",
+      "subject": "ladder connecting two land elevations",
+      "states": [
+        "orientation-a",
+        "orientation-b"
+      ],
+      "status": "proposed-design",
+      "kind": "module",
+      "notes": "Proposed orientations only. Final footprint/anchor and collision must be set before atlas production. A/B are opposite isometric axes, not inferred existing frame IDs.",
+      "palette": null
+    },
+    {
+      "id": "module.dock_segment",
+      "group": "Construction modules and interiors",
+      "subject": "modular dock segment",
+      "states": [
+        "orientation-a",
+        "orientation-b"
+      ],
+      "status": "proposed-design",
+      "kind": "module",
+      "notes": "Proposed orientations only. Final footprint/anchor and collision must be set before atlas production. A/B are opposite isometric axes, not inferred existing frame IDs.",
+      "palette": null
+    },
+    {
+      "id": "module.building_sign",
+      "group": "Construction modules and interiors",
+      "subject": "empty replaceable business sign panel",
+      "states": [
+        "orientation-a",
+        "orientation-b"
+      ],
+      "status": "proposed-design",
+      "kind": "module",
+      "notes": "Proposed orientations only. Final footprint/anchor and collision must be set before atlas production. A/B are opposite isometric axes, not inferred existing frame IDs.",
+      "palette": null
+    },
+    {
+      "id": "prop.painting",
+      "group": "Home, outdoor living, music and sports",
+      "subject": "framed painting with an original non-narrative abstract image, no characters or text",
+      "states": [
+        "orientation-a",
+        "orientation-b"
+      ],
+      "status": "proposed-design",
+      "kind": "object",
+      "notes": "Specific unrequested furniture examples are proposed roster additions. Instrument type must be selected; do not silently invent the final instrument roster.",
+      "palette": null
+    },
+    {
+      "id": "prop.picture_frame",
+      "group": "Home, outdoor living, music and sports",
+      "subject": "empty decorative picture frame",
+      "states": [
+        "orientation-a",
+        "orientation-b"
+      ],
+      "status": "proposed-design",
+      "kind": "object",
+      "notes": "Specific unrequested furniture examples are proposed roster additions. Instrument type must be selected; do not silently invent the final instrument roster.",
+      "palette": null
+    },
+    {
+      "id": "prop.wall_decoration",
+      "group": "Home, outdoor living, music and sports",
+      "subject": "simple wall decoration",
+      "states": [
+        "orientation-a",
+        "orientation-b"
+      ],
+      "status": "proposed-design",
+      "kind": "object",
+      "notes": "Specific unrequested furniture examples are proposed roster additions. Instrument type must be selected; do not silently invent the final instrument roster.",
+      "palette": null
+    },
+    {
+      "id": "prop.sofa",
+      "group": "Home, outdoor living, music and sports",
+      "subject": "home sofa",
+      "states": [
+        "orientation-a",
+        "orientation-b"
+      ],
+      "status": "proposed-design",
+      "kind": "object",
+      "notes": "Specific unrequested furniture examples are proposed roster additions. Instrument type must be selected; do not silently invent the final instrument roster.",
+      "palette": null
+    },
+    {
+      "id": "prop.cabinet",
+      "group": "Home, outdoor living, music and sports",
+      "subject": "home storage cabinet",
+      "states": [
+        "orientation-a",
+        "orientation-b"
+      ],
+      "status": "proposed-design",
+      "kind": "object",
+      "notes": "Specific unrequested furniture examples are proposed roster additions. Instrument type must be selected; do not silently invent the final instrument roster.",
+      "palette": null
+    },
+    {
+      "id": "prop.bookcase",
+      "group": "Home, outdoor living, music and sports",
+      "subject": "home bookcase",
+      "states": [
+        "orientation-a",
+        "orientation-b"
+      ],
+      "status": "proposed-design",
+      "kind": "object",
+      "notes": "Specific unrequested furniture examples are proposed roster additions. Instrument type must be selected; do not silently invent the final instrument roster.",
+      "palette": null
+    },
+    {
+      "id": "prop.bed",
+      "group": "Home, outdoor living, music and sports",
+      "subject": "home bed",
+      "states": [
+        "orientation-a",
+        "orientation-b"
+      ],
+      "status": "proposed-design",
+      "kind": "object",
+      "notes": "Specific unrequested furniture examples are proposed roster additions. Instrument type must be selected; do not silently invent the final instrument roster.",
+      "palette": null
+    },
+    {
+      "id": "prop.side_table",
+      "group": "Home, outdoor living, music and sports",
+      "subject": "small indoor side table",
+      "states": [
+        "orientation-a",
+        "orientation-b"
+      ],
+      "status": "proposed-design",
+      "kind": "object",
+      "notes": "Specific unrequested furniture examples are proposed roster additions. Instrument type must be selected; do not silently invent the final instrument roster.",
+      "palette": null
+    },
+    {
+      "id": "prop.dining_table",
+      "group": "Home, outdoor living, music and sports",
+      "subject": "indoor dining table",
+      "states": [
+        "orientation-a",
+        "orientation-b"
+      ],
+      "status": "proposed-design",
+      "kind": "object",
+      "notes": "Specific unrequested furniture examples are proposed roster additions. Instrument type must be selected; do not silently invent the final instrument roster.",
+      "palette": null
+    },
+    {
+      "id": "prop.dining_chair",
+      "group": "Home, outdoor living, music and sports",
+      "subject": "indoor dining chair",
+      "states": [
+        "orientation-a",
+        "orientation-b"
+      ],
+      "status": "proposed-design",
+      "kind": "object",
+      "notes": "Specific unrequested furniture examples are proposed roster additions. Instrument type must be selected; do not silently invent the final instrument roster.",
+      "palette": null
+    },
+    {
+      "id": "prop.outdoor_table",
+      "group": "Home, outdoor living, music and sports",
+      "subject": "outdoor garden table",
+      "states": [
+        "orientation-a",
+        "orientation-b"
+      ],
+      "status": "proposed-design",
+      "kind": "object",
+      "notes": "Specific unrequested furniture examples are proposed roster additions. Instrument type must be selected; do not silently invent the final instrument roster.",
+      "palette": null
+    },
+    {
+      "id": "prop.outdoor_chair",
+      "group": "Home, outdoor living, music and sports",
+      "subject": "outdoor garden chair",
+      "states": [
+        "orientation-a",
+        "orientation-b"
+      ],
+      "status": "proposed-design",
+      "kind": "object",
+      "notes": "Specific unrequested furniture examples are proposed roster additions. Instrument type must be selected; do not silently invent the final instrument roster.",
+      "palette": null
+    },
+    {
+      "id": "prop.bench",
+      "group": "Home, outdoor living, music and sports",
+      "subject": "outdoor bench",
+      "states": [
+        "orientation-a",
+        "orientation-b"
+      ],
+      "status": "proposed-design",
+      "kind": "object",
+      "notes": "Specific unrequested furniture examples are proposed roster additions. Instrument type must be selected; do not silently invent the final instrument roster.",
+      "palette": null
+    },
+    {
+      "id": "prop.yard_decoration",
+      "group": "Home, outdoor living, music and sports",
+      "subject": "small yard decoration",
+      "states": [
+        "orientation-a",
+        "orientation-b"
+      ],
+      "status": "proposed-design",
+      "kind": "object",
+      "notes": "Specific unrequested furniture examples are proposed roster additions. Instrument type must be selected; do not silently invent the final instrument roster.",
+      "palette": null
+    },
+    {
+      "id": "prop.patio_umbrella",
+      "group": "Home, outdoor living, music and sports",
+      "subject": "patio umbrella",
+      "states": [
+        "orientation-a",
+        "orientation-b"
+      ],
+      "status": "proposed-design",
+      "kind": "object",
+      "notes": "Specific unrequested furniture examples are proposed roster additions. Instrument type must be selected; do not silently invent the final instrument roster.",
+      "palette": null
+    },
+    {
+      "id": "prop.slip_slide",
+      "group": "Home, outdoor living, music and sports",
+      "subject": "water slip-and-slide recreation mat",
+      "states": [
+        "orientation-a",
+        "orientation-b"
+      ],
+      "status": "proposed-design",
+      "kind": "object",
+      "notes": "Specific unrequested furniture examples are proposed roster additions. Instrument type must be selected; do not silently invent the final instrument roster.",
+      "palette": null
+    },
+    {
+      "id": "prop.croquet_set",
+      "group": "Home, outdoor living, music and sports",
+      "subject": "croquet hoops, mallet and ball arranged as a single equipment asset",
+      "states": [
+        "orientation-a",
+        "orientation-b"
+      ],
+      "status": "proposed-design",
+      "kind": "object",
+      "notes": "Specific unrequested furniture examples are proposed roster additions. Instrument type must be selected; do not silently invent the final instrument roster.",
+      "palette": null
+    },
+    {
+      "id": "prop.tennis_racket",
+      "group": "Home, outdoor living, music and sports",
+      "subject": "tennis racket",
+      "states": [
+        "orientation-a",
+        "orientation-b"
+      ],
+      "status": "proposed-design",
+      "kind": "object",
+      "notes": "Specific unrequested furniture examples are proposed roster additions. Instrument type must be selected; do not silently invent the final instrument roster.",
+      "palette": null
+    },
+    {
+      "id": "prop.tennis_ball",
+      "group": "Home, outdoor living, music and sports",
+      "subject": "tennis ball",
+      "states": [
+        "orientation-a",
+        "orientation-b"
+      ],
+      "status": "proposed-design",
+      "kind": "object",
+      "notes": "Specific unrequested furniture examples are proposed roster additions. Instrument type must be selected; do not silently invent the final instrument roster.",
+      "palette": null
+    },
+    {
+      "id": "prop.baseball_equipment",
+      "group": "Home, outdoor living, music and sports",
+      "subject": "baseball bat, glove and ball equipment group",
+      "states": [
+        "orientation-a",
+        "orientation-b"
+      ],
+      "status": "proposed-design",
+      "kind": "object",
+      "notes": "Specific unrequested furniture examples are proposed roster additions. Instrument type must be selected; do not silently invent the final instrument roster.",
+      "palette": null
+    },
+    {
+      "id": "prop.soccer_ball",
+      "group": "Home, outdoor living, music and sports",
+      "subject": "soccer ball",
+      "states": [
+        "orientation-a",
+        "orientation-b"
+      ],
+      "status": "proposed-design",
+      "kind": "object",
+      "notes": "Specific unrequested furniture examples are proposed roster additions. Instrument type must be selected; do not silently invent the final instrument roster.",
+      "palette": null
+    },
+    {
+      "id": "prop.playground_equipment",
+      "group": "Home, outdoor living, music and sports",
+      "subject": "playground climbing equipment",
+      "states": [
+        "orientation-a",
+        "orientation-b"
+      ],
+      "status": "proposed-design",
+      "kind": "object",
+      "notes": "Specific unrequested furniture examples are proposed roster additions. Instrument type must be selected; do not silently invent the final instrument roster.",
+      "palette": null
+    },
+    {
+      "id": "prop.radio",
+      "group": "Home, outdoor living, music and sports",
+      "subject": "portable music radio",
+      "states": [
+        "orientation-a",
+        "orientation-b"
+      ],
+      "status": "proposed-design",
+      "kind": "object",
+      "notes": "Specific unrequested furniture examples are proposed roster additions. Instrument type must be selected; do not silently invent the final instrument roster.",
+      "palette": null
+    },
+    {
+      "id": "prop.instrument_template",
+      "group": "Home, outdoor living, music and sports",
+      "subject": "[APPROVED_INSTRUMENT_TYPE] musical instrument",
+      "states": [
+        "orientation-a",
+        "orientation-b"
+      ],
+      "status": "needs-content-decision",
+      "kind": "object",
+      "notes": "Specific unrequested furniture examples are proposed roster additions. Instrument type must be selected; do not silently invent the final instrument roster.",
+      "palette": null
+    },
+    {
+      "id": "music.radio_playing",
+      "group": "Music active states",
+      "subject": "radio in playing state",
+      "states": [
+        "idle",
+        "playing"
+      ],
+      "status": "proposed-design",
+      "kind": "object",
+      "notes": "Actual sound/music is a separate audio deliverable, not an image. Keep idle/playing silhouettes and anchor identical.",
+      "palette": null
+    },
+    {
+      "id": "music.instrument_playing",
+      "group": "Music active states",
+      "subject": "[APPROVED_INSTRUMENT_TYPE] being played without a visible performer",
+      "states": [
+        "idle",
+        "playing"
+      ],
+      "status": "needs-content-decision",
+      "kind": "object",
+      "notes": "Actual sound/music is a separate audio deliverable, not an image. Keep idle/playing silhouettes and anchor identical.",
+      "palette": null
+    },
+    {
+      "id": "tool.saw",
+      "group": "Professional tools",
+      "subject": "wood-cutting saw",
+      "states": [
+        "inventory",
+        "placed",
+        "worn"
+      ],
+      "status": "proposed-design",
+      "kind": "object",
+      "notes": "Saw, loom and electronics toolkit are existing recipe items; other tool forms and repair categories are proposed. The held-use image must be authored after the character rig is approved.",
+      "palette": null
+    },
+    {
+      "id": "tool.loom",
+      "group": "Professional tools",
+      "subject": "cloth-weaving loom",
+      "states": [
+        "inventory",
+        "placed",
+        "worn"
+      ],
+      "status": "proposed-design",
+      "kind": "object",
+      "notes": "Saw, loom and electronics toolkit are existing recipe items; other tool forms and repair categories are proposed. The held-use image must be authored after the character rig is approved.",
+      "palette": null
+    },
+    {
+      "id": "tool.electronics_toolkit",
+      "group": "Professional tools",
+      "subject": "electronics assembly toolkit",
+      "states": [
+        "inventory",
+        "placed",
+        "worn"
+      ],
+      "status": "proposed-design",
+      "kind": "object",
+      "notes": "Saw, loom and electronics toolkit are existing recipe items; other tool forms and repair categories are proposed. The held-use image must be authored after the character rig is approved.",
+      "palette": null
+    },
+    {
+      "id": "tool.mining_pick",
+      "group": "Professional tools",
+      "subject": "mining pick",
+      "states": [
+        "inventory",
+        "placed",
+        "worn"
+      ],
+      "status": "proposed-design",
+      "kind": "object",
+      "notes": "Saw, loom and electronics toolkit are existing recipe items; other tool forms and repair categories are proposed. The held-use image must be authored after the character rig is approved.",
+      "palette": null
+    },
+    {
+      "id": "tool.shovel",
+      "group": "Professional tools",
+      "subject": "digging shovel",
+      "states": [
+        "inventory",
+        "placed",
+        "worn"
+      ],
+      "status": "proposed-design",
+      "kind": "object",
+      "notes": "Saw, loom and electronics toolkit are existing recipe items; other tool forms and repair categories are proposed. The held-use image must be authored after the character rig is approved.",
+      "palette": null
+    },
+    {
+      "id": "tool.watering_can",
+      "group": "Professional tools",
+      "subject": "watering can",
+      "states": [
+        "inventory",
+        "placed",
+        "worn"
+      ],
+      "status": "proposed-design",
+      "kind": "object",
+      "notes": "Saw, loom and electronics toolkit are existing recipe items; other tool forms and repair categories are proposed. The held-use image must be authored after the character rig is approved.",
+      "palette": null
+    },
+    {
+      "id": "tool.fishing_rod",
+      "group": "Professional tools",
+      "subject": "fishing rod",
+      "states": [
+        "inventory",
+        "placed",
+        "worn"
+      ],
+      "status": "proposed-design",
+      "kind": "object",
+      "notes": "Saw, loom and electronics toolkit are existing recipe items; other tool forms and repair categories are proposed. The held-use image must be authored after the character rig is approved.",
+      "palette": null
+    },
+    {
+      "id": "tool.plumbing_tools",
+      "group": "Professional tools",
+      "subject": "plumbing repair tools",
+      "states": [
+        "inventory",
+        "placed",
+        "worn"
+      ],
+      "status": "proposed-design",
+      "kind": "object",
+      "notes": "Saw, loom and electronics toolkit are existing recipe items; other tool forms and repair categories are proposed. The held-use image must be authored after the character rig is approved.",
+      "palette": null
+    },
+    {
+      "id": "tool.electrical_tools",
+      "group": "Professional tools",
+      "subject": "electrical repair tools",
+      "states": [
+        "inventory",
+        "placed",
+        "worn"
+      ],
+      "status": "proposed-design",
+      "kind": "object",
+      "notes": "Saw, loom and electronics toolkit are existing recipe items; other tool forms and repair categories are proposed. The held-use image must be authored after the character rig is approved.",
+      "palette": null
+    },
+    {
+      "id": "tool.contractor_tools",
+      "group": "Professional tools",
+      "subject": "construction contractor tools",
+      "states": [
+        "inventory",
+        "placed",
+        "worn"
+      ],
+      "status": "proposed-design",
+      "kind": "object",
+      "notes": "Saw, loom and electronics toolkit are existing recipe items; other tool forms and repair categories are proposed. The held-use image must be authored after the character rig is approved.",
+      "palette": null
+    },
+    {
+      "id": "tool.gardening_tools",
+      "group": "Professional tools",
+      "subject": "gardening tools",
+      "states": [
+        "inventory",
+        "placed",
+        "worn"
+      ],
+      "status": "proposed-design",
+      "kind": "object",
+      "notes": "Saw, loom and electronics toolkit are existing recipe items; other tool forms and repair categories are proposed. The held-use image must be authored after the character rig is approved.",
+      "palette": null
+    },
+    {
+      "id": "tool.carpentry_tools",
+      "group": "Professional tools",
+      "subject": "carpentry tools",
+      "states": [
+        "inventory",
+        "placed",
+        "worn"
+      ],
+      "status": "proposed-design",
+      "kind": "object",
+      "notes": "Saw, loom and electronics toolkit are existing recipe items; other tool forms and repair categories are proposed. The held-use image must be authored after the character rig is approved.",
+      "palette": null
+    },
+    {
+      "id": "tool.boatbuilding_tools",
+      "group": "Professional tools",
+      "subject": "boatbuilding tools",
+      "states": [
+        "inventory",
+        "placed",
+        "worn"
+      ],
+      "status": "proposed-design",
+      "kind": "object",
+      "notes": "Saw, loom and electronics toolkit are existing recipe items; other tool forms and repair categories are proposed. The held-use image must be authored after the character rig is approved.",
+      "palette": null
+    },
+    {
+      "id": "tool.cooking_tools",
+      "group": "Professional tools",
+      "subject": "cooking utensils",
+      "states": [
+        "inventory",
+        "placed",
+        "worn"
+      ],
+      "status": "proposed-design",
+      "kind": "object",
+      "notes": "Saw, loom and electronics toolkit are existing recipe items; other tool forms and repair categories are proposed. The held-use image must be authored after the character rig is approved.",
+      "palette": null
+    },
+    {
+      "id": "tool.bartending_tools",
+      "group": "Professional tools",
+      "subject": "bartending mixing tools",
+      "states": [
+        "inventory",
+        "placed",
+        "worn"
+      ],
+      "status": "proposed-design",
+      "kind": "object",
+      "notes": "Saw, loom and electronics toolkit are existing recipe items; other tool forms and repair categories are proposed. The held-use image must be authored after the character rig is approved.",
+      "palette": null
+    },
+    {
+      "id": "tool.repair_tools",
+      "group": "Professional tools",
+      "subject": "general repair tools",
+      "states": [
+        "inventory",
+        "placed",
+        "worn"
+      ],
+      "status": "proposed-design",
+      "kind": "object",
+      "notes": "Saw, loom and electronics toolkit are existing recipe items; other tool forms and repair categories are proposed. The held-use image must be authored after the character rig is approved.",
+      "palette": null
+    },
+    {
+      "id": "station.sawmill_station",
+      "group": "Workplaces and production",
+      "subject": "wood-cutting workstation",
+      "states": [
+        "idle",
+        "in-use"
+      ],
+      "status": "proposed-design",
+      "kind": "object",
+      "notes": "Separate asset from the enclosing building. No unseen operator or animated output baked in. Machinery/tool placement is a proposed design until station gameplay is specified.",
+      "palette": null
+    },
+    {
+      "id": "station.weaving_station",
+      "group": "Workplaces and production",
+      "subject": "weaving workspace with loom",
+      "states": [
+        "idle",
+        "in-use"
+      ],
+      "status": "proposed-design",
+      "kind": "object",
+      "notes": "Separate asset from the enclosing building. No unseen operator or animated output baked in. Machinery/tool placement is a proposed design until station gameplay is specified.",
+      "palette": null
+    },
+    {
+      "id": "station.electronics_bench",
+      "group": "Workplaces and production",
+      "subject": "electronics assembly bench",
+      "states": [
+        "idle",
+        "in-use"
+      ],
+      "status": "proposed-design",
+      "kind": "object",
+      "notes": "Separate asset from the enclosing building. No unseen operator or animated output baked in. Machinery/tool placement is a proposed design until station gameplay is specified.",
+      "palette": null
+    },
+    {
+      "id": "station.phone_assembly",
+      "group": "Workplaces and production",
+      "subject": "phone assembly station",
+      "states": [
+        "idle",
+        "in-use"
+      ],
+      "status": "proposed-design",
+      "kind": "object",
+      "notes": "Separate asset from the enclosing building. No unseen operator or animated output baked in. Machinery/tool placement is a proposed design until station gameplay is specified.",
+      "palette": null
+    },
+    {
+      "id": "station.computer_assembly",
+      "group": "Workplaces and production",
+      "subject": "computer assembly station",
+      "states": [
+        "idle",
+        "in-use"
+      ],
+      "status": "proposed-design",
+      "kind": "object",
+      "notes": "Separate asset from the enclosing building. No unseen operator or animated output baked in. Machinery/tool placement is a proposed design until station gameplay is specified.",
+      "palette": null
+    },
+    {
+      "id": "station.boatbuilding_station",
+      "group": "Workplaces and production",
+      "subject": "boatbuilding workstation",
+      "states": [
+        "idle",
+        "in-use"
+      ],
+      "status": "proposed-design",
+      "kind": "object",
+      "notes": "Separate asset from the enclosing building. No unseen operator or animated output baked in. Machinery/tool placement is a proposed design until station gameplay is specified.",
+      "palette": null
+    },
+    {
+      "id": "station.repair_bench",
+      "group": "Workplaces and production",
+      "subject": "repair workbench",
+      "states": [
+        "idle",
+        "in-use"
+      ],
+      "status": "proposed-design",
+      "kind": "object",
+      "notes": "Separate asset from the enclosing building. No unseen operator or animated output baked in. Machinery/tool placement is a proposed design until station gameplay is specified.",
+      "palette": null
+    },
+    {
+      "id": "station.plumbing_station",
+      "group": "Workplaces and production",
+      "subject": "plumbing tools/work area",
+      "states": [
+        "idle",
+        "in-use"
+      ],
+      "status": "proposed-design",
+      "kind": "object",
+      "notes": "Separate asset from the enclosing building. No unseen operator or animated output baked in. Machinery/tool placement is a proposed design until station gameplay is specified.",
+      "palette": null
+    },
+    {
+      "id": "station.electrician_station",
+      "group": "Workplaces and production",
+      "subject": "electrical tools/work area",
+      "states": [
+        "idle",
+        "in-use"
+      ],
+      "status": "proposed-design",
+      "kind": "object",
+      "notes": "Separate asset from the enclosing building. No unseen operator or animated output baked in. Machinery/tool placement is a proposed design until station gameplay is specified.",
+      "palette": null
+    },
+    {
+      "id": "station.cook_station",
+      "group": "Workplaces and production",
+      "subject": "food preparation station",
+      "states": [
+        "idle",
+        "in-use"
+      ],
+      "status": "proposed-design",
+      "kind": "object",
+      "notes": "Separate asset from the enclosing building. No unseen operator or animated output baked in. Machinery/tool placement is a proposed design until station gameplay is specified.",
+      "palette": null
+    },
+    {
+      "id": "station.bar_station",
+      "group": "Workplaces and production",
+      "subject": "drink preparation counter",
+      "states": [
+        "idle",
+        "in-use"
+      ],
+      "status": "proposed-design",
+      "kind": "object",
+      "notes": "Separate asset from the enclosing building. No unseen operator or animated output baked in. Machinery/tool placement is a proposed design until station gameplay is specified.",
+      "palette": null
+    },
+    {
+      "id": "station.teacher_station",
+      "group": "Workplaces and production",
+      "subject": "teaching workspace",
+      "states": [
+        "idle",
+        "in-use"
+      ],
+      "status": "proposed-design",
+      "kind": "object",
+      "notes": "Separate asset from the enclosing building. No unseen operator or animated output baked in. Machinery/tool placement is a proposed design until station gameplay is specified.",
+      "palette": null
+    },
+    {
+      "id": "station.pastoral_station",
+      "group": "Workplaces and production",
+      "subject": "nondenominational pastoral conversation workspace",
+      "states": [
+        "idle",
+        "in-use"
+      ],
+      "status": "proposed-design",
+      "kind": "object",
+      "notes": "Separate asset from the enclosing building. No unseen operator or animated output baked in. Machinery/tool placement is a proposed design until station gameplay is specified.",
+      "palette": null
+    },
+    {
+      "id": "station.garden_station",
+      "group": "Workplaces and production",
+      "subject": "plant propagation workspace",
+      "states": [
+        "idle",
+        "in-use"
+      ],
+      "status": "proposed-design",
+      "kind": "object",
+      "notes": "Separate asset from the enclosing building. No unseen operator or animated output baked in. Machinery/tool placement is a proposed design until station gameplay is specified.",
+      "palette": null
+    },
+    {
+      "id": "item.boards",
+      "group": "Inventory goods and learning",
+      "subject": "rough salvaged boards",
+      "states": [
+        "inventory"
+      ],
+      "status": "proposed-design",
+      "kind": "icon",
+      "notes": "No baked quantity, price, account balance, item label or readable book text. Vouchers are local barter goods, not Rapture Credits. Undefined mineral/fish/recipe/product roster entries remain blocked templates.",
+      "palette": null
+    },
+    {
+      "id": "item.roofing",
+      "group": "Inventory goods and learning",
+      "subject": "salvaged roofing sheets",
+      "states": [
+        "inventory"
+      ],
+      "status": "proposed-design",
+      "kind": "icon",
+      "notes": "No baked quantity, price, account balance, item label or readable book text. Vouchers are local barter goods, not Rapture Credits. Undefined mineral/fish/recipe/product roster entries remain blocked templates.",
+      "palette": null
+    },
+    {
+      "id": "item.stone",
+      "group": "Inventory goods and learning",
+      "subject": "gathered stone",
+      "states": [
+        "inventory"
+      ],
+      "status": "proposed-design",
+      "kind": "icon",
+      "notes": "No baked quantity, price, account balance, item label or readable book text. Vouchers are local barter goods, not Rapture Credits. Undefined mineral/fish/recipe/product roster entries remain blocked templates.",
+      "palette": null
+    },
+    {
+      "id": "item.lumber",
+      "group": "Inventory goods and learning",
+      "subject": "cut construction lumber",
+      "states": [
+        "inventory"
+      ],
+      "status": "proposed-design",
+      "kind": "icon",
+      "notes": "No baked quantity, price, account balance, item label or readable book text. Vouchers are local barter goods, not Rapture Credits. Undefined mineral/fish/recipe/product roster entries remain blocked templates.",
+      "palette": null
+    },
+    {
+      "id": "item.block",
+      "group": "Inventory goods and learning",
+      "subject": "construction blocks",
+      "states": [
+        "inventory"
+      ],
+      "status": "proposed-design",
+      "kind": "icon",
+      "notes": "No baked quantity, price, account balance, item label or readable book text. Vouchers are local barter goods, not Rapture Credits. Undefined mineral/fish/recipe/product roster entries remain blocked templates.",
+      "palette": null
+    },
+    {
+      "id": "item.cloth",
+      "group": "Inventory goods and learning",
+      "subject": "woven cloth",
+      "states": [
+        "inventory"
+      ],
+      "status": "proposed-design",
+      "kind": "icon",
+      "notes": "No baked quantity, price, account balance, item label or readable book text. Vouchers are local barter goods, not Rapture Credits. Undefined mineral/fish/recipe/product roster entries remain blocked templates.",
+      "palette": null
+    },
+    {
+      "id": "item.plant_fiber",
+      "group": "Inventory goods and learning",
+      "subject": "gathered plant fibers",
+      "states": [
+        "inventory"
+      ],
+      "status": "proposed-design",
+      "kind": "icon",
+      "notes": "No baked quantity, price, account balance, item label or readable book text. Vouchers are local barter goods, not Rapture Credits. Undefined mineral/fish/recipe/product roster entries remain blocked templates.",
+      "palette": null
+    },
+    {
+      "id": "item.phone_parts",
+      "group": "Inventory goods and learning",
+      "subject": "phone components",
+      "states": [
+        "inventory"
+      ],
+      "status": "proposed-design",
+      "kind": "icon",
+      "notes": "No baked quantity, price, account balance, item label or readable book text. Vouchers are local barter goods, not Rapture Credits. Undefined mineral/fish/recipe/product roster entries remain blocked templates.",
+      "palette": null
+    },
+    {
+      "id": "item.computer_parts",
+      "group": "Inventory goods and learning",
+      "subject": "computer components",
+      "states": [
+        "inventory"
+      ],
+      "status": "proposed-design",
+      "kind": "icon",
+      "notes": "No baked quantity, price, account balance, item label or readable book text. Vouchers are local barter goods, not Rapture Credits. Undefined mineral/fish/recipe/product roster entries remain blocked templates.",
+      "palette": null
+    },
+    {
+      "id": "item.boat_parts",
+      "group": "Inventory goods and learning",
+      "subject": "boat components",
+      "states": [
+        "inventory"
+      ],
+      "status": "proposed-design",
+      "kind": "icon",
+      "notes": "No baked quantity, price, account balance, item label or readable book text. Vouchers are local barter goods, not Rapture Credits. Undefined mineral/fish/recipe/product roster entries remain blocked templates.",
+      "palette": null
+    },
+    {
+      "id": "item.phone",
+      "group": "Inventory goods and learning",
+      "subject": "finished mobile phone",
+      "states": [
+        "inventory"
+      ],
+      "status": "proposed-design",
+      "kind": "icon",
+      "notes": "No baked quantity, price, account balance, item label or readable book text. Vouchers are local barter goods, not Rapture Credits. Undefined mineral/fish/recipe/product roster entries remain blocked templates.",
+      "palette": null
+    },
+    {
+      "id": "item.computer",
+      "group": "Inventory goods and learning",
+      "subject": "finished computer",
+      "states": [
+        "inventory"
+      ],
+      "status": "proposed-design",
+      "kind": "icon",
+      "notes": "No baked quantity, price, account balance, item label or readable book text. Vouchers are local barter goods, not Rapture Credits. Undefined mineral/fish/recipe/product roster entries remain blocked templates.",
+      "palette": null
+    },
+    {
+      "id": "item.boat",
+      "group": "Inventory goods and learning",
+      "subject": "finished player-owned boat",
+      "states": [
+        "inventory"
+      ],
+      "status": "proposed-design",
+      "kind": "icon",
+      "notes": "No baked quantity, price, account balance, item label or readable book text. Vouchers are local barter goods, not Rapture Credits. Undefined mineral/fish/recipe/product roster entries remain blocked templates.",
+      "palette": null
+    },
+    {
+      "id": "item.kit_table",
+      "group": "Inventory goods and learning",
+      "subject": "table construction kit",
+      "states": [
+        "inventory"
+      ],
+      "status": "proposed-design",
+      "kind": "icon",
+      "notes": "No baked quantity, price, account balance, item label or readable book text. Vouchers are local barter goods, not Rapture Credits. Undefined mineral/fish/recipe/product roster entries remain blocked templates.",
+      "palette": null
+    },
+    {
+      "id": "item.kit_chair",
+      "group": "Inventory goods and learning",
+      "subject": "chair construction kit",
+      "states": [
+        "inventory"
+      ],
+      "status": "proposed-design",
+      "kind": "icon",
+      "notes": "No baked quantity, price, account balance, item label or readable book text. Vouchers are local barter goods, not Rapture Credits. Undefined mineral/fish/recipe/product roster entries remain blocked templates.",
+      "palette": null
+    },
+    {
+      "id": "item.kit_lantern",
+      "group": "Inventory goods and learning",
+      "subject": "solar lantern kit",
+      "states": [
+        "inventory"
+      ],
+      "status": "proposed-design",
+      "kind": "icon",
+      "notes": "No baked quantity, price, account balance, item label or readable book text. Vouchers are local barter goods, not Rapture Credits. Undefined mineral/fish/recipe/product roster entries remain blocked templates.",
+      "palette": null
+    },
+    {
+      "id": "item.kit_rug",
+      "group": "Inventory goods and learning",
+      "subject": "woven rug kit",
+      "states": [
+        "inventory"
+      ],
+      "status": "proposed-design",
+      "kind": "icon",
+      "notes": "No baked quantity, price, account balance, item label or readable book text. Vouchers are local barter goods, not Rapture Credits. Undefined mineral/fish/recipe/product roster entries remain blocked templates.",
+      "palette": null
+    },
+    {
+      "id": "item.learning_credit",
+      "group": "Inventory goods and learning",
+      "subject": "learning voucher with no printed text",
+      "states": [
+        "inventory"
+      ],
+      "status": "proposed-design",
+      "kind": "icon",
+      "notes": "No baked quantity, price, account balance, item label or readable book text. Vouchers are local barter goods, not Rapture Credits. Undefined mineral/fish/recipe/product roster entries remain blocked templates.",
+      "palette": null
+    },
+    {
+      "id": "item.seed_greens",
+      "group": "Inventory goods and learning",
+      "subject": "leafy-greens planting seeds",
+      "states": [
+        "inventory"
+      ],
+      "status": "proposed-design",
+      "kind": "icon",
+      "notes": "No baked quantity, price, account balance, item label or readable book text. Vouchers are local barter goods, not Rapture Credits. Undefined mineral/fish/recipe/product roster entries remain blocked templates.",
+      "palette": null
+    },
+    {
+      "id": "item.slip_sweet_potato",
+      "group": "Inventory goods and learning",
+      "subject": "sweet-potato planting slip",
+      "states": [
+        "inventory"
+      ],
+      "status": "proposed-design",
+      "kind": "icon",
+      "notes": "No baked quantity, price, account balance, item label or readable book text. Vouchers are local barter goods, not Rapture Credits. Undefined mineral/fish/recipe/product roster entries remain blocked templates.",
+      "palette": null
+    },
+    {
+      "id": "item.seed_papaya",
+      "group": "Inventory goods and learning",
+      "subject": "papaya planting seeds",
+      "states": [
+        "inventory"
+      ],
+      "status": "proposed-design",
+      "kind": "icon",
+      "notes": "No baked quantity, price, account balance, item label or readable book text. Vouchers are local barter goods, not Rapture Credits. Undefined mineral/fish/recipe/product roster entries remain blocked templates.",
+      "palette": null
+    },
+    {
+      "id": "item.seed_long_beans",
+      "group": "Inventory goods and learning",
+      "subject": "long-bean planting seeds",
+      "states": [
+        "inventory"
+      ],
+      "status": "proposed-design",
+      "kind": "icon",
+      "notes": "No baked quantity, price, account balance, item label or readable book text. Vouchers are local barter goods, not Rapture Credits. Undefined mineral/fish/recipe/product roster entries remain blocked templates.",
+      "palette": null
+    },
+    {
+      "id": "item.keiki_banana",
+      "group": "Inventory goods and learning",
+      "subject": "banana planting shoot",
+      "states": [
+        "inventory"
+      ],
+      "status": "proposed-design",
+      "kind": "icon",
+      "notes": "No baked quantity, price, account balance, item label or readable book text. Vouchers are local barter goods, not Rapture Credits. Undefined mineral/fish/recipe/product roster entries remain blocked templates.",
+      "palette": null
+    },
+    {
+      "id": "item.greens",
+      "group": "Inventory goods and learning",
+      "subject": "harvested leafy greens",
+      "states": [
+        "inventory"
+      ],
+      "status": "proposed-design",
+      "kind": "icon",
+      "notes": "No baked quantity, price, account balance, item label or readable book text. Vouchers are local barter goods, not Rapture Credits. Undefined mineral/fish/recipe/product roster entries remain blocked templates.",
+      "palette": null
+    },
+    {
+      "id": "item.sweet_potato",
+      "group": "Inventory goods and learning",
+      "subject": "harvested sweet potato",
+      "states": [
+        "inventory"
+      ],
+      "status": "proposed-design",
+      "kind": "icon",
+      "notes": "No baked quantity, price, account balance, item label or readable book text. Vouchers are local barter goods, not Rapture Credits. Undefined mineral/fish/recipe/product roster entries remain blocked templates.",
+      "palette": null
+    },
+    {
+      "id": "item.papaya",
+      "group": "Inventory goods and learning",
+      "subject": "harvested papaya",
+      "states": [
+        "inventory"
+      ],
+      "status": "proposed-design",
+      "kind": "icon",
+      "notes": "No baked quantity, price, account balance, item label or readable book text. Vouchers are local barter goods, not Rapture Credits. Undefined mineral/fish/recipe/product roster entries remain blocked templates.",
+      "palette": null
+    },
+    {
+      "id": "item.long_beans",
+      "group": "Inventory goods and learning",
+      "subject": "harvested long beans",
+      "states": [
+        "inventory"
+      ],
+      "status": "proposed-design",
+      "kind": "icon",
+      "notes": "No baked quantity, price, account balance, item label or readable book text. Vouchers are local barter goods, not Rapture Credits. Undefined mineral/fish/recipe/product roster entries remain blocked templates.",
+      "palette": null
+    },
+    {
+      "id": "item.banana",
+      "group": "Inventory goods and learning",
+      "subject": "harvested banana",
+      "states": [
+        "inventory"
+      ],
+      "status": "proposed-design",
+      "kind": "icon",
+      "notes": "No baked quantity, price, account balance, item label or readable book text. Vouchers are local barter goods, not Rapture Credits. Undefined mineral/fish/recipe/product roster entries remain blocked templates.",
+      "palette": null
+    },
+    {
+      "id": "item.meal_salad",
+      "group": "Inventory goods and learning",
+      "subject": "prepared garden salad",
+      "states": [
+        "inventory"
+      ],
+      "status": "proposed-design",
+      "kind": "icon",
+      "notes": "No baked quantity, price, account balance, item label or readable book text. Vouchers are local barter goods, not Rapture Credits. Undefined mineral/fish/recipe/product roster entries remain blocked templates.",
+      "palette": null
+    },
+    {
+      "id": "item.drink_fruit",
+      "group": "Inventory goods and learning",
+      "subject": "prepared fruit drink",
+      "states": [
+        "inventory"
+      ],
+      "status": "proposed-design",
+      "kind": "icon",
+      "notes": "No baked quantity, price, account balance, item label or readable book text. Vouchers are local barter goods, not Rapture Credits. Undefined mineral/fish/recipe/product roster entries remain blocked templates.",
+      "palette": null
+    },
+    {
+      "id": "item.drinking_water",
+      "group": "Inventory goods and learning",
+      "subject": "container of drinking water",
+      "states": [
+        "inventory"
+      ],
+      "status": "proposed-design",
+      "kind": "icon",
+      "notes": "No baked quantity, price, account balance, item label or readable book text. Vouchers are local barter goods, not Rapture Credits. Undefined mineral/fish/recipe/product roster entries remain blocked templates.",
+      "palette": null
+    },
+    {
+      "id": "item.book_skill",
+      "group": "Inventory goods and learning",
+      "subject": "purchased skill-learning book with no text on cover",
+      "states": [
+        "inventory"
+      ],
+      "status": "proposed-design",
+      "kind": "icon",
+      "notes": "No baked quantity, price, account balance, item label or readable book text. Vouchers are local barter goods, not Rapture Credits. Undefined mineral/fish/recipe/product roster entries remain blocked templates.",
+      "palette": null
+    },
+    {
+      "id": "item.book_recipe",
+      "group": "Inventory goods and learning",
+      "subject": "purchased recipe book with no text on cover",
+      "states": [
+        "inventory"
+      ],
+      "status": "proposed-design",
+      "kind": "icon",
+      "notes": "No baked quantity, price, account balance, item label or readable book text. Vouchers are local barter goods, not Rapture Credits. Undefined mineral/fish/recipe/product roster entries remain blocked templates.",
+      "palette": null
+    },
+    {
+      "id": "item.mineral_template",
+      "group": "Inventory goods and learning",
+      "subject": "[APPROVED_MINERAL_TYPE] gathered mineral",
+      "states": [
+        "inventory"
+      ],
+      "status": "needs-content-decision",
+      "kind": "icon",
+      "notes": "No baked quantity, price, account balance, item label or readable book text. Vouchers are local barter goods, not Rapture Credits. Undefined mineral/fish/recipe/product roster entries remain blocked templates.",
+      "palette": null
+    },
+    {
+      "id": "item.fish_template",
+      "group": "Inventory goods and learning",
+      "subject": "[APPROVED_FISH_SPECIES] caught fish",
+      "states": [
+        "inventory"
+      ],
+      "status": "needs-content-decision",
+      "kind": "icon",
+      "notes": "No baked quantity, price, account balance, item label or readable book text. Vouchers are local barter goods, not Rapture Credits. Undefined mineral/fish/recipe/product roster entries remain blocked templates.",
+      "palette": null
+    },
+    {
+      "id": "item.recipe_food_template",
+      "group": "Inventory goods and learning",
+      "subject": "[APPROVED_FOOD_RECIPE] finished food",
+      "states": [
+        "inventory"
+      ],
+      "status": "needs-content-decision",
+      "kind": "icon",
+      "notes": "No baked quantity, price, account balance, item label or readable book text. Vouchers are local barter goods, not Rapture Credits. Undefined mineral/fish/recipe/product roster entries remain blocked templates.",
+      "palette": null
+    },
+    {
+      "id": "item.recipe_drink_template",
+      "group": "Inventory goods and learning",
+      "subject": "[APPROVED_DRINK_RECIPE] finished drink",
+      "states": [
+        "inventory"
+      ],
+      "status": "needs-content-decision",
+      "kind": "icon",
+      "notes": "No baked quantity, price, account balance, item label or readable book text. Vouchers are local barter goods, not Rapture Credits. Undefined mineral/fish/recipe/product roster entries remain blocked templates.",
+      "palette": null
+    },
+    {
+      "id": "item.farm_product_template",
+      "group": "Inventory goods and learning",
+      "subject": "[APPROVED_ANIMAL_PRODUCT] farm product",
+      "states": [
+        "inventory"
+      ],
+      "status": "needs-content-decision",
+      "kind": "icon",
+      "notes": "No baked quantity, price, account balance, item label or readable book text. Vouchers are local barter goods, not Rapture Credits. Undefined mineral/fish/recipe/product roster entries remain blocked templates.",
+      "palette": null
+    },
+    {
+      "id": "device.phone",
+      "group": "Devices and communication",
+      "subject": "finished phone",
+      "states": [
+        "off",
+        "on",
+        "worn"
+      ],
+      "status": "proposed-design",
+      "kind": "object",
+      "notes": "Keep screen area blank/neutral for real in-game UI, never bake messages, names, maps, classifieds or websites into device pixels.",
+      "palette": null
+    },
+    {
+      "id": "device.computer",
+      "group": "Devices and communication",
+      "subject": "finished computer",
+      "states": [
+        "off",
+        "on",
+        "worn"
+      ],
+      "status": "proposed-design",
+      "kind": "object",
+      "notes": "Keep screen area blank/neutral for real in-game UI, never bake messages, names, maps, classifieds or websites into device pixels.",
+      "palette": null
+    },
+    {
+      "id": "travel.player_boat",
+      "group": "Boats and travel",
+      "subject": "player-owned boat",
+      "states": [
+        "orientation-a",
+        "orientation-b"
+      ],
+      "status": "proposed-design",
+      "kind": "object",
+      "notes": "Boat shape and propulsion system are proposed choices, not final craft definitions. Hull/sail/motor are alternative design studies, not assertions every boat requires them. Isolate from water; wake is a separate overlay.",
+      "palette": null
+    },
+    {
+      "id": "travel.ferry",
+      "group": "Boats and travel",
+      "subject": "intertown ferry",
+      "states": [
+        "orientation-a",
+        "orientation-b"
+      ],
+      "status": "proposed-design",
+      "kind": "object",
+      "notes": "Boat shape and propulsion system are proposed choices, not final craft definitions. Hull/sail/motor are alternative design studies, not assertions every boat requires them. Isolate from water; wake is a separate overlay.",
+      "palette": null
+    },
+    {
+      "id": "travel.boat_hull",
+      "group": "Boats and travel",
+      "subject": "boat hull component",
+      "states": [
+        "orientation-a",
+        "orientation-b"
+      ],
+      "status": "proposed-design",
+      "kind": "object",
+      "notes": "Boat shape and propulsion system are proposed choices, not final craft definitions. Hull/sail/motor are alternative design studies, not assertions every boat requires them. Isolate from water; wake is a separate overlay.",
+      "palette": null
+    },
+    {
+      "id": "travel.boat_sail",
+      "group": "Boats and travel",
+      "subject": "boat sail component",
+      "states": [
+        "orientation-a",
+        "orientation-b"
+      ],
+      "status": "proposed-design",
+      "kind": "object",
+      "notes": "Boat shape and propulsion system are proposed choices, not final craft definitions. Hull/sail/motor are alternative design studies, not assertions every boat requires them. Isolate from water; wake is a separate overlay.",
+      "palette": null
+    },
+    {
+      "id": "travel.boat_motor",
+      "group": "Boats and travel",
+      "subject": "boat propulsion component",
+      "states": [
+        "orientation-a",
+        "orientation-b"
+      ],
+      "status": "proposed-design",
+      "kind": "object",
+      "notes": "Boat shape and propulsion system are proposed choices, not final craft definitions. Hull/sail/motor are alternative design studies, not assertions every boat requires them. Isolate from water; wake is a separate overlay.",
+      "palette": null
+    },
+    {
+      "id": "travel.boat_rope",
+      "group": "Boats and travel",
+      "subject": "boat mooring ropes",
+      "states": [
+        "orientation-a",
+        "orientation-b"
+      ],
+      "status": "proposed-design",
+      "kind": "object",
+      "notes": "Boat shape and propulsion system are proposed choices, not final craft definitions. Hull/sail/motor are alternative design studies, not assertions every boat requires them. Isolate from water; wake is a separate overlay.",
+      "palette": null
+    },
+    {
+      "id": "travel.wake",
+      "group": "Travel overlays",
+      "subject": "boat wake",
+      "states": [
+        "frame-0",
+        "frame-1",
+        "frame-2",
+        "frame-3"
+      ],
+      "status": "proposed-design",
+      "kind": "effect",
+      "notes": "Proposed four-frame effect study; timing/frame count is not an existing engine contract. No text or interface controls baked in.",
+      "palette": null
+    },
+    {
+      "id": "travel.boarding_marker",
+      "group": "Travel overlays",
+      "subject": "boat boarding-location ground marker",
+      "states": [
+        "frame-0",
+        "frame-1",
+        "frame-2",
+        "frame-3"
+      ],
+      "status": "proposed-design",
+      "kind": "effect",
+      "notes": "Proposed four-frame effect study; timing/frame count is not an existing engine contract. No text or interface controls baked in.",
+      "palette": null
+    },
+    {
+      "id": "travel.home_arrival",
+      "group": "Travel overlays",
+      "subject": "quick-return arrival ground effect",
+      "states": [
+        "frame-0",
+        "frame-1",
+        "frame-2",
+        "frame-3"
+      ],
+      "status": "proposed-design",
+      "kind": "effect",
+      "notes": "Proposed four-frame effect study; timing/frame count is not an existing engine contract. No text or interface controls baked in.",
+      "palette": null
+    },
+    {
+      "id": "terrain.river_straight",
+      "group": "Expanded terrain and gathering",
+      "subject": "straight river segment",
+      "states": [
+        "base",
+        "connection-variant"
+      ],
+      "status": "proposed-design",
+      "kind": "terrain",
+      "notes": "Terrain must use complete edge-to-edge tile coverage, not a freestanding object cutout. Edge topology, elevation height and every required connection variant must be finalized before production; the two listed states are concept studies, not a complete autotile set.",
+      "palette": null
+    },
+    {
+      "id": "terrain.river_bend",
+      "group": "Expanded terrain and gathering",
+      "subject": "river bend",
+      "states": [
+        "base",
+        "connection-variant"
+      ],
+      "status": "proposed-design",
+      "kind": "terrain",
+      "notes": "Terrain must use complete edge-to-edge tile coverage, not a freestanding object cutout. Edge topology, elevation height and every required connection variant must be finalized before production; the two listed states are concept studies, not a complete autotile set.",
+      "palette": null
+    },
+    {
+      "id": "terrain.river_junction",
+      "group": "Expanded terrain and gathering",
+      "subject": "river junction",
+      "states": [
+        "base",
+        "connection-variant"
+      ],
+      "status": "proposed-design",
+      "kind": "terrain",
+      "notes": "Terrain must use complete edge-to-edge tile coverage, not a freestanding object cutout. Edge topology, elevation height and every required connection variant must be finalized before production; the two listed states are concept studies, not a complete autotile set.",
+      "palette": null
+    },
+    {
+      "id": "terrain.river_bank",
+      "group": "Expanded terrain and gathering",
+      "subject": "riverbank edge",
+      "states": [
+        "base",
+        "connection-variant"
+      ],
+      "status": "proposed-design",
+      "kind": "terrain",
+      "notes": "Terrain must use complete edge-to-edge tile coverage, not a freestanding object cutout. Edge topology, elevation height and every required connection variant must be finalized before production; the two listed states are concept studies, not a complete autotile set.",
+      "palette": null
+    },
+    {
+      "id": "terrain.river_mouth",
+      "group": "Expanded terrain and gathering",
+      "subject": "river mouth into sea",
+      "states": [
+        "base",
+        "connection-variant"
+      ],
+      "status": "proposed-design",
+      "kind": "terrain",
+      "notes": "Terrain must use complete edge-to-edge tile coverage, not a freestanding object cutout. Edge topology, elevation height and every required connection variant must be finalized before production; the two listed states are concept studies, not a complete autotile set.",
+      "palette": null
+    },
+    {
+      "id": "terrain.shoreline",
+      "group": "Expanded terrain and gathering",
+      "subject": "island shoreline",
+      "states": [
+        "base",
+        "connection-variant"
+      ],
+      "status": "proposed-design",
+      "kind": "terrain",
+      "notes": "Terrain must use complete edge-to-edge tile coverage, not a freestanding object cutout. Edge topology, elevation height and every required connection variant must be finalized before production; the two listed states are concept studies, not a complete autotile set.",
+      "palette": null
+    },
+    {
+      "id": "terrain.beach",
+      "group": "Expanded terrain and gathering",
+      "subject": "beach ground",
+      "states": [
+        "base",
+        "connection-variant"
+      ],
+      "status": "proposed-design",
+      "kind": "terrain",
+      "notes": "Terrain must use complete edge-to-edge tile coverage, not a freestanding object cutout. Edge topology, elevation height and every required connection variant must be finalized before production; the two listed states are concept studies, not a complete autotile set.",
+      "palette": null
+    },
+    {
+      "id": "terrain.shallow_water",
+      "group": "Expanded terrain and gathering",
+      "subject": "shallow coastal water",
+      "states": [
+        "base",
+        "connection-variant"
+      ],
+      "status": "proposed-design",
+      "kind": "terrain",
+      "notes": "Terrain must use complete edge-to-edge tile coverage, not a freestanding object cutout. Edge topology, elevation height and every required connection variant must be finalized before production; the two listed states are concept studies, not a complete autotile set.",
+      "palette": null
+    },
+    {
+      "id": "terrain.deep_water",
+      "group": "Expanded terrain and gathering",
+      "subject": "deep coastal water",
+      "states": [
+        "base",
+        "connection-variant"
+      ],
+      "status": "proposed-design",
+      "kind": "terrain",
+      "notes": "Terrain must use complete edge-to-edge tile coverage, not a freestanding object cutout. Edge topology, elevation height and every required connection variant must be finalized before production; the two listed states are concept studies, not a complete autotile set.",
+      "palette": null
+    },
+    {
+      "id": "terrain.elevation_edge",
+      "group": "Expanded terrain and gathering",
+      "subject": "land elevation cliff edge",
+      "states": [
+        "base",
+        "connection-variant"
+      ],
+      "status": "proposed-design",
+      "kind": "terrain",
+      "notes": "Terrain must use complete edge-to-edge tile coverage, not a freestanding object cutout. Edge topology, elevation height and every required connection variant must be finalized before production; the two listed states are concept studies, not a complete autotile set.",
+      "palette": null
+    },
+    {
+      "id": "terrain.elevation_corner",
+      "group": "Expanded terrain and gathering",
+      "subject": "land elevation corner",
+      "states": [
+        "base",
+        "connection-variant"
+      ],
+      "status": "proposed-design",
+      "kind": "terrain",
+      "notes": "Terrain must use complete edge-to-edge tile coverage, not a freestanding object cutout. Edge topology, elevation height and every required connection variant must be finalized before production; the two listed states are concept studies, not a complete autotile set.",
+      "palette": null
+    },
+    {
+      "id": "terrain.raised_ground",
+      "group": "Expanded terrain and gathering",
+      "subject": "raised ground surface",
+      "states": [
+        "base",
+        "connection-variant"
+      ],
+      "status": "proposed-design",
+      "kind": "terrain",
+      "notes": "Terrain must use complete edge-to-edge tile coverage, not a freestanding object cutout. Edge topology, elevation height and every required connection variant must be finalized before production; the two listed states are concept studies, not a complete autotile set.",
+      "palette": null
+    },
+    {
+      "id": "terrain.ladder_connection",
+      "group": "Expanded terrain and gathering",
+      "subject": "ground connection at a ladder",
+      "states": [
+        "base",
+        "connection-variant"
+      ],
+      "status": "proposed-design",
+      "kind": "terrain",
+      "notes": "Terrain must use complete edge-to-edge tile coverage, not a freestanding object cutout. Edge topology, elevation height and every required connection variant must be finalized before production; the two listed states are concept studies, not a complete autotile set.",
+      "palette": null
+    },
+    {
+      "id": "terrain.excavation_shallow",
+      "group": "Expanded terrain and gathering",
+      "subject": "shallow excavation",
+      "states": [
+        "base",
+        "connection-variant"
+      ],
+      "status": "proposed-design",
+      "kind": "terrain",
+      "notes": "Terrain must use complete edge-to-edge tile coverage, not a freestanding object cutout. Edge topology, elevation height and every required connection variant must be finalized before production; the two listed states are concept studies, not a complete autotile set.",
+      "palette": null
+    },
+    {
+      "id": "terrain.excavation_deep",
+      "group": "Expanded terrain and gathering",
+      "subject": "deep excavation",
+      "states": [
+        "base",
+        "connection-variant"
+      ],
+      "status": "proposed-design",
+      "kind": "terrain",
+      "notes": "Terrain must use complete edge-to-edge tile coverage, not a freestanding object cutout. Edge topology, elevation height and every required connection variant must be finalized before production; the two listed states are concept studies, not a complete autotile set.",
+      "palette": null
+    },
+    {
+      "id": "terrain.foundation_trench",
+      "group": "Expanded terrain and gathering",
+      "subject": "excavated building foundation trench",
+      "states": [
+        "base",
+        "connection-variant"
+      ],
+      "status": "proposed-design",
+      "kind": "terrain",
+      "notes": "Terrain must use complete edge-to-edge tile coverage, not a freestanding object cutout. Edge topology, elevation height and every required connection variant must be finalized before production; the two listed states are concept studies, not a complete autotile set.",
+      "palette": null
+    },
+    {
+      "id": "terrain.underground_entry",
+      "group": "Expanded terrain and gathering",
+      "subject": "underground mining entrance",
+      "states": [
+        "base",
+        "connection-variant"
+      ],
+      "status": "proposed-design",
+      "kind": "object",
+      "notes": "Terrain must use complete edge-to-edge tile coverage, not a freestanding object cutout. Edge topology, elevation height and every required connection variant must be finalized before production; the two listed states are concept studies, not a complete autotile set.",
+      "palette": null
+    },
+    {
+      "id": "terrain.mineral_vein",
+      "group": "Expanded terrain and gathering",
+      "subject": "[APPROVED_MINERAL_TYPE] mineral vein",
+      "states": [
+        "base",
+        "connection-variant"
+      ],
+      "status": "needs-content-decision",
+      "kind": "terrain",
+      "notes": "Terrain must use complete edge-to-edge tile coverage, not a freestanding object cutout. Edge topology, elevation height and every required connection variant must be finalized before production; the two listed states are concept studies, not a complete autotile set.",
+      "palette": null
+    },
+    {
+      "id": "terrain.water_well",
+      "group": "Expanded terrain and gathering",
+      "subject": "dug water well",
+      "states": [
+        "base",
+        "connection-variant"
+      ],
+      "status": "proposed-design",
+      "kind": "object",
+      "notes": "Terrain must use complete edge-to-edge tile coverage, not a freestanding object cutout. Edge topology, elevation height and every required connection variant must be finalized before production; the two listed states are concept studies, not a complete autotile set.",
+      "palette": null
+    },
+    {
+      "id": "terrain.water_source",
+      "group": "Expanded terrain and gathering",
+      "subject": "local constructed water source",
+      "states": [
+        "base",
+        "connection-variant"
+      ],
+      "status": "proposed-design",
+      "kind": "object",
+      "notes": "Terrain must use complete edge-to-edge tile coverage, not a freestanding object cutout. Edge topology, elevation height and every required connection variant must be finalized before production; the two listed states are concept studies, not a complete autotile set.",
+      "palette": null
+    },
+    {
+      "id": "terrain.fishing_spot",
+      "group": "Expanded terrain and gathering",
+      "subject": "readable fishing location",
+      "states": [
+        "base",
+        "connection-variant"
+      ],
+      "status": "proposed-design",
+      "kind": "terrain",
+      "notes": "Terrain must use complete edge-to-edge tile coverage, not a freestanding object cutout. Edge topology, elevation height and every required connection variant must be finalized before production; the two listed states are concept studies, not a complete autotile set.",
+      "palette": null
+    },
+    {
+      "id": "terrain.searchable_crater",
+      "group": "Expanded terrain and gathering",
+      "subject": "existing bomb crater adapted for a meaningful interaction",
+      "states": [
+        "base",
+        "connection-variant"
+      ],
+      "status": "proposed-design",
+      "kind": "terrain",
+      "notes": "Terrain must use complete edge-to-edge tile coverage, not a freestanding object cutout. Edge topology, elevation height and every required connection variant must be finalized before production; the two listed states are concept studies, not a complete autotile set.",
+      "palette": null
+    },
+    {
+      "id": "roster.new_crop",
+      "group": "Unspecified crops and animals",
+      "subject": "[APPROVED_NEW_CROP]",
+      "states": [
+        "planted",
+        "seedling",
+        "growing",
+        "mature",
+        "harvested"
+      ],
+      "status": "needs-content-decision",
+      "kind": "object",
+      "notes": "Blocked template: species/crop roster not specified by the owner. Do not infer dog/cat/cow/chicken or a new crop. Animal direction/rig and crop harvest/regrowth behavior must be defined before expanding frame counts.",
+      "palette": null
+    },
+    {
+      "id": "roster.pet",
+      "group": "Unspecified crops and animals",
+      "subject": "[APPROVED_PET_SPECIES]",
+      "states": [
+        "idle",
+        "walk-0",
+        "walk-1",
+        "care-interaction",
+        "produce-or-happiness-interaction"
+      ],
+      "status": "needs-content-decision",
+      "kind": "animal",
+      "notes": "Blocked template: species/crop roster not specified by the owner. Do not infer dog/cat/cow/chicken or a new crop. Animal direction/rig and crop harvest/regrowth behavior must be defined before expanding frame counts.",
+      "palette": null
+    },
+    {
+      "id": "roster.farm_animal",
+      "group": "Unspecified crops and animals",
+      "subject": "[APPROVED_FARM_ANIMAL_SPECIES]",
+      "states": [
+        "idle",
+        "walk-0",
+        "walk-1",
+        "care-interaction",
+        "produce-or-happiness-interaction"
+      ],
+      "status": "needs-content-decision",
+      "kind": "animal",
+      "notes": "Blocked template: species/crop roster not specified by the owner. Do not infer dog/cat/cow/chicken or a new crop. Animal direction/rig and crop harvest/regrowth behavior must be defined before expanding frame counts.",
+      "palette": null
+    },
+    {
+      "id": "character.adult_resident",
+      "group": "Resident animation templates",
+      "subject": "[APPROVED_CHARACTER_APPEARANCE] adult resident",
+      "states": [
+        "idle-front",
+        "idle-back",
+        "walk-front-0",
+        "walk-front-1",
+        "walk-back-0",
+        "walk-back-1",
+        "conversation",
+        "work-interaction"
+      ],
+      "status": "needs-approved-identity",
+      "kind": "character",
+      "notes": "Blocked identity/rig template, not a new named entity. Author one coherent approved character first. No inferred ethnicity, age specifics beyond adult/child, facial features or costume. Final facing and frame counts require animation design.",
+      "palette": null
+    },
+    {
+      "id": "character.child_resident",
+      "group": "Resident animation templates",
+      "subject": "[APPROVED_CHARACTER_APPEARANCE] child NPC resident",
+      "states": [
+        "idle-front",
+        "idle-back",
+        "walk-front-0",
+        "walk-front-1",
+        "walk-back-0",
+        "walk-back-1",
+        "conversation",
+        "work-interaction"
+      ],
+      "status": "needs-approved-identity",
+      "kind": "character",
+      "notes": "Blocked identity/rig template, not a new named entity. Author one coherent approved character first. No inferred ethnicity, age specifics beyond adult/child, facial features or costume. Final facing and frame counts require animation design.",
+      "palette": null
+    },
+    {
+      "id": "profession.gardener",
+      "group": "Profession outfit and action templates",
+      "subject": "[APPROVED_CHARACTER_APPEARANCE] acting as gardener",
+      "states": [
+        "work-idle",
+        "work-action"
+      ],
+      "status": "needs-approved-identity",
+      "kind": "character",
+      "notes": "Reuse the approved resident identity and rig; occupation does not imply a new person. Outfit/tool choices are concepts until approved. Do not invent official uniforms, religious symbols, faction emblems or gender requirements.",
+      "palette": null
+    },
+    {
+      "id": "profession.carpenter",
+      "group": "Profession outfit and action templates",
+      "subject": "[APPROVED_CHARACTER_APPEARANCE] acting as carpenter",
+      "states": [
+        "work-idle",
+        "work-action"
+      ],
+      "status": "needs-approved-identity",
+      "kind": "character",
+      "notes": "Reuse the approved resident identity and rig; occupation does not imply a new person. Outfit/tool choices are concepts until approved. Do not invent official uniforms, religious symbols, faction emblems or gender requirements.",
+      "palette": null
+    },
+    {
+      "id": "profession.crafter",
+      "group": "Profession outfit and action templates",
+      "subject": "[APPROVED_CHARACTER_APPEARANCE] acting as crafter",
+      "states": [
+        "work-idle",
+        "work-action"
+      ],
+      "status": "needs-approved-identity",
+      "kind": "character",
+      "notes": "Reuse the approved resident identity and rig; occupation does not imply a new person. Outfit/tool choices are concepts until approved. Do not invent official uniforms, religious symbols, faction emblems or gender requirements.",
+      "palette": null
+    },
+    {
+      "id": "profession.cook",
+      "group": "Profession outfit and action templates",
+      "subject": "[APPROVED_CHARACTER_APPEARANCE] acting as cook",
+      "states": [
+        "work-idle",
+        "work-action"
+      ],
+      "status": "needs-approved-identity",
+      "kind": "character",
+      "notes": "Reuse the approved resident identity and rig; occupation does not imply a new person. Outfit/tool choices are concepts until approved. Do not invent official uniforms, religious symbols, faction emblems or gender requirements.",
+      "palette": null
+    },
+    {
+      "id": "profession.bartender",
+      "group": "Profession outfit and action templates",
+      "subject": "[APPROVED_CHARACTER_APPEARANCE] acting as bartender",
+      "states": [
+        "work-idle",
+        "work-action"
+      ],
+      "status": "needs-approved-identity",
+      "kind": "character",
+      "notes": "Reuse the approved resident identity and rig; occupation does not imply a new person. Outfit/tool choices are concepts until approved. Do not invent official uniforms, religious symbols, faction emblems or gender requirements.",
+      "palette": null
+    },
+    {
+      "id": "profession.teacher",
+      "group": "Profession outfit and action templates",
+      "subject": "[APPROVED_CHARACTER_APPEARANCE] acting as teacher",
+      "states": [
+        "work-idle",
+        "work-action"
+      ],
+      "status": "needs-approved-identity",
+      "kind": "character",
+      "notes": "Reuse the approved resident identity and rig; occupation does not imply a new person. Outfit/tool choices are concepts until approved. Do not invent official uniforms, religious symbols, faction emblems or gender requirements.",
+      "palette": null
+    },
+    {
+      "id": "profession.plumber",
+      "group": "Profession outfit and action templates",
+      "subject": "[APPROVED_CHARACTER_APPEARANCE] acting as plumber",
+      "states": [
+        "work-idle",
+        "work-action"
+      ],
+      "status": "needs-approved-identity",
+      "kind": "character",
+      "notes": "Reuse the approved resident identity and rig; occupation does not imply a new person. Outfit/tool choices are concepts until approved. Do not invent official uniforms, religious symbols, faction emblems or gender requirements.",
+      "palette": null
+    },
+    {
+      "id": "profession.electrician",
+      "group": "Profession outfit and action templates",
+      "subject": "[APPROVED_CHARACTER_APPEARANCE] acting as electrician",
+      "states": [
+        "work-idle",
+        "work-action"
+      ],
+      "status": "needs-approved-identity",
+      "kind": "character",
+      "notes": "Reuse the approved resident identity and rig; occupation does not imply a new person. Outfit/tool choices are concepts until approved. Do not invent official uniforms, religious symbols, faction emblems or gender requirements.",
+      "palette": null
+    },
+    {
+      "id": "profession.contractor",
+      "group": "Profession outfit and action templates",
+      "subject": "[APPROVED_CHARACTER_APPEARANCE] acting as contractor",
+      "states": [
+        "work-idle",
+        "work-action"
+      ],
+      "status": "needs-approved-identity",
+      "kind": "character",
+      "notes": "Reuse the approved resident identity and rig; occupation does not imply a new person. Outfit/tool choices are concepts until approved. Do not invent official uniforms, religious symbols, faction emblems or gender requirements.",
+      "palette": null
+    },
+    {
+      "id": "profession.babysitter",
+      "group": "Profession outfit and action templates",
+      "subject": "[APPROVED_CHARACTER_APPEARANCE] acting as babysitter",
+      "states": [
+        "work-idle",
+        "work-action"
+      ],
+      "status": "needs-approved-identity",
+      "kind": "character",
+      "notes": "Reuse the approved resident identity and rig; occupation does not imply a new person. Outfit/tool choices are concepts until approved. Do not invent official uniforms, religious symbols, faction emblems or gender requirements.",
+      "palette": null
+    },
+    {
+      "id": "profession.cloth_maker",
+      "group": "Profession outfit and action templates",
+      "subject": "[APPROVED_CHARACTER_APPEARANCE] acting as cloth maker",
+      "states": [
+        "work-idle",
+        "work-action"
+      ],
+      "status": "needs-approved-identity",
+      "kind": "character",
+      "notes": "Reuse the approved resident identity and rig; occupation does not imply a new person. Outfit/tool choices are concepts until approved. Do not invent official uniforms, religious symbols, faction emblems or gender requirements.",
+      "palette": null
+    },
+    {
+      "id": "profession.plank_cutter",
+      "group": "Profession outfit and action templates",
+      "subject": "[APPROVED_CHARACTER_APPEARANCE] acting as plank cutter",
+      "states": [
+        "work-idle",
+        "work-action"
+      ],
+      "status": "needs-approved-identity",
+      "kind": "character",
+      "notes": "Reuse the approved resident identity and rig; occupation does not imply a new person. Outfit/tool choices are concepts until approved. Do not invent official uniforms, religious symbols, faction emblems or gender requirements.",
+      "palette": null
+    },
+    {
+      "id": "profession.phone_parts_maker",
+      "group": "Profession outfit and action templates",
+      "subject": "[APPROVED_CHARACTER_APPEARANCE] acting as phone-parts maker",
+      "states": [
+        "work-idle",
+        "work-action"
+      ],
+      "status": "needs-approved-identity",
+      "kind": "character",
+      "notes": "Reuse the approved resident identity and rig; occupation does not imply a new person. Outfit/tool choices are concepts until approved. Do not invent official uniforms, religious symbols, faction emblems or gender requirements.",
+      "palette": null
+    },
+    {
+      "id": "profession.computer_parts_maker",
+      "group": "Profession outfit and action templates",
+      "subject": "[APPROVED_CHARACTER_APPEARANCE] acting as computer-parts maker",
+      "states": [
+        "work-idle",
+        "work-action"
+      ],
+      "status": "needs-approved-identity",
+      "kind": "character",
+      "notes": "Reuse the approved resident identity and rig; occupation does not imply a new person. Outfit/tool choices are concepts until approved. Do not invent official uniforms, religious symbols, faction emblems or gender requirements.",
+      "palette": null
+    },
+    {
+      "id": "profession.phone_assembler",
+      "group": "Profession outfit and action templates",
+      "subject": "[APPROVED_CHARACTER_APPEARANCE] acting as phone assembler",
+      "states": [
+        "work-idle",
+        "work-action"
+      ],
+      "status": "needs-approved-identity",
+      "kind": "character",
+      "notes": "Reuse the approved resident identity and rig; occupation does not imply a new person. Outfit/tool choices are concepts until approved. Do not invent official uniforms, religious symbols, faction emblems or gender requirements.",
+      "palette": null
+    },
+    {
+      "id": "profession.computer_assembler",
+      "group": "Profession outfit and action templates",
+      "subject": "[APPROVED_CHARACTER_APPEARANCE] acting as computer assembler",
+      "states": [
+        "work-idle",
+        "work-action"
+      ],
+      "status": "needs-approved-identity",
+      "kind": "character",
+      "notes": "Reuse the approved resident identity and rig; occupation does not imply a new person. Outfit/tool choices are concepts until approved. Do not invent official uniforms, religious symbols, faction emblems or gender requirements.",
+      "palette": null
+    },
+    {
+      "id": "profession.boat_parts_maker",
+      "group": "Profession outfit and action templates",
+      "subject": "[APPROVED_CHARACTER_APPEARANCE] acting as boat-parts maker",
+      "states": [
+        "work-idle",
+        "work-action"
+      ],
+      "status": "needs-approved-identity",
+      "kind": "character",
+      "notes": "Reuse the approved resident identity and rig; occupation does not imply a new person. Outfit/tool choices are concepts until approved. Do not invent official uniforms, religious symbols, faction emblems or gender requirements.",
+      "palette": null
+    },
+    {
+      "id": "profession.boat_builder",
+      "group": "Profession outfit and action templates",
+      "subject": "[APPROVED_CHARACTER_APPEARANCE] acting as boat builder",
+      "states": [
+        "work-idle",
+        "work-action"
+      ],
+      "status": "needs-approved-identity",
+      "kind": "character",
+      "notes": "Reuse the approved resident identity and rig; occupation does not imply a new person. Outfit/tool choices are concepts until approved. Do not invent official uniforms, religious symbols, faction emblems or gender requirements.",
+      "palette": null
+    },
+    {
+      "id": "profession.boat_captain",
+      "group": "Profession outfit and action templates",
+      "subject": "[APPROVED_CHARACTER_APPEARANCE] acting as boat captain",
+      "states": [
+        "work-idle",
+        "work-action"
+      ],
+      "status": "needs-approved-identity",
+      "kind": "character",
+      "notes": "Reuse the approved resident identity and rig; occupation does not imply a new person. Outfit/tool choices are concepts until approved. Do not invent official uniforms, religious symbols, faction emblems or gender requirements.",
+      "palette": null
+    },
+    {
+      "id": "profession.travel_agent",
+      "group": "Profession outfit and action templates",
+      "subject": "[APPROVED_CHARACTER_APPEARANCE] acting as travel agent",
+      "states": [
+        "work-idle",
+        "work-action"
+      ],
+      "status": "needs-approved-identity",
+      "kind": "character",
+      "notes": "Reuse the approved resident identity and rig; occupation does not imply a new person. Outfit/tool choices are concepts until approved. Do not invent official uniforms, religious symbols, faction emblems or gender requirements.",
+      "palette": null
+    },
+    {
+      "id": "profession.repair_specialist",
+      "group": "Profession outfit and action templates",
+      "subject": "[APPROVED_CHARACTER_APPEARANCE] acting as repair specialist",
+      "states": [
+        "work-idle",
+        "work-action"
+      ],
+      "status": "needs-approved-identity",
+      "kind": "character",
+      "notes": "Reuse the approved resident identity and rig; occupation does not imply a new person. Outfit/tool choices are concepts until approved. Do not invent official uniforms, religious symbols, faction emblems or gender requirements.",
+      "palette": null
+    },
+    {
+      "id": "profession.nondenominational_minister",
+      "group": "Profession outfit and action templates",
+      "subject": "[APPROVED_CHARACTER_APPEARANCE] acting as nondenominational minister",
+      "states": [
+        "work-idle",
+        "work-action"
+      ],
+      "status": "needs-approved-identity",
+      "kind": "character",
+      "notes": "Reuse the approved resident identity and rig; occupation does not imply a new person. Outfit/tool choices are concepts until approved. Do not invent official uniforms, religious symbols, faction emblems or gender requirements.",
+      "palette": null
+    },
+    {
+      "id": "profession.mayor",
+      "group": "Profession outfit and action templates",
+      "subject": "[APPROVED_CHARACTER_APPEARANCE] acting as mayor",
+      "states": [
+        "work-idle",
+        "work-action"
+      ],
+      "status": "needs-approved-identity",
+      "kind": "character",
+      "notes": "Reuse the approved resident identity and rig; occupation does not imply a new person. Outfit/tool choices are concepts until approved. Do not invent official uniforms, religious symbols, faction emblems or gender requirements.",
+      "palette": null
+    },
+    {
+      "id": "profession.treasurer",
+      "group": "Profession outfit and action templates",
+      "subject": "[APPROVED_CHARACTER_APPEARANCE] acting as treasurer",
+      "states": [
+        "work-idle",
+        "work-action"
+      ],
+      "status": "needs-approved-identity",
+      "kind": "character",
+      "notes": "Reuse the approved resident identity and rig; occupation does not imply a new person. Outfit/tool choices are concepts until approved. Do not invent official uniforms, religious symbols, faction emblems or gender requirements.",
+      "palette": null
+    },
+    {
+      "id": "profession.public_institution_worker",
+      "group": "Profession outfit and action templates",
+      "subject": "[APPROVED_CHARACTER_APPEARANCE] acting as public institution worker",
+      "states": [
+        "work-idle",
+        "work-action"
+      ],
+      "status": "needs-approved-identity",
+      "kind": "character",
+      "notes": "Reuse the approved resident identity and rig; occupation does not imply a new person. Outfit/tool choices are concepts until approved. Do not invent official uniforms, religious symbols, faction emblems or gender requirements.",
+      "palette": null
+    },
+    {
+      "id": "wearable.clothes",
+      "group": "Wearable templates",
+      "subject": "[APPROVED_CLOTHING_DESIGN] clothing",
+      "states": [
+        "inventory",
+        "equipped-front",
+        "equipped-back"
+      ],
+      "status": "needs-content-decision",
+      "kind": "wearable",
+      "notes": "Blocked design/rig template. Equipment alignment must use the approved character rig; do not paint a new character inside the garment asset.",
+      "palette": null
+    },
+    {
+      "id": "wearable.hat",
+      "group": "Wearable templates",
+      "subject": "[APPROVED_HAT_DESIGN] hat",
+      "states": [
+        "inventory",
+        "equipped-front",
+        "equipped-back"
+      ],
+      "status": "needs-content-decision",
+      "kind": "wearable",
+      "notes": "Blocked design/rig template. Equipment alignment must use the approved character rig; do not paint a new character inside the garment asset.",
+      "palette": null
+    },
+    {
+      "id": "wearable.shoes",
+      "group": "Wearable templates",
+      "subject": "[APPROVED_SHOE_DESIGN] shoes",
+      "states": [
+        "inventory",
+        "equipped-front",
+        "equipped-back"
+      ],
+      "status": "needs-content-decision",
+      "kind": "wearable",
+      "notes": "Blocked design/rig template. Equipment alignment must use the approved character rig; do not paint a new character inside the garment asset.",
+      "palette": null
+    },
+    {
+      "id": "wearable.bag",
+      "group": "Wearable templates",
+      "subject": "[APPROVED_BAG_DESIGN] bag",
+      "states": [
+        "inventory",
+        "equipped-front",
+        "equipped-back"
+      ],
+      "status": "needs-content-decision",
+      "kind": "wearable",
+      "notes": "Blocked design/rig template. Equipment alignment must use the approved character rig; do not paint a new character inside the garment asset.",
+      "palette": null
+    },
+    {
+      "id": "repair.furniture",
+      "group": "Wear and repair states",
+      "subject": "[APPROVED_BASE_FURNITURE_ASSET] in the furniture repair category",
+      "states": [
+        "worn",
+        "broken",
+        "repaired"
+      ],
+      "status": "needs-approved-base-asset",
+      "kind": "object",
+      "notes": "Edit/derive states from the approved base asset. Keep camera, footprint, anchor, scale, identity and silhouette; change only wear/repair. Do not generate an unrelated replacement design.",
+      "palette": null
+    },
+    {
+      "id": "repair.electronics",
+      "group": "Wear and repair states",
+      "subject": "[APPROVED_BASE_ELECTRONICS_ASSET] in the electronics repair category",
+      "states": [
+        "worn",
+        "broken",
+        "repaired"
+      ],
+      "status": "needs-approved-base-asset",
+      "kind": "object",
+      "notes": "Edit/derive states from the approved base asset. Keep camera, footprint, anchor, scale, identity and silhouette; change only wear/repair. Do not generate an unrelated replacement design.",
+      "palette": null
+    },
+    {
+      "id": "repair.boat",
+      "group": "Wear and repair states",
+      "subject": "[APPROVED_BASE_BOAT_ASSET] in the boat repair category",
+      "states": [
+        "worn",
+        "broken",
+        "repaired"
+      ],
+      "status": "needs-approved-base-asset",
+      "kind": "object",
+      "notes": "Edit/derive states from the approved base asset. Keep camera, footprint, anchor, scale, identity and silhouette; change only wear/repair. Do not generate an unrelated replacement design.",
+      "palette": null
+    },
+    {
+      "id": "repair.plumbing",
+      "group": "Wear and repair states",
+      "subject": "[APPROVED_BASE_PLUMBING_ASSET] in the plumbing repair category",
+      "states": [
+        "worn",
+        "broken",
+        "repaired"
+      ],
+      "status": "needs-approved-base-asset",
+      "kind": "object",
+      "notes": "Edit/derive states from the approved base asset. Keep camera, footprint, anchor, scale, identity and silhouette; change only wear/repair. Do not generate an unrelated replacement design.",
+      "palette": null
+    },
+    {
+      "id": "repair.electrical",
+      "group": "Wear and repair states",
+      "subject": "[APPROVED_BASE_ELECTRICAL_ASSET] in the electrical repair category",
+      "states": [
+        "worn",
+        "broken",
+        "repaired"
+      ],
+      "status": "needs-approved-base-asset",
+      "kind": "object",
+      "notes": "Edit/derive states from the approved base asset. Keep camera, footprint, anchor, scale, identity and silhouette; change only wear/repair. Do not generate an unrelated replacement design.",
+      "palette": null
+    },
+    {
+      "id": "repair.tool",
+      "group": "Wear and repair states",
+      "subject": "[APPROVED_BASE_TOOL_ASSET] in the tool repair category",
+      "states": [
+        "worn",
+        "broken",
+        "repaired"
+      ],
+      "status": "needs-approved-base-asset",
+      "kind": "object",
+      "notes": "Edit/derive states from the approved base asset. Keep camera, footprint, anchor, scale, identity and silhouette; change only wear/repair. Do not generate an unrelated replacement design.",
+      "palette": null
+    },
+    {
+      "id": "repair.clothing",
+      "group": "Wear and repair states",
+      "subject": "[APPROVED_BASE_CLOTHING_ASSET] in the clothing repair category",
+      "states": [
+        "worn",
+        "broken",
+        "repaired"
+      ],
+      "status": "needs-approved-base-asset",
+      "kind": "object",
+      "notes": "Edit/derive states from the approved base asset. Keep camera, footprint, anchor, scale, identity and silhouette; change only wear/repair. Do not generate an unrelated replacement design.",
+      "palette": null
+    },
+    {
+      "id": "event.reflex_collectible",
+      "group": "Activities and rewards",
+      "subject": "[APPROVED_EVENT_OBJECT] quick-grab reward object",
+      "states": [
+        "active",
+        "collected-or-completed"
+      ],
+      "status": "needs-content-decision",
+      "kind": "object",
+      "notes": "Object/target roster and animation timing require gameplay decisions. Avoid invented weapons or violence for the airborne-target mechanic.",
+      "palette": null
+    },
+    {
+      "id": "event.airborne_target",
+      "group": "Activities and rewards",
+      "subject": "[APPROVED_TARGET_OBJECT] airborne reflex target",
+      "states": [
+        "active",
+        "collected-or-completed"
+      ],
+      "status": "needs-content-decision",
+      "kind": "object",
+      "notes": "Object/target roster and animation timing require gameplay decisions. Avoid invented weapons or violence for the airborne-target mechanic.",
+      "palette": null
+    },
+    {
+      "id": "event.water_find",
+      "group": "Activities and rewards",
+      "subject": "[APPROVED_WATER_FIND] found object",
+      "states": [
+        "active",
+        "collected-or-completed"
+      ],
+      "status": "needs-content-decision",
+      "kind": "object",
+      "notes": "Object/target roster and animation timing require gameplay decisions. Avoid invented weapons or violence for the airborne-target mechanic.",
+      "palette": null
+    },
+    {
+      "id": "event.competition_trophy",
+      "group": "Activities and rewards",
+      "subject": "unlettered competition trophy",
+      "states": [
+        "active",
+        "collected-or-completed"
+      ],
+      "status": "proposed-design",
+      "kind": "object",
+      "notes": "Object/target roster and animation timing require gameplay decisions. Avoid invented weapons or violence for the airborne-target mechanic.",
+      "palette": null
+    },
+    {
+      "id": "ui.private_message",
+      "group": "Interface symbols",
+      "subject": "private message",
+      "states": [
+        "symbol"
+      ],
+      "status": "code-native-spec",
+      "kind": "ui",
+      "notes": "Prefer deterministic SVG/CSS in the existing interface. This is a design brief, not a request to rasterize labels or controls. Include accessible text separately and never rely on color alone.",
+      "palette": null
+    },
+    {
+      "id": "ui.group_chat",
+      "group": "Interface symbols",
+      "subject": "group chat",
+      "states": [
+        "symbol"
+      ],
+      "status": "code-native-spec",
+      "kind": "ui",
+      "notes": "Prefer deterministic SVG/CSS in the existing interface. This is a design brief, not a request to rasterize labels or controls. Include accessible text separately and never rely on color alone.",
+      "palette": null
+    },
+    {
+      "id": "ui.town_channel",
+      "group": "Interface symbols",
+      "subject": "town channel",
+      "states": [
+        "symbol"
+      ],
+      "status": "code-native-spec",
+      "kind": "ui",
+      "notes": "Prefer deterministic SVG/CSS in the existing interface. This is a design brief, not a request to rasterize labels or controls. Include accessible text separately and never rely on color alone.",
+      "palette": null
+    },
+    {
+      "id": "ui.intertown_message",
+      "group": "Interface symbols",
+      "subject": "intertown message",
+      "states": [
+        "symbol"
+      ],
+      "status": "code-native-spec",
+      "kind": "ui",
+      "notes": "Prefer deterministic SVG/CSS in the existing interface. This is a design brief, not a request to rasterize labels or controls. Include accessible text separately and never rely on color alone.",
+      "palette": null
+    },
+    {
+      "id": "ui.instant_chat",
+      "group": "Interface symbols",
+      "subject": "instant chat",
+      "states": [
+        "symbol"
+      ],
+      "status": "code-native-spec",
+      "kind": "ui",
+      "notes": "Prefer deterministic SVG/CSS in the existing interface. This is a design brief, not a request to rasterize labels or controls. Include accessible text separately and never rely on color alone.",
+      "palette": null
+    },
+    {
+      "id": "ui.asynchronous_message",
+      "group": "Interface symbols",
+      "subject": "asynchronous message",
+      "states": [
+        "symbol"
+      ],
+      "status": "code-native-spec",
+      "kind": "ui",
+      "notes": "Prefer deterministic SVG/CSS in the existing interface. This is a design brief, not a request to rasterize labels or controls. Include accessible text separately and never rely on color alone.",
+      "palette": null
+    },
+    {
+      "id": "ui.block_player",
+      "group": "Interface symbols",
+      "subject": "block player",
+      "states": [
+        "symbol"
+      ],
+      "status": "code-native-spec",
+      "kind": "ui",
+      "notes": "Prefer deterministic SVG/CSS in the existing interface. This is a design brief, not a request to rasterize labels or controls. Include accessible text separately and never rely on color alone.",
+      "palette": null
+    },
+    {
+      "id": "ui.town_invitation",
+      "group": "Interface symbols",
+      "subject": "town invitation",
+      "states": [
+        "symbol"
+      ],
+      "status": "code-native-spec",
+      "kind": "ui",
+      "notes": "Prefer deterministic SVG/CSS in the existing interface. This is a design brief, not a request to rasterize labels or controls. Include accessible text separately and never rely on color alone.",
+      "palette": null
+    },
+    {
+      "id": "ui.resident_directory",
+      "group": "Interface symbols",
+      "subject": "resident directory",
+      "states": [
+        "symbol"
+      ],
+      "status": "code-native-spec",
+      "kind": "ui",
+      "notes": "Prefer deterministic SVG/CSS in the existing interface. This is a design brief, not a request to rasterize labels or controls. Include accessible text separately and never rely on color alone.",
+      "palette": null
+    },
+    {
+      "id": "ui.town_directory",
+      "group": "Interface symbols",
+      "subject": "town directory",
+      "states": [
+        "symbol"
+      ],
+      "status": "code-native-spec",
+      "kind": "ui",
+      "notes": "Prefer deterministic SVG/CSS in the existing interface. This is a design brief, not a request to rasterize labels or controls. Include accessible text separately and never rely on color alone.",
+      "palette": null
+    },
+    {
+      "id": "ui.classified_goods_wanted",
+      "group": "Interface symbols",
+      "subject": "classified goods wanted",
+      "states": [
+        "symbol"
+      ],
+      "status": "code-native-spec",
+      "kind": "ui",
+      "notes": "Prefer deterministic SVG/CSS in the existing interface. This is a design brief, not a request to rasterize labels or controls. Include accessible text separately and never rely on color alone.",
+      "palette": null
+    },
+    {
+      "id": "ui.classified_goods_offered",
+      "group": "Interface symbols",
+      "subject": "classified goods offered",
+      "states": [
+        "symbol"
+      ],
+      "status": "code-native-spec",
+      "kind": "ui",
+      "notes": "Prefer deterministic SVG/CSS in the existing interface. This is a design brief, not a request to rasterize labels or controls. Include accessible text separately and never rely on color alone.",
+      "palette": null
+    },
+    {
+      "id": "ui.classified_service_wanted",
+      "group": "Interface symbols",
+      "subject": "classified service wanted",
+      "states": [
+        "symbol"
+      ],
+      "status": "code-native-spec",
+      "kind": "ui",
+      "notes": "Prefer deterministic SVG/CSS in the existing interface. This is a design brief, not a request to rasterize labels or controls. Include accessible text separately and never rely on color alone.",
+      "palette": null
+    },
+    {
+      "id": "ui.classified_service_offered",
+      "group": "Interface symbols",
+      "subject": "classified service offered",
+      "states": [
+        "symbol"
+      ],
+      "status": "code-native-spec",
+      "kind": "ui",
+      "notes": "Prefer deterministic SVG/CSS in the existing interface. This is a design brief, not a request to rasterize labels or controls. Include accessible text separately and never rely on color alone.",
+      "palette": null
+    },
+    {
+      "id": "ui.npc_recruitment",
+      "group": "Interface symbols",
+      "subject": "npc recruitment",
+      "states": [
+        "symbol"
+      ],
+      "status": "code-native-spec",
+      "kind": "ui",
+      "notes": "Prefer deterministic SVG/CSS in the existing interface. This is a design brief, not a request to rasterize labels or controls. Include accessible text separately and never rely on color alone.",
+      "palette": null
+    },
+    {
+      "id": "ui.profession",
+      "group": "Interface symbols",
+      "subject": "profession",
+      "states": [
+        "symbol"
+      ],
+      "status": "code-native-spec",
+      "kind": "ui",
+      "notes": "Prefer deterministic SVG/CSS in the existing interface. This is a design brief, not a request to rasterize labels or controls. Include accessible text separately and never rely on color alone.",
+      "palette": null
+    },
+    {
+      "id": "ui.skill",
+      "group": "Interface symbols",
+      "subject": "skill",
+      "states": [
+        "symbol"
+      ],
+      "status": "code-native-spec",
+      "kind": "ui",
+      "notes": "Prefer deterministic SVG/CSS in the existing interface. This is a design brief, not a request to rasterize labels or controls. Include accessible text separately and never rely on color alone.",
+      "palette": null
+    },
+    {
+      "id": "ui.recipe",
+      "group": "Interface symbols",
+      "subject": "recipe",
+      "states": [
+        "symbol"
+      ],
+      "status": "code-native-spec",
+      "kind": "ui",
+      "notes": "Prefer deterministic SVG/CSS in the existing interface. This is a design brief, not a request to rasterize labels or controls. Include accessible text separately and never rely on color alone.",
+      "palette": null
+    },
+    {
+      "id": "ui.learning_book",
+      "group": "Interface symbols",
+      "subject": "learning book",
+      "states": [
+        "symbol"
+      ],
+      "status": "code-native-spec",
+      "kind": "ui",
+      "notes": "Prefer deterministic SVG/CSS in the existing interface. This is a design brief, not a request to rasterize labels or controls. Include accessible text separately and never rely on color alone.",
+      "palette": null
+    },
+    {
+      "id": "ui.online_learning",
+      "group": "Interface symbols",
+      "subject": "online learning",
+      "states": [
+        "symbol"
+      ],
+      "status": "code-native-spec",
+      "kind": "ui",
+      "notes": "Prefer deterministic SVG/CSS in the existing interface. This is a design brief, not a request to rasterize labels or controls. Include accessible text separately and never rely on color alone.",
+      "palette": null
+    },
+    {
+      "id": "ui.school",
+      "group": "Interface symbols",
+      "subject": "school",
+      "states": [
+        "symbol"
+      ],
+      "status": "code-native-spec",
+      "kind": "ui",
+      "notes": "Prefer deterministic SVG/CSS in the existing interface. This is a design brief, not a request to rasterize labels or controls. Include accessible text separately and never rely on color alone.",
+      "palette": null
+    },
+    {
+      "id": "ui.teacher_certificate",
+      "group": "Interface symbols",
+      "subject": "teacher certificate",
+      "states": [
+        "symbol"
+      ],
+      "status": "code-native-spec",
+      "kind": "ui",
+      "notes": "Prefer deterministic SVG/CSS in the existing interface. This is a design brief, not a request to rasterize labels or controls. Include accessible text separately and never rely on color alone.",
+      "palette": null
+    },
+    {
+      "id": "ui.town_government",
+      "group": "Interface symbols",
+      "subject": "town government",
+      "states": [
+        "symbol"
+      ],
+      "status": "code-native-spec",
+      "kind": "ui",
+      "notes": "Prefer deterministic SVG/CSS in the existing interface. This is a design brief, not a request to rasterize labels or controls. Include accessible text separately and never rely on color alone.",
+      "palette": null
+    },
+    {
+      "id": "ui.mayor",
+      "group": "Interface symbols",
+      "subject": "mayor",
+      "states": [
+        "symbol"
+      ],
+      "status": "code-native-spec",
+      "kind": "ui",
+      "notes": "Prefer deterministic SVG/CSS in the existing interface. This is a design brief, not a request to rasterize labels or controls. Include accessible text separately and never rely on color alone.",
+      "palette": null
+    },
+    {
+      "id": "ui.treasurer",
+      "group": "Interface symbols",
+      "subject": "treasurer",
+      "states": [
+        "symbol"
+      ],
+      "status": "code-native-spec",
+      "kind": "ui",
+      "notes": "Prefer deterministic SVG/CSS in the existing interface. This is a design brief, not a request to rasterize labels or controls. Include accessible text separately and never rely on color alone.",
+      "palette": null
+    },
+    {
+      "id": "ui.tax",
+      "group": "Interface symbols",
+      "subject": "tax",
+      "states": [
+        "symbol"
+      ],
+      "status": "code-native-spec",
+      "kind": "ui",
+      "notes": "Prefer deterministic SVG/CSS in the existing interface. This is a design brief, not a request to rasterize labels or controls. Include accessible text separately and never rely on color alone.",
+      "palette": null
+    },
+    {
+      "id": "ui.election",
+      "group": "Interface symbols",
+      "subject": "election",
+      "states": [
+        "symbol"
+      ],
+      "status": "code-native-spec",
+      "kind": "ui",
+      "notes": "Prefer deterministic SVG/CSS in the existing interface. This is a design brief, not a request to rasterize labels or controls. Include accessible text separately and never rely on color alone.",
+      "palette": null
+    },
+    {
+      "id": "ui.trade",
+      "group": "Interface symbols",
+      "subject": "trade",
+      "states": [
+        "symbol"
+      ],
+      "status": "code-native-spec",
+      "kind": "ui",
+      "notes": "Prefer deterministic SVG/CSS in the existing interface. This is a design brief, not a request to rasterize labels or controls. Include accessible text separately and never rely on color alone.",
+      "palette": null
+    },
+    {
+      "id": "ui.auction",
+      "group": "Interface symbols",
+      "subject": "auction",
+      "states": [
+        "symbol"
+      ],
+      "status": "code-native-spec",
+      "kind": "ui",
+      "notes": "Prefer deterministic SVG/CSS in the existing interface. This is a design brief, not a request to rasterize labels or controls. Include accessible text separately and never rely on color alone.",
+      "palette": null
+    },
+    {
+      "id": "ui.bank",
+      "group": "Interface symbols",
+      "subject": "bank",
+      "states": [
+        "symbol"
+      ],
+      "status": "code-native-spec",
+      "kind": "ui",
+      "notes": "Prefer deterministic SVG/CSS in the existing interface. This is a design brief, not a request to rasterize labels or controls. Include accessible text separately and never rely on color alone.",
+      "palette": null
+    },
+    {
+      "id": "ui.boat_route",
+      "group": "Interface symbols",
+      "subject": "boat route",
+      "states": [
+        "symbol"
+      ],
+      "status": "code-native-spec",
+      "kind": "ui",
+      "notes": "Prefer deterministic SVG/CSS in the existing interface. This is a design brief, not a request to rasterize labels or controls. Include accessible text separately and never rely on color alone.",
+      "palette": null
+    },
+    {
+      "id": "ui.travel_fare",
+      "group": "Interface symbols",
+      "subject": "travel fare",
+      "states": [
+        "symbol"
+      ],
+      "status": "code-native-spec",
+      "kind": "ui",
+      "notes": "Prefer deterministic SVG/CSS in the existing interface. This is a design brief, not a request to rasterize labels or controls. Include accessible text separately and never rely on color alone.",
+      "palette": null
+    },
+    {
+      "id": "ui.return_home",
+      "group": "Interface symbols",
+      "subject": "return home",
+      "states": [
+        "symbol"
+      ],
+      "status": "code-native-spec",
+      "kind": "ui",
+      "notes": "Prefer deterministic SVG/CSS in the existing interface. This is a design brief, not a request to rasterize labels or controls. Include accessible text separately and never rely on color alone.",
+      "palette": null
+    },
+    {
+      "id": "ui.happiness",
+      "group": "Interface symbols",
+      "subject": "happiness",
+      "states": [
+        "symbol"
+      ],
+      "status": "code-native-spec",
+      "kind": "ui",
+      "notes": "Prefer deterministic SVG/CSS in the existing interface. This is a design brief, not a request to rasterize labels or controls. Include accessible text separately and never rely on color alone.",
+      "palette": null
+    },
+    {
+      "id": "ui.hunger",
+      "group": "Interface symbols",
+      "subject": "hunger",
+      "states": [
+        "symbol"
+      ],
+      "status": "code-native-spec",
+      "kind": "ui",
+      "notes": "Prefer deterministic SVG/CSS in the existing interface. This is a design brief, not a request to rasterize labels or controls. Include accessible text separately and never rely on color alone.",
+      "palette": null
+    },
+    {
+      "id": "ui.thirst",
+      "group": "Interface symbols",
+      "subject": "thirst",
+      "states": [
+        "symbol"
+      ],
+      "status": "code-native-spec",
+      "kind": "ui",
+      "notes": "Prefer deterministic SVG/CSS in the existing interface. This is a design brief, not a request to rasterize labels or controls. Include accessible text separately and never rely on color alone.",
+      "palette": null
+    },
+    {
+      "id": "ui.charisma",
+      "group": "Interface symbols",
+      "subject": "charisma",
+      "states": [
+        "symbol"
+      ],
+      "status": "code-native-spec",
+      "kind": "ui",
+      "notes": "Prefer deterministic SVG/CSS in the existing interface. This is a design brief, not a request to rasterize labels or controls. Include accessible text separately and never rely on color alone.",
+      "palette": null
+    },
+    {
+      "id": "ui.kindness",
+      "group": "Interface symbols",
+      "subject": "kindness",
+      "states": [
+        "symbol"
+      ],
+      "status": "code-native-spec",
+      "kind": "ui",
+      "notes": "Prefer deterministic SVG/CSS in the existing interface. This is a design brief, not a request to rasterize labels or controls. Include accessible text separately and never rely on color alone.",
+      "palette": null
+    },
+    {
+      "id": "ui.animal_care",
+      "group": "Interface symbols",
+      "subject": "animal care",
+      "states": [
+        "symbol"
+      ],
+      "status": "code-native-spec",
+      "kind": "ui",
+      "notes": "Prefer deterministic SVG/CSS in the existing interface. This is a design brief, not a request to rasterize labels or controls. Include accessible text separately and never rely on color alone.",
+      "palette": null
+    },
+    {
+      "id": "ui.item_wear",
+      "group": "Interface symbols",
+      "subject": "item wear",
+      "states": [
+        "symbol"
+      ],
+      "status": "code-native-spec",
+      "kind": "ui",
+      "notes": "Prefer deterministic SVG/CSS in the existing interface. This is a design brief, not a request to rasterize labels or controls. Include accessible text separately and never rely on color alone.",
+      "palette": null
+    },
+    {
+      "id": "ui.repair",
+      "group": "Interface symbols",
+      "subject": "repair",
+      "states": [
+        "symbol"
+      ],
+      "status": "code-native-spec",
+      "kind": "ui",
+      "notes": "Prefer deterministic SVG/CSS in the existing interface. This is a design brief, not a request to rasterize labels or controls. Include accessible text separately and never rely on color alone.",
+      "palette": null
+    },
+    {
+      "id": "ui.music_play",
+      "group": "Interface symbols",
+      "subject": "music play",
+      "states": [
+        "symbol"
+      ],
+      "status": "code-native-spec",
+      "kind": "ui",
+      "notes": "Prefer deterministic SVG/CSS in the existing interface. This is a design brief, not a request to rasterize labels or controls. Include accessible text separately and never rely on color alone.",
+      "palette": null
+    },
+    {
+      "id": "ui.radio",
+      "group": "Interface symbols",
+      "subject": "radio",
+      "states": [
+        "symbol"
+      ],
+      "status": "code-native-spec",
+      "kind": "ui",
+      "notes": "Prefer deterministic SVG/CSS in the existing interface. This is a design brief, not a request to rasterize labels or controls. Include accessible text separately and never rely on color alone.",
+      "palette": null
+    },
+    {
+      "id": "ui.competition",
+      "group": "Interface symbols",
+      "subject": "competition",
+      "states": [
+        "symbol"
+      ],
+      "status": "code-native-spec",
+      "kind": "ui",
+      "notes": "Prefer deterministic SVG/CSS in the existing interface. This is a design brief, not a request to rasterize labels or controls. Include accessible text separately and never rely on color alone.",
+      "palette": null
+    }
+  ]
+}

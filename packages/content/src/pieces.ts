@@ -28,6 +28,21 @@ const defs: PieceDef[] = [
   { id: 'board_window', name: 'Lumber wall with window', kind: 'window', tier: 2, cost: { lumber: 3 }, rotations: 1, category: 'Walls' },
 ];
 
+defs.push(
+  {id:'masonry_wall',name:'Masonry wall',kind:'wall',tier:1,cost:{part_masonry:1},rotations:1,category:'Civic buildings'},
+  {id:'stone_floor',name:'Stone floor',kind:'floor',tier:1,cost:{part_masonry:1},rotations:1,category:'Civic buildings'},
+  {id:'shop_window',name:'Shopfront window',kind:'window',tier:1,cost:{part_shopfront:1},rotations:1,category:'Shops'},
+  {id:'civic_door',name:'Civic entrance door',kind:'door',tier:1,cost:{part_civic:1},rotations:1,category:'Civic buildings'},
+  {id:'clinic_wall',name:'Clinic wall',kind:'wall',tier:1,cost:{part_civic:1},rotations:1,category:'Healthcare'},
+  {id:'hospital_wall',name:'Hospital wall',kind:'wall',tier:1,cost:{part_civic:1},rotations:1,category:'Healthcare'},
+  {id:'pharmacy_window',name:'Pharmacy window',kind:'window',tier:1,cost:{part_shopfront:1},rotations:1,category:'Healthcare'},
+  {id:'pet_store_window',name:'Pet store window',kind:'window',tier:1,cost:{part_shopfront:1},rotations:1,category:'Shops'},
+  {id:'sofa',name:'Sofa',kind:'furniture',tier:1,cost:{kit_sofa:1},rotations:2,category:'Furniture'},
+  {id:'cabinet',name:'Cabinet',kind:'furniture',tier:1,cost:{kit_cabinet:1},rotations:1,category:'Furniture'},
+  {id:'yard_bench',name:'Yard bench',kind:'furniture',tier:1,cost:{kit_yard_bench:1},rotations:2,category:'Yard',outdoor:true},
+  {id:'yard_planter',name:'Decorative planter',kind:'furniture',tier:1,cost:{kit_planter:1},rotations:1,category:'Yard',outdoor:true},
+);
+
 export const catalog: Catalog = Object.freeze(Object.fromEntries(defs.map((d) => [d.id, d])));
 
 /** Catalogue order for the build UI. */
@@ -43,4 +58,4 @@ export const MATERIALS: readonly { id: string; name: string }[] = [
 ];
 
 /** What a new player arrives with: a tarp's worth of cloth. Everything else is salvaged. */
-export const STARTER_INVENTORY: Readonly<Record<string, number>> = { cloth: 3 };
+export const STARTER_INVENTORY: Readonly<Record<string, number>> = { cloth: 3, water: 3 };

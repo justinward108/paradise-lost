@@ -1,12 +1,19 @@
+import {playerLessons} from './playerLessons.ts';
+import {updateJobClocks} from './jobBoard.ts';
 /**
  * HTML interface over the game canvas. Built in the DOM (not on the canvas) for real
  * text, screen readers and easy layout.
  */
 import { art, catalog, crops, ITEMS, pieceOrder, requiredFrames, type Style } from '@paradise-lost/content';
-import { ambientTime, friendshipLevel, goals, helperLabour, materialsMet } from '@paradise-lost/sim';
+import { shelterReport, dailyRequest, dailyState, ambientTime, friendshipLevel, goals, helperLabour, materialsMet } from '@paradise-lost/sim';
 import { drawFrame } from '../art/generate.ts';
 import { closeHelp, isHelpOpen, showHelp, Tips } from './help.ts';
 import { isFeedbackOpen, showFeedback } from './feedback.ts';
+import {productionPanel} from './productionPanel.ts';
+import { animalPanel } from './animalPanel.ts';
+import { wellbeingPanel } from './wellbeingPanel.ts';
+import { travelPanel } from './travelPanel.ts';
+import { workshopPanel, updateWorkshopClock } from './workshopPanel.ts';
 import { kioskPanel } from './kioskPanel.ts';
 import { rc } from '../game/kiosk.ts';
 import type { Controller } from '../game/controller.ts';
@@ -50,6 +57,10 @@ function nightAlpha(hour: number) {
 
 /** Which help section fits what the player is doing right now. */
 function helpSectionFor(ctrl: Controller): string {
+  if (['activities','animals','production','shelter'].includes(ctrl.panel?.kind ?? '')) return 'homestead';
+  if (ctrl.panel?.kind === 'wellbeing') return 'homestead';
+  if (ctrl.panel?.kind === 'travel') return 'travel';
+  if (ctrl.panel?.kind === 'workshop') return 'workshop';
   if (ctrl.panel?.kind === 'npc') return 'rosa';
   if (ctrl.panel?.kind === 'project') return 'projects';
   if (ctrl.panel?.kind === 'kiosk') return 'kiosk';
@@ -58,7 +69,7 @@ function helpSectionFor(ctrl: Controller): string {
   return 'start';
 }
 
-const GOAL_SECTION: Record<string, string> = { brush: 'moving', salvage: 'materials', shelter: 'building', neighbour: 'rosa', garden: 'garden', path: 'projects' };
+const GOAL_SECTION: Record<string, string> = { brush: 'moving', salvage: 'materials', shelter: 'building', neighbour: 'rosa', garden: 'garden', path: 'projects', townbuild: 'travel', returnplot: 'travel', training: 'workshop', recipe: 'workshop', profession: 'workshop', multitrade: 'workshop', device: 'workshop' };
 
 export function mountUi(root: HTMLElement, ctrl: Controller, hooks: UiHooks): Tips {
   let roofs = true;
@@ -90,7 +101,20 @@ export function mountUi(root: HTMLElement, ctrl: Controller, hooks: UiHooks): Ti
   const helpBtn = btn('? Help', { title: 'Help (H)', 'aria-label': 'Help' }, () => openHelp(helpSectionFor(ctrl)));
   const credits = btn('', { class: 'chip credits hidden', title: 'Rapture Credits (your Poor Camp account)' }, () => ctrl.openPanel({ kind: 'kiosk' }));
   const noteBtn = btn('✎ Note', { title: 'Write a playtest note (N)', 'aria-label': 'Write a playtest note' }, () => showFeedback(root, ctrl));
-  top.append(clock, inv, credits, undo, redo, roofBtn, styleBtn, meBtn, noteBtn, helpBtn);
+  const exitBtn = btn('Back to poor.camp', { title: 'Save and return to poor.camp' }, () => {
+    ctrl.flushSave();
+    window.location.assign('https://poor.camp/');
+  });
+  const workshopBtn = btn('Skills & workshop', {}, () => ctrl.openPanel({ kind: 'workshop' }));
+  const travelBtn = btn('Towns & travel', {}, () => ctrl.openPanel({ kind: 'travel' }));
+  const returnBtn = btn('Return to my plot', { title: 'Quick travel to your plot, free' }, () => ctrl.travelAction({ type: 'returnToPlot' }));
+  const wellbeingBtn = btn('Food & water', {}, () => ctrl.openPanel({ kind: 'wellbeing' }));
+  const animalsBtn = btn('Animals', {}, () => ctrl.openPanel({ kind: 'animals' }));
+  const inspectBtn = btn('Check shelter', {}, () => ctrl.openPanel({kind:'shelter'}));
+  const lessonsBtn=btn('Player teachers',{},()=>void ctrl.onlineAction('lessonBoard'));lessonsBtn.disabled=!ctrl.online;
+  const productionBtn = btn('Resources & garden',{},()=>ctrl.openPanel({kind:'production'}));
+  const activitiesBtn = btn('Activities',{},()=>ctrl.openPanel({kind:'activities'}));
+  top.append(activitiesBtn, returnBtn, clock, inv, credits, undo, redo, meBtn, helpBtn, exitBtn);
 
   // ----- goals -----
   const goalsBox = el('section', { class: 'goals', 'aria-label': 'Goals' });
@@ -139,7 +163,14 @@ export function mountUi(root: HTMLElement, ctrl: Controller, hooks: UiHooks): Ti
   const demoBtn = btn('⛏ Demolish', { class: 'tool', title: 'Demolish (Delete)' }, () => ctrl.setTool({ mode: 'demolish' }));
   const rotBtn = btn('↻ Rotate', { class: 'tool', title: 'Rotate (R)' }, () => ctrl.rotate());
   const pieceButtons = new Map<string, HTMLButtonElement>();
-  buildBar.append(demoBtn, rotBtn);
+  const category = el('select', {'aria-label':'Building part category'});
+  for (const name of ['All parts', ...new Set(pieceOrder.map(id => catalog[id]!.category))]) {
+    const option = el('option', {value:name}, name); category.append(option);
+  }
+  category.addEventListener('change', () => {
+    for (const [id,b] of pieceButtons) b.classList.toggle('hidden', category.value !== 'All parts' && catalog[id]!.category !== category.value);
+  });
+  buildBar.append(category, demoBtn, rotBtn);
   for (const id of pieceOrder) {
     const def = catalog[id]!;
     const b = el('button', { class: 'piece', 'data-id': id });
@@ -151,6 +182,10 @@ export function mountUi(root: HTMLElement, ctrl: Controller, hooks: UiHooks): Ti
 
   // ----- side panel -----
   const panel = el('aside', { class: 'panel hidden', role: 'dialog', 'aria-live': 'polite' });
+  window.setInterval(() => {
+    if (ctrl.panel?.kind === 'workshop') updateWorkshopClock(panel, ctrl.now());
+    updateJobClocks(panel,ctrl.now());
+  }, 1000);
 
   root.append(night, top, goalsBox, status, toasts, touch, panel, bottom);
 
@@ -231,14 +266,19 @@ export function mountUi(root: HTMLElement, ctrl: Controller, hooks: UiHooks): Ti
       btn('✋ Walk & use', { class: `tool ${t.mode === 'walk' ? 'active' : ''}`, title: 'Click to walk; click things to use them (Esc)' }, () => ctrl.setTool({ mode: 'walk' })),
       btn('⛏ Dig bed', { class: `tool ${t.mode === 'dig' ? 'active' : ''}`, title: 'Click cleared ground on your lot to make a garden bed' }, () => ctrl.setTool({ mode: 'dig' })),
     ];
+    items.push(btn('💧 Water', { class: `tool ${t.mode === 'water' ? 'active' : ''}`, title: 'Water a crop on a dry day. Rain does it for you most days.' }, () => ctrl.setTool({ mode: 'water' })));
+    items.push(btn('Seed supplies', {class:'tool',title:'Where to get seeds and how to choose plants'},()=>ctrl.setStatus('Scroll this planting bar to see every crop. Visit the seed trader in the starter neighborhood for the new seeds; harvesting also returns planting material.', 'info')));
     for (const c of Object.values(crops)) {
       const n = ctrl.town.inventory[c.seed] ?? 0;
-      if (n <= 0) continue;
+      // Empty stock stays visible so the player knows planting material is needed.
       const active = t.mode === 'plant' && t.cropId === c.id;
       const time = c.regrowDays ? `${c.days} watered days, then every ${c.regrowDays}` : `${c.days} watered days`;
-      items.push(btn(`🌱 ${c.name} (${n})`, { class: `tool ${active ? 'active' : ''}`, title: `Plant ${c.name.toLowerCase()} in an empty bed. Ready in ${time}.` }, () => ctrl.setTool({ mode: 'plant', cropId: c.id })));
+      items.push(btn(`🌱 ${c.name} (${n})`, { class: `tool ${active ? 'active' : ''}`, ...(n <= 0 ? { disabled: 'true' } : {}), title: `Plant ${c.name.toLowerCase()} in an empty bed. Ready in ${time}.` }, () => ctrl.setTool({ mode: 'plant', cropId: c.id })));
     }
-    items.push(btn('💧 Water', { class: `tool ${t.mode === 'water' ? 'active' : ''}`, title: 'Water a crop on a dry day. Rain does it for you most days.' }, () => ctrl.setTool({ mode: 'water' })));
+
+    if (!Object.values(crops).some((c) => (ctrl.town.inventory[c.seed] ?? 0) > 0)) {
+      items.push(btn('Where are seeds?', { class: 'tool' }, () => ctrl.setStatus('Visit Rosa or the seed trader for planting material. On a private plot, use Towns & travel → Neighborhood (free). Harvested crops also return planting material.', 'info')));
+    }
     playBar.replaceChildren(...items);
   }
 
@@ -250,7 +290,7 @@ export function mountUi(root: HTMLElement, ctrl: Controller, hooks: UiHooks): Ti
     document.body.classList.toggle('raining', a.rain);
   }
 
-  function renderTown() {
+  function renderTown(refreshPanel = true) {
     const list = ctrl.inventoryList();
     inv.replaceChildren(...(list.length ? list : [{ id: 'none', name: 'Empty-handed', kind: '', n: 0 }]).map((i) => el('span', { class: `item ${i.kind}` }, i.n ? `${i.name} ${i.n}` : i.name)));
     undo.disabled = ctrl.town.history.undo.length === 0;
@@ -261,10 +301,10 @@ export function mountUi(root: HTMLElement, ctrl: Controller, hooks: UiHooks): Ti
       b.classList.toggle('locked', locked);
       b.title = locked ? `${def.name} — unlocks at tier ${def.tier}` : def.name;
     }
-    const gs = goals(ctrl.town, ctrl.catalog, ctrl.world);
+    const gs = ctrl.onlineCenter ? [] : goals(ctrl.town, ctrl.catalog, ctrl.world);
     goalsList.replaceChildren(...gs.map((g) => el('li', { class: g.done ? 'done' : '' }, `${g.done ? '✓' : '○'} ${g.text}`)));
     const next = gs.find((g) => !g.done);
-    goalsHint.textContent = next ? next.hint : 'All done for now. The town has more to discover soon.';
+    goalsHint.textContent = ctrl.onlineCenter ? `Town center: ${ctrl.onlineCenter.name}. ${ctrl.centerDonation?'You are donating personal building materials.':'Building uses shared town stock.'} Open Towns & travel for treasury contributions and paid jobs.` : next ? next.hint : 'All done for now. The town has more to discover soon.';
     nextGoal = next?.id ?? 'start';
     goalsMore.classList.toggle('hidden', !next);
     // Tips for things that have just happened.
@@ -273,7 +313,7 @@ export function mountUi(root: HTMLElement, ctrl: Controller, hooks: UiHooks): Ti
     if (Object.values(ctrl.town.npcs).some((n) => n.met)) tips.trigger('metRosa');
     if (Object.keys(ctrl.town.inventory).some((k) => k.startsWith('seed_') || k.startsWith('slip_'))) tips.trigger('garden');
     renderPlayBar();
-    renderPanel();
+    if (refreshPanel) renderPanel();
   }
 
   function renderMode() {
@@ -331,6 +371,36 @@ export function mountUi(root: HTMLElement, ctrl: Controller, hooks: UiHooks): Ti
     panel.classList.toggle('hidden', p === null);
     if (!p) return;
     const close = btn('✕', { class: 'close', 'aria-label': 'Close' }, () => ctrl.openPanel(null));
+    if (p.kind === 'activities') {
+      const menu = el('div',{class:'activity-menu'});
+      menu.append(workshopBtn,lessonsBtn,productionBtn,animalsBtn,wellbeingBtn,travelBtn,inspectBtn,roofBtn,styleBtn,noteBtn);
+      panel.replaceChildren(close,el('h2',{},'Activities & settings'),menu);
+      return;
+    }
+    if(p.kind==='lessons'){panel.replaceChildren(close,...playerLessons(ctrl));return;}
+    if (p.kind === 'production') {panel.replaceChildren(...productionPanel(ctrl,close,p.note));return;}
+    if (p.kind === 'shelter') {
+      const report = shelterReport(ctrl.town, ctrl.catalog);
+      panel.replaceChildren(close, el('h2', {}, 'Shelter check'), el('p', {}, report.summary));
+      for (const issue of report.issues) panel.append(btn(`${issue.text} — show location`, {}, () => ctrl.focusPoint(issue)));
+      return;
+    }
+    if (p.kind === 'animals') {
+      panel.replaceChildren(...animalPanel(ctrl, close, p.note, p.confirmSlaughter));
+      return;
+    }
+    if (p.kind === 'wellbeing') {
+      panel.replaceChildren(...wellbeingPanel(ctrl, close, p.note));
+      return;
+    }
+    if (p.kind === 'travel') {
+      panel.replaceChildren(...travelPanel(ctrl, close, p.note));
+      return;
+    }
+    if (p.kind === 'workshop') {
+      panel.replaceChildren(...workshopPanel(ctrl, close, p.note));
+      return;
+    }
     if (p.kind === 'project') tips.trigger('project');
     if (p.kind === 'kiosk') {
       tips.trigger('kiosk');
@@ -346,12 +416,32 @@ export function mountUi(root: HTMLElement, ctrl: Controller, hooks: UiHooks): Ti
       const gifts = el('div', { class: 'gifts' });
       gifts.append(el('span', { class: 'label' }, foods.length ? 'Give:' : 'Grow food to share with her.'));
       for (const f of foods) gifts.append(btn(`${f.name} (${f.n})${def.likes.includes(f.id) ? ' ♥' : ''}`, {}, () => ctrl.give(def.id, f.id)));
+      const daily = dailyState(ctrl.town, ctrl.now());
+      const request = dailyRequest(daily.day);
+      const requests = el('div', { class: 'gifts' });
+      const describe = (items: Record<string, number>) => Object.entries(items).map(([id,n]) => `${n} ${ITEMS[id]?.name ?? id}`).join(', ');
+      requests.append(el('p', {}, `Today's request: ${request.title}. Bring ${describe(request.cost as Record<string,number>)}; receive ${describe(request.gives as Record<string,number>)}. A new request arrives each ambient day.`));
+      requests.append(btn(daily.requestDone ? 'Request completed today' : 'Deliver requested goods', daily.requestDone ? {disabled:'true'} : {}, () => ctrl.dailyAction({type:'completeDailyRequest',npcId:def.id})));
+      requests.append(el('p', {}, `Food donations: ${daily.donated}/10 today. Every two donated food earns a learning voucher; donations also improve friendship.`));
+      for (const f of foods) {
+        const qty = Math.min(f.n, 10-daily.donated);
+        if (qty > 0) requests.append(btn(`Donate ${qty} ${f.name}`, {}, () => ctrl.dailyAction({type:'donateFood',npcId:def.id,item:f.id,qty})));
+      }
+      const trades = el('div', { class: 'gifts' });
+      if (def.trades?.length) trades.append(el('span', { class: 'label' }, 'Trade goods:'));
+      const goods = (items: Record<string, number>) => Object.entries(items).map(([id, qty]) => `${qty} ${ITEMS[id]?.name ?? id}`).join(', ');
+      for (const offer of def.trades ?? []) {
+        const afford = Object.entries(offer.cost).every(([id, qty]) => (ctrl.town.inventory[id] ?? 0) >= qty);
+        trades.append(btn(`Give ${goods(offer.cost)} → get ${goods(offer.gives)}`, afford ? {} : { disabled: 'true' }, () => ctrl.trade(def.id, offer.id)));
+      }
       panel.replaceChildren(
         close,
         el('h2', {}, def.name),
         el('p', { class: 'sub' }, `${friendshipLevel(st.friendship)} · ${st.friendship} / 100`),
         ...p.lines.map((l) => el('p', { class: 'line' }, l)),
         gifts,
+        trades,
+        requests,
       );
       return;
     }
@@ -390,7 +480,10 @@ export function mountUi(root: HTMLElement, ctrl: Controller, hooks: UiHooks): Ti
 
   ctrl.on((what, data) => {
     if (what === 'style') renderStyle();
-    if (what === 'town') renderTown();
+    if (what === 'town') {
+      const passive = data && typeof data === 'object' && 'commandType' in data && ['tick','move'].includes(String(data.commandType));
+      renderTown(!passive);
+    }
     if (what === 'tool') renderTool();
     if (what === 'mode') renderMode();
     if (what === 'panel') renderPanel();
@@ -401,6 +494,8 @@ export function mountUi(root: HTMLElement, ctrl: Controller, hooks: UiHooks): Ti
       if (show) credits.textContent = `◈ ${rc(k!.state!.balance)}`;
     }
     if (what === 'clock') {
+      if (ctrl.panel?.kind === 'workshop') updateWorkshopClock(panel, ctrl.now());
+    updateJobClocks(panel,ctrl.now());
       renderClock();
       renderTown();
     }

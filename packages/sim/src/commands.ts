@@ -5,6 +5,7 @@
  * town; multiplayer (later) sends the same commands to the server, which applies them to
  * its own copy with exactly this code. Undo, redo and save files reuse the same records.
  */
+import { isTownVisitor } from './travel.ts';
 import { applyWorld, type WorldCommand } from './actions.ts';
 import { LAYER_OF, slotKey } from './grid.ts';
 import { checkPlace, checkRemove } from './rules.ts';
@@ -89,6 +90,8 @@ function remember(town: Town, id: string): void {
  */
 export function apply(town: Town, catalog: Catalog, cmd: Command, world?: World): ApplyResult {
   if (town.appliedIds.includes(cmd.id)) return { ok: true, changed: false, duplicate: true };
+
+  if (isTownVisitor(town) && !(town.travel?.location.kind === 'town' && town.travel.location.townId === 'local-neighborhood' && ['clearBrush', 'clearRubble', 'chop', 'salvage', 'contribute', 'work'].includes(cmd.type)) && ['place', 'remove', 'undo', 'redo', 'clearBrush', 'clearRubble', 'chop', 'salvage', 'fill', 'till', 'plant', 'water', 'weed', 'harvest', 'contribute', 'work'].includes(cmd.type)) return { ok: false, changed: false, reason: 'Only the local mayor can change this town center' };
 
   switch (cmd.type) {
     case 'place': {

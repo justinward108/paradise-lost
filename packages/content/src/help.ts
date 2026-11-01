@@ -116,7 +116,43 @@ export const HELP_SECTIONS: readonly HelpSection[] = [
       'Every planted bed has a stake with a coloured tag: green for greens, purple for sweet potato, orange for papaya, teal for long beans, yellow for banana. Each crop also has its own shape as it grows: greens are a round clump, sweet potato spreads out on purple stems, papaya grows a trunk, long beans climb two poles, banana grows big paddle leaves.',
       'A blue drop over a crop means it needs water today. A yellow star means it is ready to harvest. Point at a crop to see how many days it has grown.',
       'Weeds come up on beds after about a real day and take a share of the harvest until you pull them. Click a weedy bed to pull them.',
-      'Harvest by clicking a ripe crop. Food can be given to Rosa.',
+      'Harvest by clicking a ripe crop. Each harvest also gives one seed or planting slip for another bed. Food can be given to Rosa. Clear brush for plant fiber as well as boards; fiber can be woven into cloth once you learn the recipe and make a loom.',
+    ],
+  },
+  {
+    id: 'homestead', title: 'Your private plot and daily neighborhood life',
+    body: [
+      'New games begin on a 64 by 64 private buildable plot. Existing games can expand free through Activities, Towns & travel. Construction, crops and belongings are preserved. Public neighbors live in a separate Neighborhood destination; visiting and returning are free.',
+      'Seed buttons remain visible even when stock is zero. Visit Rosa or the seed trader to acquire planting material. Each harvest also returns planting material.',
+      'The neighborhood has a visiting carpenter and seed trader as well as Rosa. They move around during the day. Neighbors offer a rotating request each ambient day and reward up to 10 donated food daily. Every two donated food earns a learning voucher; ordinary barter remains available after the donation allowance.',
+      'Check shelter in Activities lists missing roofing, doors or boundary walls and lets you move the camera to an issue. Demolition may remove dependent roofing too; rebuilding a wall alone does not restore missing roof tiles.',
+      'Mining & wardrobe in Activities provides prospecting for ore/silica, garment equipment and timed game-console leisure. Learn recipes in Skills & workshop. A pick and water are required for prospecting; jobs share the workshop activity slot.',
+      'Build categories organize furniture, yard items, shops, civic and healthcare parts. Indoor furniture needs flooring; yard decorations can go on clear ground. These are modular construction parts; staffed institutional services are still being built.',
+      'Animals in Activities provides dogs, cats, chickens and cows. Feed and water them daily. Healthy livestock produces once per ambient day after its first day. Toys let you play with cared-for pets. Neglect can require veterinary medicine. Livestock can be sold or slaughtered for meat, with confirmation; pets cannot be slaughtered.',
+    ],
+  },
+  {
+    id: 'travel',
+    title: 'Towns, travel and returning home',
+    body: [
+      'Open Towns & travel to found a named town, view residents and boat routes, visit town centers, or move your plot to a different town.',
+      'This first town network is local to this device. It does not yet connect to other players, invitations or an online directory. New town centers start unbuilt and have no invented NPC residents.',
+      'Founding costs 20 boards and 10 stone; moving from an existing town also costs 5 boards. You become mayor of the town you found. Moving residency removes you from the old town and attaches your existing plot to the new one, preserving its buildings and crops.',
+      'Ferry passage costs 3 boards per trip. An owned boat removes the fare. Visiting never moves your residency. Mayors can build their local town centers; visitors cannot change them.',
+      'Return to my plot is quick, free and available from any town without a boat or travel agency. It restores your actual home plot, not the town center. Your inventory, skills and paid workshop activities travel with you.',
+      'Town centers and your personal plot are saved separately. Saving while away preserves both. A mayor with other residents must appoint a resident successor before moving away; an empty town can have a vacant mayor role.',
+    ],
+  },
+  {
+    id: 'workshop',
+    title: 'Skills, learning and production',
+    body: [
+      'Open Skills & workshop in the top bar. Rosa trades learning vouchers for boards or greens. These vouchers are local goods, not Rapture Credits.',
+      'Buy and study book lessons, or study online after making a phone or computer. Lessons cost vouchers and take real time. Collect a completed activity to receive experience. Progress survives closing the game.',
+      'Each 6 experience earns a skill level, up to level 5. At level 1 you can qualify for the associated profession; you can hold several qualifications. Cooks and bartenders study separate subjects.',
+      'Recipes are learned separately from skills. Each costs a voucher and may require experience. Crafting spends ingredients at the start, takes time, and returns output plus practice experience when collected. Required tools are retained.',
+      'Produce lumber and cloth, make furniture kits, or build electronics tools, parts and devices. Phones enable online study. Owned boats provide fare-free travel between locally founded town centers. Crafted food and drinks can be given or traded; consumption bonuses are not connected yet.',
+      'The outside teaching exam requires level 2 in a subject and 4 vouchers, with no teacher prerequisite. Paid teaching and schools are not implemented yet.',
     ],
   },
   {
@@ -125,7 +161,7 @@ export const HELP_SECTIONS: readonly HelpSection[] = [
     body: [
       'Your neighbour lives across the footbridge to the east. She keeps a routine: her garden in the morning, her porch around midday and in the evening, and indoors at night.',
       'Once you have started on the path repair, you will find her there in the afternoons.',
-      'Talk to her once a day, work on the path with her, and give her food to become friends. She is fondest of papaya and sweet potato (marked ♥).',
+      'Talk to her once a day, work on the path with her, and give her food to become friends. She is fondest of papaya and sweet potato (marked ♥). You can also barter boards or stone for planting material, and trade some harvested food for building materials. The conversation panel shows the exact exchange before you choose it.',
       'When you are friends enough, she will teach you to build with lumber and block, and give you some to start.',
     ],
   },

@@ -168,6 +168,9 @@ const fromPalette = (pal: Record<string, string>): BoxColours => ({
 type Painter = (pen: Pen, pal: Record<string, string>, frame: string, rand: () => number) => void;
 
 const painters: Record<ArtEntry['generator'], { up: number; paint: Painter } | 'wall'> = {
+  sofa: {up:32,paint(pen,pal,frame){const c=fromPalette(pal);const along=frame==='r1';box(pen,0,0,along?0.25:0.42,along?0.42:0.25,0,14,c);box(pen,along?-0.2:0,along?0:-0.2,along?0.07:0.42,along?0.42:0.07,12,30,c);}},
+  bench: {up:24,paint(pen,pal,frame){const c=fromPalette(pal);const hx=frame==='r1'?0.18:0.42,hy=frame==='r1'?0.42:0.18;box(pen,0,0,hx,hy,12,17,c);for(const x of [-hx+0.04,hx-0.04])for(const y of [-hy+0.04,hy-0.04])pen.line(P(x,y),P(x,y,12),c.line,2);}},
+  planter: {up:24,paint(pen,pal){const c=fromPalette(pal);box(pen,0,0,0.25,0.25,0,13,c);for(const x of [-7,0,7])blob(pen,x,-18,7,6,pal.leaf??'#6d9a4b');}},
   terrain: {
     up: 0,
     paint(pen, pal, _f, rand) {
@@ -524,7 +527,7 @@ const painters: Record<ArtEntry['generator'], { up: number; paint: Painter } | '
     },
   },
   person: {
-    up: 46,
+    up: 54,
     paint(pen, pal) {
       const line = pal.line ?? '#1a1410';
       pen.poly([{ x: -8, y: -2 }, { x: 8, y: -2 }, { x: 8, y: 2 }, { x: -8, y: 2 }], 'rgba(0,0,0,0.25)');
@@ -533,6 +536,9 @@ const painters: Record<ArtEntry['generator'], { up: number; paint: Painter } | '
       pen.poly([{ x: -7, y: -13 }, { x: 7, y: -13 }, { x: 6, y: -29 }, { x: -6, y: -29 }], pal.shirt ?? '#3f6a9a', line);
       blob(pen, 0, -35, 6, 6.5, pal.skin ?? '#b07a52', line);
       blob(pen, -1, -39, 6.5, 3.5, pal.hair ?? '#2a1d14');
+      if (pal.hat) { blob(pen,0,-41,9,2,pal.hat,line); blob(pen,0,-44,6,3,pal.hat,line); }
+      if (pal.shoes) for (const x of [-3,3]) blob(pen,x,0,3,2,pal.shoes,line);
+      if (pal.bag) { pen.line({x:-6,y:-25},{x:7,y:-13},pal.bag,2); blob(pen,7,-12,4,6,pal.bag,line); }
     },
   },
   table: {

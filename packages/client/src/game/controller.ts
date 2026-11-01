@@ -1,3 +1,5 @@
+import {townCenterWorld} from '@paradise-lost/sim';
+import {WorldConnection,WorldRefused,type OnlineDirectory,type PlayerOffer,type MailDelivery,type CenterReceipt,type PlayerJob,type TownTreasury,type LessonOffer,type PlayerLesson} from '../net/world.ts';
 /**
  * Client-side game controller: holds the town, turns player intents into sim commands,
  * walks the avatar to where an action needs it, saves, and tells the renderer and UI
@@ -30,6 +32,13 @@ import {
   tile,
   topLayerAt,
   walkable,
+  travelWorld,
+  type DailyCommand,
+  type ProductionCommand,
+  type AnimalCommand,
+  type WellbeingCommand,
+  type TravelCommand,
+  type CareerCommand,
   type ApplyResult,
   type Catalog,
   type Command,
@@ -78,9 +87,17 @@ export type Preview =
   | { kind: 'remove'; slot: Slot; layer: Layer; ok: boolean; message: string; dependents: string[] }
   | { kind: 'action'; action: Action };
 
-export type Panel = null | { kind: 'npc'; npcId: string; lines: string[] } | { kind: 'project'; projectId: string; note?: string } | { kind: 'kiosk' };
+type DailyIntent = DailyCommand extends infer T ? T extends DailyCommand ? Omit<T, 'id' | 'nowMs'> : never : never;
+type StaffingOrProduction = ProductionCommand | import('@paradise-lost/sim').StaffingCommand;
+type ProductionIntent = StaffingOrProduction extends infer T ? T extends StaffingOrProduction ? Omit<T, 'id' | 'nowMs'> : never : never;
+type AnimalIntent = AnimalCommand extends infer T ? T extends AnimalCommand ? Omit<T, 'id' | 'nowMs'> : never : never;
+type WellbeingIntent = WellbeingCommand extends infer T ? T extends WellbeingCommand ? Omit<T, 'id' | 'nowMs'> : never : never;
+type TravelIntent = TravelCommand extends infer T ? T extends TravelCommand ? Omit<T, 'id' | 'nowMs'> : never : never;
+type CareerIntent = CareerCommand extends infer T ? T extends CareerCommand ? Omit<T, 'id' | 'nowMs'> : never : never;
 
-export type Change = 'town' | 'tool' | 'preview' | 'style' | 'status' | 'panel' | 'walk' | 'clock' | 'mode' | 'credits';
+export type Panel = null | {kind:'lessons'} | {kind:'activities'} | {kind:'production';note?:string} | {kind:'shelter'} | { kind: 'animals'; note?: string; confirmSlaughter?: string } | { kind: 'wellbeing'; note?: string } | { kind: 'travel'; note?: string } | { kind: 'workshop'; note?: string } | { kind: 'npc'; npcId: string; lines: string[] } | { kind: 'project'; projectId: string; note?: string } | { kind: 'kiosk' };
+
+export type Change = 'focus' | 'location' | 'town' | 'tool' | 'preview' | 'style' | 'status' | 'panel' | 'walk' | 'clock' | 'mode' | 'credits';
 type Listener = (what: Change, data?: unknown) => void;
 
 const STEP_MS = 230;
@@ -106,16 +123,22 @@ export class Controller {
   private hadShelter: boolean;
   facing: Point = { x: 1, y: 0 };
 
+  private readonly baseWorld: World;
+
   constructor(
     public town: Town,
     public readonly catalog: Catalog,
-    public readonly world: World,
+    public world: World,
     private store: TownStore,
     public style: Style,
     private clock: () => number = Date.now,
   ) {
+    this.baseWorld = world;
+    this.world = travelWorld(world, town);
     this.hadShelter = hasShelter(town, catalog);
   }
+
+  focusPoint(point: Point) { this.emit('focus', point); }
 
   now(): number {
     return this.clock();
@@ -141,12 +164,154 @@ export class Controller {
 
   // ---------- commands ----------
 
+  lessonMaxPriceRC=200;
+  lessonOffers:LessonOffer[]=[];
+  playerLessons:PlayerLesson[]=[];
+  onlineTreasury:TownTreasury|null=null;
+  treasuryTownId:string|null=null;
+  centerDonation=false;
+  onlineCenter:{townId:string;revision:number;name:string}|null=null;
+  onlineJobs:PlayerJob[]=[];
+  onlineAnimals:{id:string;name:string;pet:boolean}[]=[];
+  onlineGardenBeds:{x:number;y:number;name:string}[]=[];
+  jobsTownId:string|null=null;
+  private ownPlotId='';
+  private centerPending:{command:Command;revision:number}|null=null;
+  async refreshCenter(){
+    if(!this.online||!this.onlineCenter||this.onlineBusy)return;
+    this.onlineBusy=true;
+    try{const r=await this.online.connection.social<CenterReceipt>('visitCenter',{townId:this.onlineCenter.townId,useOwnMaterials:this.centerDonation});this.town=r.state;this.onlineCenter.revision=r.revision;this.world=townCenterWorld(this.baseWorld,r.townId);this.emit('town',{commandType:'tick'});}
+    catch(e){this.setStatus(e instanceof Error?e.message:'Could not refresh town center','error');}
+    finally{this.onlineBusy=false;}
+  }
+  private async sendCenter(cmd:Command):Promise<ApplyResult>{
+    if(!this.online||!this.onlineCenter)return{ok:false,changed:false,reason:'Visit a center first'};
+    if(cmd.type==='tick')return{ok:true,changed:false};
+    if(!['move','place','remove'].includes(cmd.type))return{ok:false,changed:false,reason:'Return to your plot for this activity'};
+    if(this.onlineBusy)return{ok:false,changed:false,reason:'Waiting for town server'};
+    this.onlineBusy=true;
+    const context=this.onlineCenter,key=`center-pending:${this.ownPlotId}:${context.townId}`;
+    const pending=this.centerPending??{command:cmd.type==='place'?{...cmd,donate:this.centerDonation} as Command:cmd,revision:context.revision};
+    try{
+      await this.store.setMeta(key,JSON.stringify(pending));
+      const r=await this.online.connection.social<CenterReceipt>('centerCommand',{townId:context.townId,revision:pending.revision,requestKey:pending.command.id,command:pending.command,useOwnMaterials:this.centerDonation});
+      await this.store.setMeta(key,'');this.centerPending=null;this.town=r.state;context.revision=r.revision;this.world=townCenterWorld(this.baseWorld,context.townId);this.emit('town',{commandType:pending.command.type});
+      return pending.command.id===cmd.id?(r.result??{ok:true,changed:true}):{ok:false,changed:false,reason:'Previous center action recovered; try your new action again'};
+    }catch(e){
+      if(e instanceof WorldRefused&&e.status<500){await this.store.setMeta(key,'');this.centerPending=null;const fresh=await this.online.connection.social<CenterReceipt>('visitCenter',{townId:context.townId,useOwnMaterials:this.centerDonation});this.town=fresh.state;context.revision=fresh.revision;this.emit('location');this.emit('town');}
+      else this.centerPending=pending;
+      return{ok:false,changed:false,reason:e instanceof Error?e.message:'Town request interrupted'};
+    }finally{this.onlineBusy=false;}
+  }
+  onlineMailbox:MailDelivery[]=[];
+  giftRecipient:{id:string;name:string}|null=null;
+  onlineCreditBalance:number|null=null;
+  onlineOffers:PlayerOffer[]=[];
+  onlineTradeOwner:string|null=null;
+  visitingName:string|null=null;
+  onlineDirectory:OnlineDirectory|null=null;
+  async onlineAction(action:string,values:Record<string,unknown>={}){
+    if(!this.online||this.onlineBusy)return;
+    if(this.uncertainCommand){this.setStatus('Recover the pending world action before changing towns','warn');return;}
+    this.onlineBusy=true;
+    try{
+      if(action==='archiveLegacy'){
+        const legacy=await this.store.load('home');if(!legacy)throw new Error('No legacy browser save was found');
+        values={snapshot:legacy.town};
+      }
+      const result=await this.online.connection.social<{state?:Town;name?:string;offers?:PlayerOffer[];revision?:number;townId?:string;jobs?:PlayerJob[];gardenBeds?:{x:number;y:number;name:string}[];animals?:{id:string;name:string;pet:boolean}[];balance_rc?:number|string;tax_rate?:number;taxDue?:number;inventory?:Record<string,number>;ledger?:TownTreasury['ledger']}>(action,values);
+      if(action==='visitCenter'&&result.state&&result.townId&&result.revision!==undefined){
+        this.onlineCenter={townId:result.townId,name:result.name??'Town center',revision:result.revision};this.visitingName=null;this.town=result.state;this.world=townCenterWorld(this.baseWorld,result.townId);this.route=[];this.onArrive=null;this.preview={kind:'none'};
+        const saved=await this.store.getMeta(`center-pending:${this.ownPlotId}:${result.townId}`);this.centerPending=saved?JSON.parse(saved):null;this.emit('location');
+      }
+      if(action==='treasury'){this.onlineTreasury=result as TownTreasury;this.treasuryTownId=String(values.townId);}
+      if(['contributeTown','setTownTax','payTownTax'].includes(action)&&this.treasuryTownId)this.onlineTreasury=await this.online.connection.social<TownTreasury>('treasury',{townId:this.treasuryTownId});
+      if(action==='listJobs'){this.onlineJobs=result.jobs??[];this.onlineGardenBeds=result.gardenBeds??[];this.onlineAnimals=result.animals??[];this.jobsTownId=String(values.townId);}
+      if(['postJob','claimJob','releaseJob','completeJob','cancelJob'].includes(action)&&this.jobsTownId){const board=await this.online.connection.social<{jobs:PlayerJob[];gardenBeds:{x:number;y:number;name:string}[];animals:{id:string;name:string;pet:boolean}[]}>('listJobs',{townId:this.jobsTownId});this.onlineJobs=board.jobs;this.onlineGardenBeds=board.gardenBeds;this.onlineAnimals=board.animals;}
+      if(['lessonBoard','offerLesson','withdrawLesson','bookLesson','startLesson','completeLesson','cancelLesson'].includes(action)){const board=await this.online.connection.social<{offers:LessonOffer[];lessons:PlayerLesson[];pricing:{maxFeeRC:number}}>('lessonBoard',action==='lessonBoard'?values:{});this.lessonOffers=board.offers;this.playerLessons=board.lessons;this.lessonMaxPriceRC=board.pricing.maxFeeRC;}
+      if(action==='listTrades'){this.onlineOffers=result.offers??[];this.onlineTradeOwner=String(values.ownerId??this.onlineDirectory?.ownerId??'');}
+      if(['offerTrade','acceptTrade','cancelTrade'].includes(action)){const list=await this.online.connection.social<{offers:PlayerOffer[]}>('listTrades',this.onlineTradeOwner?{ownerId:this.onlineTradeOwner}:{});this.onlineOffers=list.offers;}
+      if(action==='visitPlot'&&result.state){this.onlineCenter=null;this.town=result.state;this.visitingName=result.name??'Neighbor';this.world=travelWorld(this.baseWorld,this.town);this.route=[];this.onArrive=null;this.emit('location');}
+      if(action==='returnHome'){
+        const home=await this.online.connection.load();if(!home.state||home.revision===undefined)throw new Error('Could not load your plot');
+        this.town=home.state;this.online.revision=home.revision;this.visitingName=null;this.onlineCenter=null;this.world=travelWorld(this.baseWorld,this.town);this.route=[];this.onArrive=null;this.emit('location');
+      }
+      if(!this.visitingName&&!this.onlineCenter&&action!=='returnHome'){const home=await this.online.connection.load();if(home.state&&home.revision!==undefined){this.town=home.state;this.online.revision=home.revision;this.world=travelWorld(this.baseWorld,this.town);}}
+      if(this.onlineCenter&&action!=='visitCenter'){const center=await this.online.connection.social<CenterReceipt>('visitCenter',{townId:this.onlineCenter.townId,useOwnMaterials:this.centerDonation});this.town=center.state;this.onlineCenter.revision=center.revision;}
+      if(['sendGift','mailbox','collectMail'].includes(action))this.onlineMailbox=(await this.online.connection.social<{deliveries:MailDelivery[]}>('mailbox')).deliveries;
+      this.onlineCreditBalance=(await this.online.connection.social<{balance:number}>('creditBalance')).balance;
+      this.onlineDirectory=await this.online.connection.social<OnlineDirectory>('directory',action==='directory'?values:{});
+      this.emit('town');this.openPanel({kind:['lessonBoard','offerLesson','withdrawLesson','bookLesson','startLesson','completeLesson','cancelLesson'].includes(action)?'lessons':'travel'});
+      if(action==='archiveLegacy')this.setStatus('Legacy progress archived on the server for migration review. It has not been added to online inventory.','ok');
+    }catch(error){this.setStatus(error instanceof Error?error.message:'World request failed','error');}
+    finally{this.onlineBusy=false;}
+  }
+  online: {connection:WorldConnection;revision:number} | null = null;
+  async connectOnline(connection:WorldConnection,revision:number){
+    this.online={connection,revision};this.ownPlotId=this.town.townId;
+    const pending=await this.store.getMeta(`online-pending:${this.town.townId}`);
+    if(pending)this.uncertainCommand=JSON.parse(pending) as Command;
+  }
+  private onlineBusy = false;
+  private uncertainCommand: Command | null = null;
+  async sendOnline(cmd:Command):Promise<ApplyResult>{
+    if(this.onlineCenter)return this.sendCenter(cmd);
+    if(this.visitingName)return {ok:false,changed:false,reason:'Return home to change your plot or inventory'};
+    if(!this.online)return {ok:false,changed:false,reason:'Online world unavailable'};
+    if(this.onlineBusy)return {ok:false,changed:false,reason:'Waiting for the world server'};
+    this.onlineBusy=true;
+    const sending=this.uncertainCommand??cmd;
+    try{
+      await this.store.setMeta(`online-pending:${this.town.townId}`,JSON.stringify(sending));
+      const receipt=await this.online.connection.command(sending.id,this.online.revision,sending);
+      await this.store.setMeta(`online-pending:${this.town.townId}`,'');
+      this.uncertainCommand=null;this.online.revision=receipt.revision;this.town=receipt.state;
+      this.world=travelWorld(this.baseWorld,this.town);
+      if(this.panel&&['production','animals','wellbeing','travel','workshop','project'].includes(this.panel.kind))this.panel={...this.panel,note:'Confirmed by the world server.'} as Panel;
+      if(receipt.result.events?.includes('travel:location')){this.route=[];this.onArrive=null;this.preview={kind:'none'};this.emit('location');}
+      this.emit('town',{commandType:sending.type});
+      if(receipt.result.events?.length)this.describeEvents(receipt.result.events);
+      if(sending.type==='talk')this.openNpcPanel(sending.npcId,receipt.result.events??[]);
+      this.announceShelter();
+      if(sending!==cmd)return {ok:false,changed:false,reason:'Previous action recovered. Try your new action again.'};
+      return receipt.result;
+    }catch(error){
+      if(error instanceof WorldRefused&&error.status<500){
+        this.uncertainCommand=null;await this.store.setMeta(`online-pending:${this.town.townId}`,'');
+        if(error.status===409){const fresh=await this.online.connection.load();if(fresh.state&&fresh.revision!==undefined){this.town=fresh.state;this.online.revision=fresh.revision;this.world=travelWorld(this.baseWorld,this.town);this.emit('location');this.emit('town');}}
+      }else this.uncertainCommand=sending;
+      const reason=error instanceof Error?error.message:'Connection interrupted';this.setStatus(reason,'error');
+      return {ok:false,changed:false,reason};
+    }finally{this.onlineBusy=false;}
+  }
+
   dispatch(cmd: Command): ApplyResult {
+    if(this.online){
+      if(this.visitingName){
+        if(cmd.type==='move')return apply(this.town,this.catalog,cmd,this.world);
+        return {ok:false,changed:false,reason:'Use trade offers to exchange goods here. Building changes require permission.'};
+      }
+      if(this.onlineBusy)return {ok:false,changed:false,reason:'Waiting for the world server'};
+      void this.sendOnline(cmd).then(r=>{if(!r.ok&&r.reason)this.setStatus(r.reason,'error');});
+      return {ok:true,changed:false};
+    }
+
     const result = apply(this.town, this.catalog, cmd, this.world);
     if (result.changed) {
+      if (result.events?.includes('travel:location')) {
+        this.route = [];
+        this.onArrive = null;
+        this.preview = { kind: 'none' };
+        this.pendingTouch = false;
+        this.justPlaced = null;
+        this.armedFill = null;
+        this.world = travelWorld(this.baseWorld, this.town);
+        this.hadShelter = hasShelter(this.town, this.catalog);
+        this.emit('location');
+      }
       if (cmd.type === 'move') this.saveSoon();
       else void this.store.save(this.town);
-      this.emit('town');
+      this.emit('town', {commandType:cmd.type});
     }
     if (result.events?.length) this.describeEvents(result.events);
     return result;
@@ -243,6 +408,7 @@ export class Controller {
 
   /** Save immediately and synchronously (before leaving the page to sign in). */
   flushSave() {
+    if(this.online)return;
     void this.store.save(this.town);
     this.store.flushSync();
   }
@@ -260,7 +426,7 @@ export class Controller {
     if (this.tool.mode === 'build') {
       const def = this.catalog[this.tool.pieceId];
       if (!def) return null;
-      const z = def.kind === 'foundation' ? 0 : FOUND_H;
+      const z = def.kind === 'foundation' || def.outdoor ? 0 : FOUND_H;
       return isEdgeKind(def.kind) ? edgeAt(sx, sy, z) : tileAt(sx, sy, z);
     }
     if (this.tool.mode === 'demolish') {
@@ -272,6 +438,7 @@ export class Controller {
     }
     // Play: people and tall things are clicked above the ground they stand on.
     const ground = tileAt(sx, sy, 0);
+    if (['dig', 'plant', 'water'].includes(this.tool.mode)) return ground;
     for (const z of [36, 18]) {
       const up = tileAt(sx, sy, z);
       if (this.npcAt(up.x, up.y) || this.siteAtLive(up.x, up.y)) return up;
@@ -412,7 +579,7 @@ export class Controller {
       const renew = site.refillMs ? ', more turns up over time' : '';
       return this.preflight(`Salvage the ${site.name.toLowerCase()}`, target, { type: 'salvage', id, siteId: site.id, nowMs: now }, `Salvage the ${site.name.toLowerCase()}: +${yields} (${left} left${renew})`);
     }
-    if (hasBrush(this.town, this.world, x, y)) return this.preflight('Clear brush', target, { type: 'clearBrush', id, x, y }, 'Clear the brush: +1 board (it grows back)');
+    if (hasBrush(this.town, this.world, x, y)) return this.preflight('Clear brush', target, { type: 'clearBrush', id, x, y }, 'Clear the brush: +1 board, +2 plant fiber (it grows back)');
     if (hasRubble(this.town, this.world, x, y)) return this.preflight('Clear rubble', target, { type: 'clearRubble', id, x, y }, 'Clear the rubble: +1 stone, +1 board');
     const tree = treeAt(this.town, this.world, x, y);
     if (tree) {
@@ -524,6 +691,14 @@ export class Controller {
 
   /** The renderer calls this as the avatar reaches each tile. */
   arrived(p: Point) {
+    if(this.online&&!this.visitingName){
+      if(this.onlineBusy)return;
+      void this.sendOnline({type:'move',id:newCommandId(),to:p}).then(r=>{
+        if(!r.ok){this.route=[];this.onArrive=null;this.emit('location');return;}
+        this.route.shift();if(this.route.length===0){const then=this.onArrive;this.onArrive=null;then?.();}
+        this.emit('walk');
+      });return;
+    }
     this.facing = { x: Math.sign(p.x - this.town.player.x), y: Math.sign(p.y - this.town.player.y) };
     const r = this.dispatch({ type: 'move', id: newCommandId(), to: p });
     if (!r.ok) {
@@ -542,7 +717,7 @@ export class Controller {
   }
 
   stepMs(): number {
-    return STEP_MS;
+    return this.online&&!this.visitingName?1000:STEP_MS;
   }
 
   /** Keyboard: one step in a direction, or face it if blocked. */
@@ -569,9 +744,9 @@ export class Controller {
     if (!def) return;
     const lines: string[] = [];
     for (const e of events) {
-      if (e.startsWith('npc:first_meet')) lines.push(...ROSA.firstMeet);
-      else if (e.startsWith('npc:chat_again')) lines.push(ROSA.chatAgain[0]!);
-      else if (e.startsWith('npc:chat')) lines.push(ROSA.greet(this.lineContext(npcId)));
+      if (e.startsWith('npc:first_meet')) lines.push(...(def.greeting ? [def.greeting] : ROSA.firstMeet));
+      else if (e.startsWith('npc:chat_again')) lines.push(def.greeting ?? ROSA.chatAgain[0]!);
+      else if (e.startsWith('npc:chat')) lines.push(def.greeting ?? ROSA.greet(this.lineContext(npcId)));
       else if (e.startsWith('npc:lesson')) lines.push(...ROSA.lesson, 'Tier 2 building pieces are unlocked.');
       else if (e.startsWith('npc:gift_liked')) lines.push(ROSA.giftLiked(e.split(':')[3] ?? ''));
       else if (e.startsWith('npc:gift')) lines.push(ROSA.gift(e.split(':')[3] ?? ''));
@@ -592,6 +767,46 @@ export class Controller {
       projectState: !st || st.startedMs == null ? ('not_started' as const) : st.completedMs != null ? ('done' as const) : ('active' as const),
       projectStage: project && st ? project.stages[st.stage]?.name : undefined,
     };
+  }
+
+  dailyAction(intent: DailyIntent) {
+    const r = this.dispatch({ ...intent, id: newCommandId(), nowMs: this.now() });
+    if (this.panel?.kind === 'npc') this.openPanel({ ...this.panel, lines: [r.ok ? 'Thank you. Here is your reward.' : (r.reason ?? 'Unable to deliver.')] });
+  }
+
+  productionAction(intent: ProductionIntent) {
+    const r = this.dispatch({ ...intent, id: newCommandId(), nowMs: this.now() });
+    this.openPanel({kind:'production',note:r.ok?(this.online?'Waiting for server confirmation…':'Done.'):r.reason});
+  }
+
+  animalAction(intent: AnimalIntent) {
+    const r = this.dispatch({ ...intent, id: newCommandId(), nowMs: this.now() });
+    this.openPanel({ kind: 'animals', note: r.ok ? (this.online?'Waiting for server confirmation…':'Done.') : r.reason });
+  }
+
+  wellbeingAction(intent: WellbeingIntent) {
+    const r = this.dispatch({ ...intent, id: newCommandId(), nowMs: this.now() });
+    this.openPanel({ kind: 'wellbeing', note: r.ok ? (this.online?'Waiting for server confirmation…':'Done.') : r.reason });
+  }
+
+  travelAction(intent: TravelIntent) {
+    if(this.online&&intent.type==='returnToPlot'){void this.onlineAction('returnHome');return;}
+    const r = this.dispatch({ ...intent, id: newCommandId(), nowMs: this.now() });
+    if (r.events?.includes('travel:location')) {
+      this.setMode('play');
+      this.setTool({ mode: 'walk' });
+    }
+    this.openPanel({ kind: 'travel', note: r.ok ? (this.online?'Waiting for server confirmation…':'Done.') : r.reason });
+  }
+
+  careerAction(intent: CareerIntent) {
+    const r = this.dispatch({ ...intent, id: newCommandId(), nowMs: this.now() });
+    this.openPanel({ kind: 'workshop', note: r.ok ? (this.online?'Waiting for server confirmation…':'Done.') : r.reason });
+  }
+
+  trade(npcId: string, offerId: string) {
+    const r = this.dispatch({ type: 'trade', id: newCommandId(), npcId, offerId, nowMs: this.now() });
+    this.openPanel({ kind: 'npc', npcId, lines: [r.ok ? 'Trade completed.' : (r.reason ?? 'Unable to trade.')] });
   }
 
   give(npcId: string, item: string) {

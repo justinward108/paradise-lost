@@ -7,9 +7,9 @@
    - Do not create feature branches, staging branches, or release branches unless explicitly instructed by the user.
    - Always verify `npm run check` and `npm run validate-content` before committing to `main`.
 
-2. **Publication Hold (`[skip ci]`)**:
-   - While the studio-wide publication hold is active, every commit on `main` **must** include `[skip ci]` in the commit message so Netlify does not auto-publish builds until explicitly released.
-   - Do not run `netlify deploy` or trigger production builds manually.
+2. **Publication status (owner updated 2026-10-31)**:
+   - The owner explicitly lifted the publication hold in the playtest implementation chat. `[skip ci]` is no longer required for that hold.
+   - Run the required checks before committing or releasing. Do not imply local changes are deployed; verify publication separately.
 
 3. **Portal Analytics & Privacy (`G-7BQ8R81F1M`)**:
    - Keep `<meta name="poorcamp-analytics-id" content="G-7BQ8R81F1M" />` and `<script defer data-portal-analytics src="/portal-analytics.js"></script>` intact in `packages/client/index.html` and `public/portal-analytics.js` / `packages/client/public/portal-analytics.js`.

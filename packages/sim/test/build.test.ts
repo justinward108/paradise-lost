@@ -244,3 +244,24 @@ describe('save snapshots', () => {
     expect(() => decodeSnapshot(encodeSnapshot(t, 1))).toThrow(/newer version/);
   });
 });
+
+describe('shelter rebuilding regressions', () => {
+  it('recognizes a shelter after each type of part is removed and restored', () => {
+    for (const part of ['wall', 'door', 'floor', 'roof'] as const) {
+      const t = newTown();
+      buildRoom(t);
+      expect(hasShelter(t, catalog)).toBe(true);
+      const slot = part === 'wall' ? edge(2,2,'n') : part === 'door' ? edge(2,4,'n') : tile(2,2);
+      const layer = part === 'door' ? 'wall' : part;
+      expect(apply(t,catalog,{type:'remove',id:id(),slot,layer,cascade:true}).ok).toBe(true);
+      expect(hasShelter(t,catalog)).toBe(false);
+      // Restore all pieces, including dependents removed by demolition.
+      if (!(slotKey(tile(2,2),'floor') in t.pieces)) expect(place(t,'floor',tile(2,2)).ok).toBe(true);
+      for (const w of [edge(2,2,'n'),edge(3,2,'n'),edge(2,4,'n'),edge(3,4,'n'),edge(2,2,'w'),edge(2,3,'w'),edge(4,2,'w'),edge(4,3,'w')]) {
+        if (!(slotKey(w,'wall') in t.pieces)) expect(place(t,w.x===2&&w.y===4&&w.dir==='n'?'door':'wall',w).ok).toBe(true);
+      }
+      for (const [x,y] of [[2,2],[3,2],[2,3],[3,3]]) if (!(slotKey(tile(x!,y!),'roof') in t.pieces)) expect(place(t,'roof',tile(x!,y!)).ok).toBe(true);
+      expect(hasShelter(t,catalog)).toBe(true);
+    }
+  });
+});

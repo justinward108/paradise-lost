@@ -50,6 +50,7 @@ export interface PieceDef {
   category: string;
   /** Furniture that blocks walking (a crate does; a bedroll doesn't). */
   solid?: boolean;
+  outdoor?: boolean;
 }
 
 export type Catalog = Readonly<Record<string, PieceDef>>;
@@ -62,6 +63,8 @@ export interface PlacedPiece {
 
 /** A tilled garden bed tile. */
 export interface Soil {
+  /** One harvest only; consumed when the planted crop is collected. */
+  harvestBoost?: 1 | 2;
   tilledMs: number;
   /** Real time the bed was last weeded (weeds grow in real hours). */
   lastWeededMs: number;
@@ -69,6 +72,8 @@ export interface Soil {
 
 /** A crop growing in a bed. */
 export interface Crop {
+  /** Distinguishes replanted crops for narrowly scoped work contracts. */
+  plantingId?: string;
   cropId: string;
   /** Ambient day it was planted, or last harvested for perennials. */
   sinceDay: number;
@@ -126,6 +131,18 @@ export const SCHEMA_VERSION = 4 as const;
 
 /** Everything needed to restore a town. This is exactly what gets saved. */
 export interface Town {
+  staffing?: import('./staffing.ts').StaffingState;
+  wardrobe?: import('./productionActivities.ts').Wardrobe;
+  mining?: {day:number;used:number};
+  privatePlot?: {size:number};
+  daily?: import('./daily.ts').DailyState;
+  animals?: import('./animals.ts').AnimalState;
+  wellbeing?: import('./wellbeing.ts').Wellbeing;
+  waterSource?: import('./wellbeing.ts').WaterSource;
+  /** Device-local towns, home plot and current visit. Inventory/progression stay portable. */
+  travel?: import('./travel.ts').TravelState;
+  /** Optional additive state: old v4 saves begin with no learned trades. */
+  career?: import('./progression.ts').CareerState;
   schemaVersion: typeof SCHEMA_VERSION;
   townId: string;
   /** Seed for deterministic randomness. */

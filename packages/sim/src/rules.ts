@@ -95,6 +95,7 @@ export function isSupported(
       return sides.some((t) => slotKey(t, 'floor') in pieces) ? null : 'Walls need a floor on at least one side';
     }
     case 'furniture':
+      if (def.outdoor && s.kind === 'tile' && s.level === 0) return null;
       return s.kind === 'tile' && slotKey(s, 'floor') in pieces ? null : 'Needs a floor';
     case 'roof': {
       if (s.kind !== 'tile') return 'Roofs go on a tile';

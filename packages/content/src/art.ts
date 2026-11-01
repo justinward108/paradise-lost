@@ -1,3 +1,4 @@
+import {RESOURCE_PLANT_ART} from './resourceExpansion.ts';
 /**
  * Art manifest: how each object looks in each visual style (GDD §20.2).
  *
@@ -20,7 +21,7 @@ export const GENERATORS = [
   'terrain', 'water', 'bridge', 'soil',
   'tree', 'bush', 'rubble', 'carport', 'rockpile', 'store', 'debris', 'crop', 'weeds', 'person',
   'deadtree', 'stump', 'ruin', 'carwreck', 'smallrubble', 'marker', 'crater',
-  'table', 'chair', 'lantern', 'rug', 'kiosk',
+  'table', 'chair', 'lantern', 'rug', 'kiosk', 'sofa', 'bench', 'planter',
 ] as const;
 export type GeneratorName = (typeof GENERATORS)[number];
 
@@ -169,6 +170,10 @@ const STAGES = ['s0', 's1', 's2', 's3'];
 
 /** Objects that stand on the map (trees, sites, crops, people). */
 export const objectArt: ArtManifest = {
+  ...Object.fromEntries(Object.entries(RESOURCE_PLANT_ART).map(([id,params])=>['crop_'+id,both(
+    e('crop',{leaf:'#4e913a',dark:'#30642a',stake:'#c8a878',...params},STAGES),
+    e('crop',{leaf:'#85b36b',dark:'#5c8a4e',stake:'#e0c49a',...params},STAGES)
+  )])),
   tree: both(
     e('tree', { trunk: '#5a4128', leaf: '#2f6b2a', light: '#4c8a3c', dark: '#1f4a1c' }, ['r0', 'r1']),
     e('tree', { trunk: '#7d6247', leaf: '#6f9b52', light: '#93b872', dark: '#557c3d' }, ['r0', 'r1']),
@@ -255,3 +260,20 @@ export const objectArt: ArtManifest = {
     e('person', { skin: '#c08e6a', shirt: '#cf7d96', pants: '#7a8a66', hair: '#ececec', line: '#3a2e26' }, ONE),
   ),
 };
+
+// Role visitors are prototype game content, not approved canonical character references.
+objectArt.visitor_carpenter = both(e('person', {...objectArt.player!.pixel.palette,shirt:'#9b6d35'},ONE),e('person',{...objectArt.player!.storybook.palette,shirt:'#b58a57'},ONE));
+objectArt.visitor_seed_trader = both(e('person',{...objectArt.player!.pixel.palette,shirt:'#547e40'},ONE),e('person',{...objectArt.player!.storybook.palette,shirt:'#83a56a'},ONE));
+
+art.masonry_wall=both(e('wall',{...lumberPx,...blockPx,...glassPx,...doorPx,leaf:'#4f7d2f'},['n','w']),e('wall',{...lumberSb,...blockSb,...glassSb,...doorSb,leaf:'#86a85f'},['n','w']));
+art.stone_floor=both(e('floor',{...lumberPx,...blockPx,...glassPx,...doorPx,leaf:'#4f7d2f'},['r0']),e('floor',{...lumberSb,...blockSb,...glassSb,...doorSb,leaf:'#86a85f'},['r0']));
+art.shop_window=both(e('window',{...lumberPx,...blockPx,...glassPx,...doorPx,leaf:'#4f7d2f'},['n','w']),e('window',{...lumberSb,...blockSb,...glassSb,...doorSb,leaf:'#86a85f'},['n','w']));
+art.civic_door=both(e('door',{...lumberPx,...blockPx,...glassPx,...doorPx,leaf:'#4f7d2f'},['n','w']),e('door',{...lumberSb,...blockSb,...glassSb,...doorSb,leaf:'#86a85f'},['n','w']));
+art.clinic_wall=both(e('wall',{...lumberPx,...blockPx,...glassPx,...doorPx,leaf:'#4f7d2f'},['n','w']),e('wall',{...lumberSb,...blockSb,...glassSb,...doorSb,leaf:'#86a85f'},['n','w']));
+art.hospital_wall=both(e('wall',{...lumberPx,...blockPx,...glassPx,...doorPx,leaf:'#4f7d2f'},['n','w']),e('wall',{...lumberSb,...blockSb,...glassSb,...doorSb,leaf:'#86a85f'},['n','w']));
+art.pharmacy_window=both(e('window',{...lumberPx,...blockPx,...glassPx,...doorPx,leaf:'#4f7d2f'},['n','w']),e('window',{...lumberSb,...blockSb,...glassSb,...doorSb,leaf:'#86a85f'},['n','w']));
+art.pet_store_window=both(e('window',{...lumberPx,...blockPx,...glassPx,...doorPx,leaf:'#4f7d2f'},['n','w']),e('window',{...lumberSb,...blockSb,...glassSb,...doorSb,leaf:'#86a85f'},['n','w']));
+art.sofa=both(e('sofa',{...lumberPx,...blockPx,...glassPx,...doorPx,leaf:'#4f7d2f'},['r0', 'r1']),e('sofa',{...lumberSb,...blockSb,...glassSb,...doorSb,leaf:'#86a85f'},['r0', 'r1']));
+art.cabinet=both(e('crate',{...lumberPx,...blockPx,...glassPx,...doorPx,leaf:'#4f7d2f'},['r0']),e('crate',{...lumberSb,...blockSb,...glassSb,...doorSb,leaf:'#86a85f'},['r0']));
+art.yard_bench=both(e('bench',{...lumberPx,...blockPx,...glassPx,...doorPx,leaf:'#4f7d2f'},['r0', 'r1']),e('bench',{...lumberSb,...blockSb,...glassSb,...doorSb,leaf:'#86a85f'},['r0', 'r1']));
+art.yard_planter=both(e('planter',{...lumberPx,...blockPx,...glassPx,...doorPx,leaf:'#4f7d2f'},['r0']),e('planter',{...lumberSb,...blockSb,...glassSb,...doorSb,leaf:'#86a85f'},['r0']));

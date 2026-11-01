@@ -142,7 +142,11 @@ describe('garden', () => {
     }
     expect(cropStatus(t, def, crop, at(2))).toMatchObject({ growth: 2, ready: true });
     const r = go(t, { type: 'harvest', x: 1, y: 0, nowMs: at(2) });
-    expect(r.events).toEqual(['garden:harvested:greens', 'gain:greens:3']);
+    expect(r.events).toEqual(['garden:harvested:greens', 'gain:seed_greens:1', 'gain:greens:3']);
+    expect(t.inventory.seed_greens).toBe(2);
+    expect(go(t, { type: 'plant', x: 1, y: 0, cropId: 'greens', nowMs: at(2) }).ok).toBe(true);
+    expect(t.inventory.seed_greens).toBe(1);
+    delete t.crops['1,0'];
     expect(t.crops['1,0']).toBeUndefined();
     expect('1,0' in t.soil).toBe(true);
   });

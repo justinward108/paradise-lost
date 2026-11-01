@@ -21,6 +21,9 @@ const button = (label: string, onClick: () => void, disabled = false, cls = '') 
 };
 
 const GROUPS: [string, string][] = [
+  ['learning', 'Learning and teacher supplies'],
+  ['supplies', 'Everyday supplies'],
+  ['pets', 'Pet supplies'],
   ['seeds', 'Seeds and plants'],
   ['materials', 'Building materials'],
   ['tier2', 'Lumber and block'],

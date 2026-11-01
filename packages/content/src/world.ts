@@ -1,3 +1,5 @@
+import {RESOURCE_CROPS,RESOURCE_ITEMS,RESOURCE_FOODS,RESOURCE_SEED_TRADES} from './resourceExpansion.ts';
+import {EXPANDED_ITEMS,EXPANDED_FOODS} from './catalogExpansion.ts';
 /**
  * The starter map (Sprint 2): the player's lot, a stream with a footbridge, the
  * neighbour's yard and house, salvage sites, a lava-rock field, and a washed-out path
@@ -11,6 +13,8 @@
  * crops and anything culturally specific need the review in GDD §4.4 before release.
  */
 import { edge, mulberry32, hashString, tile, type CropDef, type PlacedPiece, type World } from '@paradise-lost/sim';
+
+import { workshop } from './workshop.ts';
 
 const W = 34;
 const H = 34;
@@ -188,6 +192,7 @@ function neighbourHouse(): PlacedPiece[] {
 }
 
 export const crops: Record<string, CropDef> = {
+  ...RESOURCE_CROPS,
   greens: { id: 'greens', name: 'Leafy greens', seed: 'seed_greens', days: 2, yields: { greens: 3 } },
   sweet_potato: { id: 'sweet_potato', name: 'Sweet potato', seed: 'slip_sweet_potato', days: 5, yields: { sweet_potato: 4 } },
   papaya: { id: 'papaya', name: 'Papaya', seed: 'seed_papaya', days: 8, regrowDays: 3, yields: { papaya: 2 } },
@@ -210,7 +215,7 @@ export const world: World = {
       id: NEIGHBOUR_ID,
       name: 'Auntie Rosa',
       schedule: [
-        { fromHour: 6, x: 28, y: 11 }, // her garden
+        { fromHour: 6, x: 28, y: 11, patrol: [{x:28,y:11},{x:27,y:11},{x:27,y:12},{x:28,y:12}] }, // her garden
         { fromHour: 11, x: 25, y: 8 }, // porch
         { fromHour: 14, x: 9, y: 20, whileProject: PATH_PROJECT_ID }, // helping at the path
         { fromHour: 18, x: 25, y: 8 }, // porch
@@ -218,10 +223,34 @@ export const world: World = {
       ],
       likes: ['papaya', 'sweet_potato', 'banana'],
       firstGift: { seed_greens: 6, slip_sweet_potato: 3, seed_papaya: 2 },
+      // Initial playtest prices: barter spends local goods, never account credits.
+      trades: [
+        { id: 'buy_pet_food', cost: { greens: 3 }, gives: { pet_food: 2 } },
+        { id: 'sell_eggs', cost: { eggs: 2 }, gives: { boards: 2 } },
+        { id: 'sell_milk', cost: { milk: 2 }, gives: { boards: 3 } },
+        { id: 'sell_chicken_meat', cost: { chicken_meat: 1 }, gives: { boards: 2 } },
+        { id: 'sell_beef', cost: { beef: 1 }, gives: { boards: 3 } },
+        { id: 'drinking_water', cost: { boards: 1 }, gives: { water: 2 } },
+        { id: 'learning_voucher', cost: { boards: 2 }, gives: { learning_credit: 1 } },
+        { id: 'learning_voucher_food', cost: { greens: 3 }, gives: { learning_credit: 1 } },
+        { id: 'greens_seed', cost: { boards: 2 }, gives: { seed_greens: 1 } },
+        { id: 'potato_slip', cost: { stone: 3 }, gives: { slip_sweet_potato: 1 } },
+        { id: 'papaya_seed', cost: { boards: 4 }, gives: { seed_papaya: 1 } },
+        { id: 'food_for_boards', cost: { greens: 3 }, gives: { boards: 2 } },
+        { id: 'fruit_for_stone', cost: { papaya: 2 }, gives: { stone: 2 } },
+      ],
       lessonAt: 20,
       lessonGift: { lumber: 24, block: 8 },
       lessonTier: 2,
     },
+    { id:'visitor_carpenter', name:'Visiting carpenter', greeting:'I can trade furniture kits for some of your harvest. ',
+      schedule:[{fromHour:7,x:15,y:18,patrol:[{x:15,y:18},{x:16,y:18},{x:16,y:17},{x:15,y:17}]},{fromHour:20,x:15,y:18,inside:true}],
+      likes:['papaya'], firstGift:{}, lessonAt:101,lessonGift:{},lessonTier:1,
+      trades:[{id:'chair_for_food',cost:{greens:5},gives:{kit_chair:1}},{id:'table_for_food',cost:{papaya:5},gives:{kit_table:1}}]},
+    { id:'visitor_seed_trader', name:'Visiting seed trader', greeting:'Bring surplus food or boards and I can supply planting material.',
+      schedule:[{fromHour:7,x:10,y:18,patrol:[{x:10,y:18},{x:11,y:18},{x:11,y:17},{x:10,y:17}]},{fromHour:20,x:10,y:18,inside:true}],
+      likes:['sweet_potato'],firstGift:{},lessonAt:101,lessonGift:{},lessonTier:1,
+      trades:[{id:'bean_seed_stock',cost:{boards:4},gives:{seed_long_beans:2}},{id:'banana_keiki_stock',cost:{boards:6},gives:{keiki_banana:1}},...RESOURCE_SEED_TRADES,{id:'seeds_for_greens',cost:{greens:2},gives:{seed_greens:2}},{id:'slips_for_food',cost:{sweet_potato:2},gives:{slip_sweet_potato:2}},{id:'seeds_for_boards',cost:{boards:2},gives:{seed_papaya:1}}]},
   ],
   projects: [
     {
@@ -239,6 +268,33 @@ export const world: World = {
   ],
   fixedPieces: neighbourHouse(),
   kiosk: KIOSK,
+  workshop,
+  animalDefs: {
+    dog: {name:'Dog',pet:true,cost:{boards:12,cloth:3},sale:{boards:6},feed:'pet_food',toy:'dog_toy'},
+    cat: {name:'Cat',pet:true,cost:{boards:10,cloth:3},sale:{boards:5},feed:'pet_food',toy:'cat_toy'},
+    chicken: {name:'Chicken',pet:false,cost:{boards:8,stone:4},sale:{boards:4},feed:'farm_feed',produce:{eggs:2},meat:{chicken_meat:2}},
+    cow: {name:'Cow',pet:false,cost:{boards:30,stone:12},sale:{boards:15},feed:'farm_feed',produce:{milk:2},meat:{beef:6}},
+  },
+  wellbeing: { foods: {
+    ...EXPANDED_FOODS,
+    ...RESOURCE_FOODS,
+    milk: { food: 12, water: 18, happiness: 3 },
+    meal_eggs: { food: 45, water: 5, happiness: 7, focusMs: 300_000 },
+    meal_chicken: { food: 55, water: 8, happiness: 9, focusMs: 420_000 },
+    meal_beef: { food: 60, water: 5, happiness: 9, focusMs: 420_000 },
+    meal_stew: { food: 42, water: 22, happiness: 6, focusMs: 360_000 },
+    meal_beans: { food: 38, water: 10, happiness: 6, focusMs: 300_000 },
+    meal_breakfast: { food: 65, water: 12, happiness: 10, focusMs: 480_000 },
+    drink_smoothie: { food: 25, water: 35, happiness: 10, focusMs: 360_000 },
+    water: { food: 0, water: 35, happiness: 0 },
+    greens: { food: 12, water: 3, happiness: 1 },
+    sweet_potato: { food: 22, water: 0, happiness: 1 },
+    papaya: { food: 15, water: 10, happiness: 2 },
+    long_beans: { food: 15, water: 2, happiness: 1 },
+    banana: { food: 20, water: 3, happiness: 2 },
+    meal_salad: { food: 40, water: 12, happiness: 7, focusMs: 300_000 },
+    drink_fruit: { food: 10, water: 40, happiness: 8, focusMs: 300_000 },
+  } },
   chop: {
     // Living trees are invasive albizia (GDD 9.2: native forest is never harvestable).
     T: { name: 'albizia tree', yields: { boards: 3 }, regrowMs: 24 * HOUR },
@@ -248,13 +304,69 @@ export const world: World = {
     brushEveryMs: 4 * HOUR,
     brushPerTime: 2,
     brushCap: 16,
-    brushYields: { boards: 1 },
+    brushYields: { boards: 1, plant_fiber: 2 },
     rubbleYields: { stone: 1, boards: 1 },
   },
 };
 
 /** Display names for everything that can be in an inventory. */
 export const ITEMS: Readonly<Record<string, { name: string; kind: 'material' | 'seed' | 'food' }>> = {
+  ...EXPANDED_ITEMS,
+  ...RESOURCE_ITEMS,
+  compost: {name:'Garden compost',kind:'material'},
+  fertilizer: {name:'Mineral fertilizer',kind:'material'},
+  tool_pick: { name: 'Mining pick', kind: 'material' },
+  tool_smelter: { name: 'Smelter', kind: 'material' },
+  metal_ore: { name: 'Metal ore', kind: 'material' },
+  silica: { name: 'Silica', kind: 'material' },
+  metal: { name: 'Refined metal', kind: 'material' },
+  glass: { name: 'Construction glass', kind: 'material' },
+  part_masonry: { name: 'Masonry wall parts', kind: 'material' },
+  part_shopfront: { name: 'Shopfront parts', kind: 'material' },
+  part_civic: { name: 'Civic building parts', kind: 'material' },
+  kit_sofa: { name: 'Sofa kit', kind: 'material' },
+  kit_cabinet: { name: 'Cabinet kit', kind: 'material' },
+  kit_yard_bench: { name: 'Yard bench kit', kind: 'material' },
+  kit_planter: { name: 'Decorative planter kit', kind: 'material' },
+  clothing_shirt: { name: 'Shirt', kind: 'material' },
+  clothing_trousers: { name: 'Trousers', kind: 'material' },
+  clothing_shoes: { name: 'Shoes', kind: 'material' },
+  clothing_hat: { name: 'Hat', kind: 'material' },
+  clothing_bag: { name: 'Bag', kind: 'material' },
+  clothing_outfit: { name: 'Complete outfit', kind: 'material' },
+  farm_feed: { name: 'Farm animal feed', kind: 'material' },
+  pet_food: { name: 'Pet food', kind: 'material' },
+  dog_toy: { name: 'Dog toy', kind: 'material' },
+  cat_toy: { name: 'Cat toy', kind: 'material' },
+  care_medicine: { name: 'Fictional care medicine', kind: 'material' },
+  pet_medicine: { name: 'Fictional veterinary medicine', kind: 'material' },
+  eggs: { name: 'Eggs', kind: 'food' },
+  milk: { name: 'Milk', kind: 'food' },
+  chicken_meat: { name: 'Chicken meat', kind: 'food' },
+  beef: { name: 'Beef', kind: 'food' },
+  meal_stew: { name: 'Vegetable stew', kind: 'food' },
+  meal_beans: { name: 'Garden bean plate', kind: 'food' },
+  meal_breakfast: { name: 'Milk-and-egg breakfast', kind: 'food' },
+  drink_smoothie: { name: 'Fruit smoothie', kind: 'food' },
+  meal_eggs: { name: 'Egg meal', kind: 'food' },
+  meal_chicken: { name: 'Chicken meal', kind: 'food' },
+  meal_beef: { name: 'Beef meal', kind: 'food' },
+  game_console: { name: 'Video game system', kind: 'material' },
+  video_game: { name: 'Video game cartridge', kind: 'material' },
+  water: { name: 'Water', kind: 'material' },
+  learning_credit: { name: 'Learning voucher', kind: 'material' },
+  plant_fiber: { name: 'Plant fiber', kind: 'material' },
+  tool_saw: { name: 'Saw', kind: 'material' },
+  tool_loom: { name: 'Loom', kind: 'material' },
+  tool_electronics: { name: 'Electronics toolkit', kind: 'material' },
+  phone_parts: { name: 'Phone parts', kind: 'material' },
+  computer_parts: { name: 'Computer parts', kind: 'material' },
+  boat_parts: { name: 'Boat parts', kind: 'material' },
+  phone: { name: 'Phone', kind: 'material' },
+  computer: { name: 'Computer', kind: 'material' },
+  boat: { name: 'Boat', kind: 'material' },
+  meal_salad: { name: 'Garden salad', kind: 'food' },
+  drink_fruit: { name: 'Fruit drink', kind: 'food' },
   boards: { name: 'Boards', kind: 'material' },
   roofing: { name: 'Roofing', kind: 'material' },
   cloth: { name: 'Cloth', kind: 'material' },

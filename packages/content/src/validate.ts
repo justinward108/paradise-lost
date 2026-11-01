@@ -73,6 +73,52 @@ export function validateWorld(
   m.rows.forEach((r, i) => r.length !== m.width && problems.push(`map row ${i}: ${r.length} columns, expected ${m.width}`));
 
   const known = (id: string, where: string) => !(id in items) && problems.push(`${where}: unknown item "${id}"`);
+  if (world.workshop) {
+    const def = world.workshop;
+    const amounts = (values: Record<string, number>, where: string) => {
+      if (!Object.keys(values).length) problems.push(`${where}: empty goods list`);
+      for (const [id, qty] of Object.entries(values)) {
+        known(id, where);
+        if (!Number.isSafeInteger(qty) || qty <= 0) problems.push(`${where}: invalid amount for ${id}`);
+      }
+    };
+    known('learning_credit', 'training');
+    for (const id of Object.keys(def.skills)) {
+      const seen = new Set<string>();
+      let subject: string | undefined = id;
+      while(subject) {
+        if(seen.has(subject)){problems.push(`skill ${id}: cyclic prerequisite`);break;}
+        seen.add(subject);
+        if(!Object.hasOwn(def.skills,subject)){problems.push(`skill ${id}: unknown prerequisite ${subject}`);break;}
+        subject=def.skills[subject]!.prerequisite;
+      }
+    }
+
+    for (const [id, recipe] of Object.entries(def.recipes)) {
+      if (!Object.hasOwn(def.skills, recipe.skill)) problems.push(`recipe ${id}: unknown skill`);
+      if (!Number.isSafeInteger(recipe.xp) || recipe.xp < 0 || recipe.xp > 30) problems.push(`recipe ${id}: invalid experience requirement`);
+      if (!Number.isSafeInteger(recipe.learnCost) || recipe.learnCost <= 0) problems.push(`recipe ${id}: invalid learning cost`);
+      if (!Number.isSafeInteger(recipe.durationMs) || recipe.durationMs <= 0) problems.push(`recipe ${id}: invalid duration`);
+      if (recipe.tool) known(recipe.tool, `recipe ${id} tool`);
+      amounts(recipe.cost, `recipe ${id} inputs`);
+      amounts(recipe.gives, `recipe ${id} outputs`);
+    }
+  }
+  for (const n of world.npcs) {
+    const ids = new Set<string>();
+    for (const offer of n.trades ?? []) {
+      if (ids.has(offer.id)) problems.push(`npc ${n.id}: duplicate trade ${offer.id}`);
+      ids.add(offer.id);
+      for (const list of [offer.cost, offer.gives]) {
+        if (!Object.keys(list).length) problems.push(`trade ${offer.id}: empty goods list`);
+        for (const [id, qty] of Object.entries(list)) {
+          known(id, `trade ${offer.id}`);
+          if (!Number.isSafeInteger(qty) || qty <= 0) problems.push(`trade ${offer.id}: invalid amount`);
+        }
+      }
+    }
+  }
+
   for (const s of world.sites) for (const id of Object.keys(s.yields)) known(id, `site ${s.id}`);
   for (const c of Object.values(world.crops)) {
     known(c.seed, `crop ${c.id}`);
