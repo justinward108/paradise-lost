@@ -680,3 +680,42 @@ function hardenEdges(ctx: CanvasRenderingContext2D, canvas: HTMLCanvasElement): 
   for (let i = 3; i < d.length; i += 4) d[i] = d[i]! >= 110 ? 255 : 0;
   ctx.putImageData(img, 0, 0);
 }
+
+function nonEmptyBounds(ctx: CanvasRenderingContext2D, w: number, h: number): { x: number; y: number; w: number; h: number } | null {
+  const data = ctx.getImageData(0, 0, w, h).data;
+  let minX = w, minY = h, maxX = -1, maxY = -1;
+  for (let y = 0; y < h; y++) {
+    for (let x = 0; x < w; x++) {
+      if ((data[(y * w + x) * 4 + 3] ?? 0) > 16) {
+        if (x < minX) minX = x;
+        if (x > maxX) maxX = x;
+        if (y < minY) minY = y;
+        if (y > maxY) maxY = y;
+      }
+    }
+  }
+  if (maxX < minX || maxY < minY) return null;
+  return { x: minX, y: minY, w: maxX - minX + 1, h: maxY - minY + 1 };
+}
+
+export function paintGeneratedImageOntoCanvas(canvas: HTMLCanvasElement, img: HTMLImageElement, style: Style): boolean {
+  if (!img.naturalWidth || !img.naturalHeight) return false;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return false;
+  const dstBox = nonEmptyBounds(ctx, canvas.width, canvas.height) ?? { x: 0, y: 0, w: canvas.width, h: canvas.height };
+  const tmp = document.createElement('canvas');
+  tmp.width = img.naturalWidth;
+  tmp.height = img.naturalHeight;
+  const tctx = tmp.getContext('2d');
+  if (!tctx) return false;
+  tctx.drawImage(img, 0, 0);
+  const srcBox = nonEmptyBounds(tctx, tmp.width, tmp.height);
+  if (!srcBox) return false;
+  ctx.setTransform(1, 0, 0, 1, 0, 0);
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.imageSmoothingEnabled = style !== 'pixel';
+  ctx.drawImage(tmp, srcBox.x, srcBox.y, srcBox.w, srcBox.h, dstBox.x, dstBox.y, dstBox.w, dstBox.h);
+  if (style === 'pixel') hardenEdges(ctx, canvas);
+  return true;
+}
+

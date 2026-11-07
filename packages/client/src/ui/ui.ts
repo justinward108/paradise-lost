@@ -7,6 +7,7 @@ import {updateJobClocks} from './jobBoard.ts';
 import { art, catalog, crops, ITEMS, pieceOrder, requiredFrames, type Style } from '@paradise-lost/content';
 import { shelterReport, dailyRequest, dailyState, ambientTime, friendshipLevel, goals, helperLabour, materialsMet } from '@paradise-lost/sim';
 import { drawFrame } from '../art/generate.ts';
+import { resolveGeneratedAssetUrl } from '../art/generatedManifest.ts';
 import { closeHelp, isHelpOpen, showHelp, Tips } from './help.ts';
 import { isFeedbackOpen, showFeedback } from './feedback.ts';
 import {productionPanel} from './productionPanel.ts';
@@ -246,9 +247,10 @@ export function mountUi(root: HTMLElement, ctrl: Controller, hooks: UiHooks): Ti
   // ----- renderers -----
   function renderThumbs() {
     for (const [id, b] of pieceButtons) {
-      const d = drawFrame(art[id]![ctrl.style], ctrl.style, requiredFrames(catalog[id]!)[0]!, `thumb:${id}`);
+      const frame = requiredFrames(catalog[id]!)[0]!;
+      const d = drawFrame(art[id]![ctrl.style], ctrl.style, frame, `thumb:${id}`);
       const img = b.querySelector('img')!;
-      img.src = d.canvas.toDataURL();
+      img.src = resolveGeneratedAssetUrl('pieces', id, ctrl.style, frame) ?? d.canvas.toDataURL();
       img.style.width = `${d.canvas.width * d.displayScale * 0.6}px`;
     }
   }

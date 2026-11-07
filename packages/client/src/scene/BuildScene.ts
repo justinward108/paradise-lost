@@ -20,7 +20,8 @@ import {
   type Point,
   type Slot,
 } from '@paradise-lost/sim';
-import { drawFrame } from '../art/generate.ts';
+import { drawFrame, paintGeneratedImageOntoCanvas } from '../art/generate.ts';
+import { resolveGeneratedAssetUrl } from '../art/generatedManifest.ts';
 import { FOUND_H, slotAnchor, slotDepth, toScreen, TW, TH, WALL_H } from '../iso.ts';
 import type { Controller } from '../game/controller.ts';
 
@@ -149,18 +150,28 @@ export class BuildScene extends Phaser.Scene {
     return `${style}:${id}:${frame}`;
   }
 
-  private addTexture(key: string, entry: ArtEntry, style: Style, frame: string) {
+  private addTexture(key: string, entry: ArtEntry, style: Style, frame: string, assetUrl?: string | null) {
     const d = drawFrame(entry, style, frame, key);
     const t = this.textures.addCanvas(key, d.canvas);
     t?.setFilter(style === 'pixel' ? Phaser.Textures.FilterMode.NEAREST : Phaser.Textures.FilterMode.LINEAR);
     this.tex.set(key, { originX: d.originX, originY: d.originY, displayScale: d.displayScale });
+    if (assetUrl && typeof Image !== 'undefined') {
+      const img = new Image();
+      img.decoding = 'async';
+      img.onload = () => {
+        if (paintGeneratedImageOntoCanvas(d.canvas, img, style)) {
+          t?.refresh();
+        }
+      };
+      img.src = assetUrl;
+    }
   }
 
   private generateTextures() {
     for (const style of STYLES) {
-      for (const [id, e] of Object.entries(art)) for (const f of e[style].frames) this.addTexture(this.key(id, f, style), e[style], style, f);
-      for (const [id, e] of Object.entries(terrainArt)) this.addTexture(this.key(`terrain.${id}`, 'r0', style), e[style], style, 'r0');
-      for (const [id, e] of Object.entries(objectArt)) for (const f of e[style].frames) this.addTexture(this.key(`obj.${id}`, f, style), e[style], style, f);
+      for (const [id, e] of Object.entries(art)) for (const f of e[style].frames) this.addTexture(this.key(id, f, style), e[style], style, f, resolveGeneratedAssetUrl('pieces', id, style, f));
+      for (const [id, e] of Object.entries(terrainArt)) this.addTexture(this.key(`terrain.${id}`, 'r0', style), e[style], style, 'r0', resolveGeneratedAssetUrl('terrain', id, style, 'r0'));
+      for (const [id, e] of Object.entries(objectArt)) for (const f of e[style].frames) this.addTexture(this.key(`obj.${id}`, f, style), e[style], style, f, resolveGeneratedAssetUrl('objects', id, style, f));
     }
   }
 
