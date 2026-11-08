@@ -95,7 +95,11 @@ async function boot() {
       if(needsSignIn){const login=document.createElement('button');login.textContent='Sign in with poor.camp';login.onclick=()=>void signIn('/');root.append(login);}
       const retry=document.createElement('button');retry.textContent='Reconnect';retry.onclick=()=>location.reload();root.append(retry);return;
     }
-    root.replaceChildren();
+    // The loading message replaced the original canvas host. Restore both
+    // layers so Phaser mounts inside #app and receives world pointer input.
+    const gameHost=document.createElement('div');gameHost.id='game';
+    const paper=document.createElement('div');paper.id='paper';paper.setAttribute('aria-hidden','true');
+    root.replaceChildren(gameHost,paper);
   }
   const store = openStore();
   void navigator.storage?.persist?.();
