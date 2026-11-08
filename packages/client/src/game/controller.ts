@@ -95,7 +95,7 @@ type WellbeingIntent = WellbeingCommand extends infer T ? T extends WellbeingCom
 type TravelIntent = TravelCommand extends infer T ? T extends TravelCommand ? Omit<T, 'id' | 'nowMs'> : never : never;
 type CareerIntent = CareerCommand extends infer T ? T extends CareerCommand ? Omit<T, 'id' | 'nowMs'> : never : never;
 
-export type Panel = null | {kind:'lessons'} | {kind:'activities'} | {kind:'production';note?:string} | {kind:'shelter'} | { kind: 'animals'; note?: string; confirmSlaughter?: string } | { kind: 'wellbeing'; note?: string } | { kind: 'travel'; note?: string } | { kind: 'workshop'; note?: string } | { kind: 'npc'; npcId: string; lines: string[] } | { kind: 'project'; projectId: string; note?: string } | { kind: 'kiosk' };
+export type Panel = null | {kind:'neighborhood'} | {kind:'lessons'} | {kind:'activities'} | {kind:'production';note?:string} | {kind:'shelter'} | { kind: 'animals'; note?: string; confirmSlaughter?: string } | { kind: 'wellbeing'; note?: string } | { kind: 'travel'; note?: string } | { kind: 'workshop'; note?: string } | { kind: 'npc'; npcId: string; lines: string[] } | { kind: 'project'; projectId: string; note?: string } | { kind: 'kiosk' };
 
 export type Change = 'focus' | 'location' | 'town' | 'tool' | 'preview' | 'style' | 'status' | 'panel' | 'walk' | 'clock' | 'mode' | 'credits';
 type Listener = (what: Change, data?: unknown) => void;
@@ -136,6 +136,31 @@ export class Controller {
     this.baseWorld = world;
     this.world = travelWorld(world, town);
     this.hadShelter = hasShelter(town, catalog);
+  }
+
+  neighborhoodView() {
+    const here=!this.onlineCenter&&!this.visitingName&&this.world.map.id==='starter';
+    const saved=this.town.travel?.towns['local-neighborhood']?.place;
+    return {here,world:this.baseWorld.travelBase??this.baseWorld,town:here?this.town:{...this.town,...saved}};
+  }
+
+  walkToNeighbor(npcId:string) {
+    const def=this.world.npcs.find(n=>n.id===npcId);
+    if(!def){this.setStatus('Visit the starter neighborhood first.','info');return;}
+    const position=npcPosition(this.town,this.world,def,this.now());
+    if(position.inside){this.setStatus(`${def.name} is indoors. Check the neighborhood board for opening hours.`,'info');return;}
+    const path=pathToReach(this.town,this.world,this.catalog,position);
+    if(!path){this.setStatus('No open route to this neighbor. Clear a path and try again.','warn');return;}
+    this.setMode('play');this.setTool({mode:'walk'});this.openPanel(null);
+    this.walk(path,()=>{
+      const current=npcPosition(this.town,this.world,def,this.now());
+      if(current.inside||Math.max(Math.abs(current.x-this.town.player.x),Math.abs(current.y-this.town.player.y))>1){
+        this.setStatus(`${def.name} has moved. Use the neighborhood board to find them again.`,'info');return;
+      }
+      const result=this.dispatch({type:'talk',id:newCommandId(),npcId,nowMs:this.now()});
+      if(!result.ok)this.setStatus(result.reason??'Unable to talk right now.','info');
+      else if(!this.online)this.openNpcPanel(npcId,result.events??[]);
+    });
   }
 
   focusPoint(point: Point) { this.emit('focus', point); }

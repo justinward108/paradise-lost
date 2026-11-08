@@ -1,3 +1,4 @@
+import {neighborhoodPanel} from './neighborhoodPanel.ts';
 import {playerLessons} from './playerLessons.ts';
 import {updateJobClocks} from './jobBoard.ts';
 /**
@@ -382,10 +383,11 @@ export function mountUi(root: HTMLElement, ctrl: Controller, hooks: UiHooks): Ti
     const close = btn('✕', { class: 'close', 'aria-label': 'Close' }, () => ctrl.openPanel(null));
     if (p.kind === 'activities') {
       const menu = el('div',{class:'activity-menu'});
-      menu.append(workshopBtn,lessonsBtn,productionBtn,animalsBtn,wellbeingBtn,travelBtn,inspectBtn,roofBtn,styleBtn,noteBtn);
+      menu.append(btn('Neighborhood & daily life',{},()=>ctrl.openPanel({kind:'neighborhood'})),workshopBtn,lessonsBtn,productionBtn,animalsBtn,wellbeingBtn,travelBtn,inspectBtn,roofBtn,styleBtn,noteBtn);
       panel.replaceChildren(close,el('h2',{},'Activities & settings'),menu);
       return;
     }
+    if(p.kind==='neighborhood'){panel.replaceChildren(...neighborhoodPanel(ctrl,close));return;}
     if(p.kind==='lessons'){panel.replaceChildren(close,...playerLessons(ctrl));return;}
     if (p.kind === 'production') {panel.replaceChildren(...productionPanel(ctrl,close,p.note));return;}
     if (p.kind === 'shelter') {
@@ -503,6 +505,7 @@ export function mountUi(root: HTMLElement, ctrl: Controller, hooks: UiHooks): Ti
       if (show) credits.textContent = `◈ ${rc(k!.state!.balance)}`;
     }
     if (what === 'clock') {
+      if(ctrl.panel?.kind==='neighborhood')renderPanel();
       if (ctrl.panel?.kind === 'workshop') updateWorkshopClock(panel, ctrl.now());
     updateJobClocks(panel,ctrl.now());
       renderClock();

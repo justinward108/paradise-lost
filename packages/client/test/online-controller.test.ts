@@ -1,5 +1,5 @@
 import {describe,it,expect,vi} from 'vitest';
-import {createTown} from '@paradise-lost/sim';
+import {createTown,AMBIENT_DAY_MS} from '@paradise-lost/sim';
 import {world,catalog} from '@paradise-lost/content';
 import {Controller} from '../src/game/controller.ts';
 import {LocalTownStore,MemoryKV} from '../src/store/townStore.ts';
@@ -27,6 +27,17 @@ describe('server-authoritative controller',()=>{
   const state=structuredClone(town);state.player=first;
   resolve(new Response(JSON.stringify({data:{revision:1,state,result:{ok:true,changed:true}}})));
   await vi.waitFor(()=>expect(ctrl.awaitingMovement).toBe(false));expect(ctrl.route).toEqual([second]);
+ });
+ it('does not walk to a neighbor who is indoors',()=>{
+  const {town,store}=setup();const ctrl=new Controller(town,catalog,world,store,'pixel',()=>town.clock.epochMs);
+  ctrl.walkToNeighbor('rosa');expect(ctrl.route).toEqual([]);
+ });
+ it('walks within reach of an available neighbor and introduces the player',()=>{
+  const {town,store}=setup();const now=town.clock.epochMs+AMBIENT_DAY_MS*11/24;
+  const ctrl=new Controller(town,catalog,world,store,'pixel',()=>now);
+  ctrl.walkToNeighbor('rosa');expect(ctrl.route.length).toBeGreaterThan(0);
+  let steps=0;while(ctrl.route.length&&steps++<200)ctrl.arrived(ctrl.route[0]!);
+  expect(ctrl.town.npcs.rosa?.met).toBe(true);expect(ctrl.panel?.kind).toBe('npc');
  });
  it('does not mutate inventory before confirmation and installs only server state',async()=>{
   const {town,ctrl}=setup();const state=structuredClone(town);state.inventory.boards=7;
