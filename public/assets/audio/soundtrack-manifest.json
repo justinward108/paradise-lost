@@ -1,0 +1,71 @@
+{
+  "game": "paradise-lost",
+  "tracks": [
+    {
+      "game": "paradise-lost",
+      "slug": "01-hilo-rain-and-new-timber",
+      "role": "title",
+      "title": "Hilo Rain & New Timber (Main Theme)",
+      "bpm": 86,
+      "key": "G Major",
+      "file": "01-hilo-rain-and-new-timber.mp3",
+      "size_bytes": 2894778,
+      "is_default": true
+    },
+    {
+      "game": "paradise-lost",
+      "slug": "02-puna-morning-garden",
+      "role": "morning",
+      "title": "Puna Morning & Garden Clearing",
+      "bpm": 92,
+      "key": "D Major",
+      "file": "02-puna-morning-garden.mp3",
+      "size_bytes": 2937409,
+      "is_default": false
+    },
+    {
+      "game": "paradise-lost",
+      "slug": "03-banyan-shade-town-errands",
+      "role": "town",
+      "title": "Banyan Shade & Town Market",
+      "bpm": 98,
+      "key": "C Major",
+      "file": "03-banyan-shade-town-errands.mp3",
+      "size_bytes": 2886000,
+      "is_default": false
+    },
+    {
+      "game": "paradise-lost",
+      "slug": "04-tradewind-afternoon-work",
+      "role": "work",
+      "title": "Tradewind Afternoon (Crafting & Building)",
+      "bpm": 90,
+      "key": "G Mixolydian",
+      "file": "04-tradewind-afternoon-work.mp3",
+      "size_bytes": 2875969,
+      "is_default": false
+    },
+    {
+      "game": "paradise-lost",
+      "slug": "05-lanterns-on-the-lanai",
+      "role": "evening",
+      "title": "Lanterns on the Lanai (Evening Nocturne)",
+      "bpm": 72,
+      "key": "E Minor to G Major",
+      "file": "05-lanterns-on-the-lanai.mp3",
+      "size_bytes": 3106056,
+      "is_default": false
+    },
+    {
+      "game": "paradise-lost",
+      "slug": "06-ohana-harvest-table",
+      "role": "festival",
+      "title": "Harvest Table & Neighborly Gathering",
+      "bpm": 104,
+      "key": "G Major",
+      "file": "06-ohana-harvest-table.mp3",
+      "size_bytes": 2870327,
+      "is_default": false
+    }
+  ]
+}
