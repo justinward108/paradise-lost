@@ -95,7 +95,7 @@ type WellbeingIntent = WellbeingCommand extends infer T ? T extends WellbeingCom
 type TravelIntent = TravelCommand extends infer T ? T extends TravelCommand ? Omit<T, 'id' | 'nowMs'> : never : never;
 type CareerIntent = CareerCommand extends infer T ? T extends CareerCommand ? Omit<T, 'id' | 'nowMs'> : never : never;
 
-export type Panel = null | {kind:'neighborhood'} | {kind:'lessons'} | {kind:'activities'} | {kind:'production';note?:string} | {kind:'shelter'} | { kind: 'animals'; note?: string; confirmSlaughter?: string } | { kind: 'wellbeing'; note?: string } | { kind: 'travel'; note?: string } | { kind: 'workshop'; note?: string } | { kind: 'npc'; npcId: string; lines: string[] } | { kind: 'project'; projectId: string; note?: string } | { kind: 'kiosk' };
+export type Panel = null | {kind:'businesses';note?:string} | {kind:'neighborhood'} | {kind:'lessons'} | {kind:'activities'} | {kind:'production';note?:string} | {kind:'shelter'} | { kind: 'animals'; note?: string; confirmSlaughter?: string } | { kind: 'wellbeing'; note?: string } | { kind: 'travel'; note?: string } | { kind: 'workshop'; note?: string } | { kind: 'npc'; npcId: string; lines: string[] } | { kind: 'project'; projectId: string; note?: string } | { kind: 'kiosk' };
 
 export type Change = 'focus' | 'location' | 'town' | 'tool' | 'preview' | 'style' | 'status' | 'panel' | 'walk' | 'clock' | 'mode' | 'credits';
 type Listener = (what: Change, data?: unknown) => void;
@@ -294,7 +294,7 @@ export class Controller {
       await this.store.setMeta(`online-pending:${this.town.townId}`,'');
       this.uncertainCommand=null;this.online.revision=receipt.revision;this.town=receipt.state;
       this.world=travelWorld(this.baseWorld,this.town);
-      if(this.panel&&['production','animals','wellbeing','travel','workshop','project'].includes(this.panel.kind))this.panel={...this.panel,note:'Confirmed by the world server.'} as Panel;
+      if(this.panel&&['businesses','production','animals','wellbeing','travel','workshop','project'].includes(this.panel.kind))this.panel={...this.panel,note:'Confirmed by the world server.'} as Panel;
       if(receipt.result.events?.includes('travel:location')){this.route=[];this.onArrive=null;this.preview={kind:'none'};this.emit('location');}
       this.emit('town',{commandType:sending.type});
       if(receipt.result.events?.length)this.describeEvents(receipt.result.events);
@@ -810,6 +810,11 @@ export class Controller {
   dailyAction(intent: DailyIntent) {
     const r = this.dispatch({ ...intent, id: newCommandId(), nowMs: this.now() });
     if (this.panel?.kind === 'npc') this.openPanel({ ...this.panel, lines: [r.ok ? 'Thank you. Here is your reward.' : (r.reason ?? 'Unable to deliver.')] });
+  }
+
+  businessAction(intent: import('@paradise-lost/sim').BusinessCommand extends infer T ? T extends import('@paradise-lost/sim').BusinessCommand ? Omit<T,'id'|'nowMs'> : never : never) {
+    const result=this.dispatch({...intent,id:newCommandId(),nowMs:this.now()});
+    this.openPanel({kind:'businesses',note:result.ok?(this.online?'Waiting for server confirmation…':'Business updated.'):result.reason});
   }
 
   productionAction(intent: ProductionIntent) {

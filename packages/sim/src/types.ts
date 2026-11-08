@@ -131,6 +131,7 @@ export const SCHEMA_VERSION = 4 as const;
 
 /** Everything needed to restore a town. This is exactly what gets saved. */
 export interface Town {
+  businesses?: Partial<Record<import('./businesses.ts').BusinessKind,import('./businesses.ts').BusinessState>>;
   staffing?: import('./staffing.ts').StaffingState;
   wardrobe?: import('./productionActivities.ts').Wardrobe;
   mining?: {day:number;used:number};

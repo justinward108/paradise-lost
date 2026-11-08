@@ -1,3 +1,4 @@
+import {runBusiness,type BusinessCommand} from './businesses.ts';
 /**
  * World actions: walking, clearing, salvaging, gardening, talking, community work.
  *
@@ -23,6 +24,7 @@ import { growBack } from './regrow.ts';
 import { DEFAULT_REGROW, hasBrush, hasRubble, inLot, projectComplete, siteRemaining, terrainAt, treeAt, type Point, type World } from './world.ts';
 
 export type WorldCommand =
+  | BusinessCommand
   | StaffingCommand
   | ProductionCommand
   | DailyCommand
@@ -109,6 +111,14 @@ function run(town: Town, catalog: Catalog, world: World, cmd: WorldCommand): Act
     case 'buildWaterSource':
     case 'drawWater':
       return runWellbeing(town, world, cmd);
+
+    case 'openBusiness':
+    case 'advertiseBusinessWorker':
+    case 'hireBusinessWorker':
+    case 'dismissBusinessWorker':
+    case 'startBusinessOrder':
+    case 'collectBusinessOrder':
+      return runBusiness(town,catalog,world.workshop,cmd);
 
     case 'advertiseTeacher':
     case 'hireTeacher':
