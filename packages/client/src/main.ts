@@ -1,4 +1,4 @@
-import {WorldConnection} from './net/world.ts';
+import {WorldConnection,WorldRefused} from './net/world.ts';
 import {account,signIn,servicesHere} from './net/poorcamp.ts';
 /**
  * Entry point: load (or create) the town, start the renderer, mount the UI.
@@ -88,8 +88,11 @@ async function boot() {
       serverSnapshot=await online.load();
       if(!serverSnapshot.exists)serverSnapshot=await online.create();
       if(!serverSnapshot.state||serverSnapshot.revision===undefined)throw new Error('Invalid world state');
-    }catch{
-      root.textContent='The world server is unavailable. Your world has not been replaced by a local save.';
+    }catch(error){
+      console.error('Paradise Lost world connection failed',error);
+      const needsSignIn=error instanceof WorldRefused&&(error.status===401||error.status===403);
+      root.textContent=needsSignIn?'Your session has ended. Sign in to load your automatically saved world.':'Unable to load your automatically saved world. Reconnect to try again.';
+      if(needsSignIn){const login=document.createElement('button');login.textContent='Sign in with poor.camp';login.onclick=()=>void signIn('/');root.append(login);}
       const retry=document.createElement('button');retry.textContent='Reconnect';retry.onclick=()=>location.reload();root.append(retry);return;
     }
     root.replaceChildren();

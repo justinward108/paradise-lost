@@ -22,7 +22,8 @@ export interface OnlineDirectory {
 export class WorldRefused extends Error {constructor(message:string,readonly status:number){super(message);}}
 /** Sends intent only. Server determines ownership, time, costs and results. */
 export class WorldConnection {
- constructor(private readonly send:typeof fetch=fetch){}
+ // Browser fetch requires the Window/global receiver, not this connection.
+ constructor(private readonly send:typeof fetch=(...args)=>globalThis.fetch(...args)){}
  private async request<T>(body?:Record<string,unknown>):Promise<T>{
   const response=await this.send('/api/paradise-world',{method:body?'POST':'GET',credentials:'same-origin',cache:'no-store',headers:body?{'Content-Type':'application/json'}:{accept:'application/json'},body:body?JSON.stringify(body):undefined});
   const payload=await response.json() as {data?:T;error?:string};

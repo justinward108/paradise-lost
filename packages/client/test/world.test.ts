@@ -1,6 +1,15 @@
 import {describe,it,expect,vi} from 'vitest';
 import {WorldConnection,WorldRefused} from '../src/net/world.ts';
 describe('online world transport',()=>{
+ it('calls browser fetch with the global receiver rather than the connection object',async()=>{
+  const previous=globalThis.fetch;
+  globalThis.fetch=function(this:unknown){
+   if(this!==globalThis)throw new TypeError('Illegal invocation');
+   return Promise.resolve(new Response(JSON.stringify({data:{exists:false}})));
+  } as typeof fetch;
+  try{await expect(new WorldConnection().load()).resolves.toEqual({exists:false});}
+  finally{globalThis.fetch=previous;}
+ });
  it('creates through the account session without uploading state or owner',async()=>{
   const send=vi.fn().mockResolvedValue(new Response(JSON.stringify({data:{exists:false}})));
   await new WorldConnection(send).create();
