@@ -253,6 +253,8 @@ export class Controller {
     if(pending)this.uncertainCommand=JSON.parse(pending) as Command;
   }
   private onlineBusy = false;
+  private movementPending = false;
+  get awaitingMovement(): boolean { return this.movementPending; }
   private uncertainCommand: Command | null = null;
   async sendOnline(cmd:Command):Promise<ApplyResult>{
     if(this.onlineCenter)return this.sendCenter(cmd);
@@ -326,6 +328,8 @@ export class Controller {
   }
 
   tick(): void {
+    // Walking commands advance server time too; do not race them with background ticks.
+    if(this.online && (this.onlineBusy || this.route.length > 0))return;
     const r = this.dispatch({ type: 'tick', id: newCommandId(), nowMs: this.now() });
     if (r.changed) void this.store.save(this.town);
     this.emit('clock');
@@ -692,12 +696,21 @@ export class Controller {
   /** The renderer calls this as the avatar reaches each tile. */
   arrived(p: Point) {
     if(this.online&&!this.visitingName){
-      if(this.onlineBusy)return;
+      if(this.onlineBusy || this.movementPending)return;
+      const route=this.route;
+      this.movementPending=true;
       void this.sendOnline({type:'move',id:newCommandId(),to:p}).then(r=>{
-        if(!r.ok){this.route=[];this.onArrive=null;this.emit('location');return;}
-        this.route.shift();if(this.route.length===0){const then=this.onArrive;this.onArrive=null;then?.();}
+        if(!r.ok){this.route=[];this.onArrive=null;this.setStatus(r.reason ?? 'Walking interrupted. Choose your destination again.','warn');this.emit('location');return;}
+        if(this.route!==route){
+          // A destination clicked during this request was planned from the previous tile.
+          const reached=this.route.findIndex(q=>q.x===p.x&&q.y===p.y);
+          if(reached>=0)this.route.splice(0,reached+1);
+          else { const target=this.route.at(-1);this.route=target?(findPath(this.town,this.world,this.catalog,this.town.player,q=>q.x===target.x&&q.y===target.y)??[]):[]; }
+        }else this.route.shift();
+        if(this.route[0]?.x===p.x&&this.route[0]?.y===p.y)this.route.shift();
+        if(this.route.length===0){const then=this.onArrive;this.onArrive=null;then?.();}
         this.emit('walk');
-      });return;
+      }).finally(()=>{this.movementPending=false;});return;
     }
     this.facing = { x: Math.sign(p.x - this.town.player.x), y: Math.sign(p.y - this.town.player.y) };
     const r = this.dispatch({ type: 'move', id: newCommandId(), to: p });

@@ -304,7 +304,14 @@ export function mountUi(root: HTMLElement, ctrl: Controller, hooks: UiHooks): Ti
       b.title = locked ? `${def.name} — unlocks at tier ${def.tier}` : def.name;
     }
     const gs = ctrl.onlineCenter ? [] : goals(ctrl.town, ctrl.catalog, ctrl.world);
-    goalsList.replaceChildren(...gs.map((g) => el('li', { class: g.done ? 'done' : '' }, `${g.done ? '✓' : '○'} ${g.text}`)));
+    goalsList.replaceChildren(...gs.map((g) => {
+      const row=el('li', { class: g.done ? 'done' : '' }, `${g.done ? '✓' : '○'} ${g.text}`);
+      row.title=g.hint;
+      if(!g.done&&['neighbour','path','salvage'].includes(g.id)&&ctrl.town.privatePlot){
+        row.append(btn('Find in starter neighborhood', {class:'link'}, ()=>ctrl.travelAction({type:'visitTown',townId:'local-neighborhood'})));
+      }
+      return row;
+    }));
     const next = gs.find((g) => !g.done);
     goalsHint.textContent = ctrl.onlineCenter ? `Town center: ${ctrl.onlineCenter.name}. ${ctrl.centerDonation?'You are donating personal building materials.':'Building uses shared town stock.'} Open Towns & travel for treasury contributions and paid jobs.` : next ? next.hint : 'All done for now. The town has more to discover soon.';
     nextGoal = next?.id ?? 'start';

@@ -60,9 +60,10 @@ export function travelPanel(ctrl: Controller, close: HTMLElement, note?: string)
 
 function onlineTravelPanel(ctrl:Controller,close:HTMLElement,note?:string):HTMLElement[]{
  const nodes=[close,el('h2','Shared towns & travel'),el('p',ctrl.onlineCenter?`Town center: ${ctrl.onlineCenter.name}. Residents share construction here.`:ctrl.visitingName?`Visiting ${ctrl.visitingName}. You can exchange goods through player trade offers.`:'Your server-owned plot. Joining a town preserves your buildings and possessions.')];
+ nodes.push(el('p','No travel agency is required. Visit the starter neighborhood for Auntie Rosa, the seed trader and the road repair project. Return home at any time for free. Shared town centers and player visits are available below.'));
  if(note)nodes.push(el('p',note));
  nodes.push(button('Return to my plot — free',()=>void ctrl.onlineAction('returnHome')),button('Refresh towns & residents',()=>void ctrl.onlineAction('directory')));
- nodes.push(button('Visit starter neighborhood',()=>ctrl.travelAction({type:'visitTown',townId:'local-neighborhood'})));
+ nodes.push(button('Visit starter neighborhood — Rosa, seeds & road (free)',()=>ctrl.travelAction({type:'visitTown',townId:'local-neighborhood'})));
  if(ctrl.onlineCenter){
   const own=document.createElement('input');own.type='checkbox';own.checked=ctrl.centerDonation;
   const label=document.createElement('label');label.append(own,' Donate my own materials for each build (otherwise use town stock)');

@@ -18,6 +18,16 @@ describe('server-authoritative controller',()=>{
   resolve(new Response(JSON.stringify({data:{revision:1,state,result:{ok:true,changed:true}}})));
   await vi.waitFor(()=>expect(ctrl.route).toHaveLength(0));expect(ctrl.town.player).toEqual(to);
  });
+ it('keeps a replacement destination when a previous step confirms',async()=>{
+  const {town,ctrl}=setup();const first={x:town.player.x+1,y:town.player.y},second={x:town.player.x+2,y:town.player.y};
+  let resolve!:(value:Response)=>void;const send=vi.fn<typeof fetch>(()=>new Promise<Response>(r=>{resolve=r;}));
+  await ctrl.connectOnline(new WorldConnection(send),0);ctrl.walk([first]);ctrl.arrived(first);
+  await vi.waitFor(()=>expect(send).toHaveBeenCalledTimes(1));
+  ctrl.walk([first,second]);ctrl.tick();expect(send).toHaveBeenCalledTimes(1);expect(ctrl.awaitingMovement).toBe(true);
+  const state=structuredClone(town);state.player=first;
+  resolve(new Response(JSON.stringify({data:{revision:1,state,result:{ok:true,changed:true}}})));
+  await vi.waitFor(()=>expect(ctrl.awaitingMovement).toBe(false));expect(ctrl.route).toEqual([second]);
+ });
  it('does not mutate inventory before confirmation and installs only server state',async()=>{
   const {town,ctrl}=setup();const state=structuredClone(town);state.inventory.boards=7;
   let resolve!:(value:Response)=>void;

@@ -380,6 +380,7 @@ export class BuildScene extends Phaser.Scene {
       this.walkFrom = null;
       return;
     }
+    if(this.ctrl.awaitingMovement)return;
     const next = route[0]!;
     this.walkFrom ??= { ...this.ctrl.town.player };
     this.walkT += delta / this.ctrl.stepMs();
