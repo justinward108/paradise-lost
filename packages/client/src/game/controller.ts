@@ -717,7 +717,7 @@ export class Controller {
   }
 
   stepMs(): number {
-    return this.online&&!this.visitingName?1000:STEP_MS;
+    return STEP_MS;
   }
 
   /** Keyboard: one step in a direction, or face it if blocked. */

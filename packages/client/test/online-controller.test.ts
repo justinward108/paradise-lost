@@ -6,6 +6,18 @@ import {LocalTownStore,MemoryKV} from '../src/store/townStore.ts';
 import {WorldConnection} from '../src/net/world.ts';
 function setup(){const town=createTown({townId:'online-test',seed:'s',nowMs:1,inventory:{boards:10},world,catalog});const store=new LocalTownStore(new MemoryKV());const ctrl=new Controller(town,catalog,world,store,'pixel');return{town,store,ctrl};}
 describe('server-authoritative controller',()=>{
+ it('walks at the normal pace while awaiting authoritative step confirmation',async()=>{
+  const {town,ctrl}=setup();const to={x:town.player.x+1,y:town.player.y};const state=structuredClone(town);state.player=to;
+  let resolve!:(value:Response)=>void;
+  const send=vi.fn<typeof fetch>(()=>new Promise<Response>(r=>{resolve=r;}));
+  await ctrl.connectOnline(new WorldConnection(send),0);
+  expect(ctrl.stepMs()).toBe(230);ctrl.walk([to]);ctrl.arrived(to);ctrl.arrived(to);
+  await vi.waitFor(()=>expect(send).toHaveBeenCalledTimes(1));
+  expect(send.mock.calls[0]![0]).toBe('/api/paradise-move');
+  expect(ctrl.town.player).toEqual(town.player);expect(ctrl.route).toEqual([to]);
+  resolve(new Response(JSON.stringify({data:{revision:1,state,result:{ok:true,changed:true}}})));
+  await vi.waitFor(()=>expect(ctrl.route).toHaveLength(0));expect(ctrl.town.player).toEqual(to);
+ });
  it('does not mutate inventory before confirmation and installs only server state',async()=>{
   const {town,ctrl}=setup();const state=structuredClone(town);state.inventory.boards=7;
   let resolve!:(value:Response)=>void;

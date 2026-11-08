@@ -25,7 +25,8 @@ export class WorldConnection {
  // Browser fetch requires the Window/global receiver, not this connection.
  constructor(private readonly send:typeof fetch=(...args)=>globalThis.fetch(...args)){}
  private async request<T>(body?:Record<string,unknown>):Promise<T>{
-  const response=await this.send('/api/paradise-world',{method:body?'POST':'GET',credentials:'same-origin',cache:'no-store',headers:body?{'Content-Type':'application/json'}:{accept:'application/json'},body:body?JSON.stringify(body):undefined});
+  const movement=body&&['command','centerCommand'].includes(String(body.action))&&(body.command as {type?:string}|undefined)?.type==='move';
+  const response=await this.send(movement?'/api/paradise-move':'/api/paradise-world',{method:body?'POST':'GET',credentials:'same-origin',cache:'no-store',headers:body?{'Content-Type':'application/json'}:{accept:'application/json'},body:body?JSON.stringify(body):undefined});
   const payload=await response.json() as {data?:T;error?:string};
   if(!response.ok)throw new WorldRefused(payload.error??'World service unavailable',response.status);
   if(!payload.data)throw new Error('Invalid world response');return payload.data;

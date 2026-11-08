@@ -1,6 +1,14 @@
 import {describe,it,expect,vi} from 'vitest';
 import {WorldConnection,WorldRefused} from '../src/net/world.ts';
 describe('online world transport',()=>{
+ it('routes only walking through the movement endpoint',async()=>{
+  const send=vi.fn().mockImplementation(()=>Promise.resolve(new Response(JSON.stringify({data:{ok:true}}))));
+  const connection=new WorldConnection(send);
+  await connection.command('walk-request-0001',0,{type:'move',id:'local',to:{x:1,y:1}});
+  await connection.social('centerCommand',{command:{type:'move',to:{x:1,y:1}}});
+  await connection.command('craft-request-001',1,{type:'finishActivity',id:'local',nowMs:1});
+  expect(send.mock.calls.map(c=>c[0])).toEqual(['/api/paradise-move','/api/paradise-move','/api/paradise-world']);
+ });
  it('calls browser fetch with the global receiver rather than the connection object',async()=>{
   const previous=globalThis.fetch;
   globalThis.fetch=function(this:unknown){

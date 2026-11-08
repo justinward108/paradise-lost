@@ -7,3 +7,5 @@
 /api/sso/logout      https://poor.camp/api/sso/logout      200
 
 /api/paradise-world  https://poor.camp/api/paradise-world  200
+
+/api/paradise-move   https://poor.camp/api/paradise-move   200
